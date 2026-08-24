@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SDN 2 Ngeposari — Tempat Belajar, Bertumbuh, & Menemukan Arah</title>
+  <meta name="description" content="Website Informasi Resmi SDN 2 Ngeposari. Temukan profil sekolah, fasilitas unggulan, layanan siswa, berita kegiatan terbaru, dan informasi kontak lengkap.">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="hero-page">
+
+  <!-- 1. NAVBAR -->
+  <header id="main-header">
+    <div class="header-container">
+      <a href="index.html" class="logo-link">
+        <img src="images/logo.png" alt="Logo SDN 2 Ngeposari" class="logo-img" onerror="this.src='https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=100&h=100&fit=crop'">
+        <div class="logo-text">
+          <span class="logo-title">SDN 2 Ngeposari</span>
+          <p>Semanu, Gunungkidul</p>
+        </div>
+      </a>
+      
+      <div style="display: flex; align-items: center; gap: var(--space-3);">
+        <nav>
+          <ul class="nav-menu" id="nav-menu">
+            <li><a href="index.html" class="nav-link active">Beranda</a></li>
+            <li><a href="tentang.html" class="nav-link">Tentang</a></li>
+            <li><a href="fasilitas.html" class="nav-link">Fasilitas</a></li>
+            <li><a href="kegiatan.html" class="nav-link">Kegiatan</a></li>
+            <li><a href="kontak.html" class="nav-link">Kontak</a></li>
+          </ul>
+        </nav>
+
+        <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="12" x2="20" y2="12"></line>
+            <line x1="4" y1="6" x2="20" y2="6"></line>
+            <line x1="4" y1="18" x2="20" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. FULL-SCREEN GHIBLI LIVING ENVIRONMENT HERO SECTION -->
+  <section class="hero-fullscreen-section ghibli-hero-section" id="hero-section">
+    <!-- Studio Ghibli Scenic Green Rolling Hills Artwork Background -->
+    <div class="hero-bg-wrapper">
+      <img src="images/ghibli_hero_bg.jpg" alt="Pemandangan Asri Perbukitan Hijau SDN 2 Ngeposari" class="hero-bg-img">
+      <div class="hero-ghibli-overlay"></div>
+    </div>
+
+    <!-- Micro-Interaction 1: Soft Floating Light Elements / Organic Petals -->
+    <div class="organic-floating-shape">
+      <svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M40 30 C70 10, 130 20, 140 70 C150 120, 90 150, 50 130 C10 110, 10 50, 40 30 Z" fill="rgba(255, 255, 255, 0.16)"/>
+      </svg>
+    </div>
+
+    <!-- Centered Editorial Main Typography & Actions (100% Matching Layout) -->
+    <div class="ghibli-hero-content">
+      <h1 class="ghibli-hero-headline">
+        Tempat <em>Belajar</em> &amp; Tumbuh<br>Penuh Inspirasi.
+      </h1>
+
+      <p class="ghibli-hero-subtitle">
+        Menghadirkan lingkungan belajar yang asri, hangat, dan ramah anak di SDN 2 Ngeposari, Semanu, Gunungkidul. Membimbing nalar budi, kemandirian, dan karakter Pancasila generasi masa depan.
+      </p>
+
+      <div class="ghibli-hero-buttons">
+        <a href="kontak.html" class="btn btn-ghibli-solid">Hubungi Kami</a>
+        <a href="tentang.html" class="btn btn-ghibli-glass">Jelajahi Profil</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. ADMISSION / HIGHLIGHT BANNER -->
+  <section class="banner-highlight-section" id="banner-highlight-sec" style="margin-top: var(--space-7);">
+    <div class="banner-highlight-content">
+      <h2>Kenali sekolah kami lebih dekat.</h2>
+      <p>Cerita tentang lingkungan belajar, fasilitas pendukung, kegiatan siswa, dan komunitas sekolah yang hangat.</p>
+      <a href="tentang.html" class="btn btn-primary" style="background-color: var(--text); border-color: var(--text);">Selengkapnya</a>
+    </div>
+
+    <div class="geometric-pattern-box">
+      <svg width="100%" height="60" viewBox="0 0 1200 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 60 C 60 15, 120 15, 180 60 C 240 15, 300 15, 360 60 C 420 15, 480 15, 540 60 C 600 15, 660 15, 720 60 C 780 15, 840 15, 900 60 C 960 15, 1020 15, 1080 60 C 1140 15, 1200 15, 1260 60 Z" fill="#D7E0F3" opacity="0.9"/>
+        <path d="M90 60 C 150 25, 210 25, 270 60 C 330 25, 390 25, 450 60 C 510 25, 570 25, 630 60 C 690 25, 750 25, 810 60 C 870 25, 930 25, 990 60 C 1050 25, 1110 25, 1170 60 Z" fill="#253B73" opacity="0.8"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 4. ESSENTIAL INFORMATION -->
+  <section class="section" id="info-section">
+    <span class="section-label">INFORMASI PENTING</span>
+    <h2 class="section-headline">Temukan informasi yang kamu butuhkan.</h2>
+    <p class="section-supporting">Akses cepat mengenai profil sekolah, fasilitas prasarana, agenda kegiatan siswa, dan kontak resmi kami.</p>
+
+    <div class="info-cards-grid" id="info-cards-grid">
+      <div class="info-card-item">
+        <div>
+          <div class="info-card-num">01</div>
+          <h3>Profil Sekolah</h3>
+          <p>Mengenal sejarah, visi, misi, dan nilai-nilai utama sekolah kami.</p>
+        </div>
+        <a href="tentang.html" class="btn-text-link">Lihat selengkapnya →</a>
+      </div>
+
+      <div class="info-card-item">
+        <div>
+          <div class="info-card-num">02</div>
+          <h3>Fasilitas</h3>
+          <p>Lihat ruang belajar, laboratorium, dan fasilitas yang tersedia.</p>
+        </div>
+        <a href="fasilitas.html" class="btn-text-link">Lihat fasilitas →</a>
+      </div>
+
+      <div class="info-card-item">
+        <div>
+          <div class="info-card-num">03</div>
+          <h3>Kegiatan</h3>
+          <p>Temukan agenda kegiatan, pramuka, dan aktivitas terbaru.</p>
+        </div>
+        <a href="kegiatan.html" class="btn-text-link">Lihat kegiatan →</a>
+      </div>
+
+      <div class="info-card-item">
+        <div>
+          <div class="info-card-num">04</div>
+          <h3>Kontak</h3>
+          <p>Alamat fisik, nomor telepon, email, dan lokasi sekolah.</p>
+        </div>
+        <a href="kontak.html" class="btn-text-link">Hubungi kami →</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- 5. KEUNGGULAN & PEMBIASAAN SEKOLAH -->
+  <section class="section" id="pillars-section">
+    <span class="section-label">PEMBIASAAN BAIK</span>
+    <h2 class="section-headline">Keunggulan & Budaya Belajar</h2>
+    <p class="section-supporting">Nilai dasar yang kami tanamkan harian untuk menciptakan generasi yang cerdas, sopan, dan berkarakter.</p>
+
+    <div class="pillars-grid">
+      <div class="pillar-card">
+        <div class="pillar-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <h4>Literasi 15 Menit</h4>
+        <p>Pembiasaan membaca buku sebelum pelajaran dimulai untuk mengasah minat baca dan daya tangkap pengetahuan siswa.</p>
+      </div>
+
+      <div class="pillar-card">
+        <div class="pillar-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        </div>
+        <h4>Karakter Pancasila</h4>
+        <p>Integrasi nilai-nilai gotong royong, kebhinekaan, dan kejujuran dalam setiap aktivitas pembelajaran Kurikulum Merdeka.</p>
+      </div>
+
+      <div class="pillar-card">
+        <div class="pillar-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+        </div>
+        <h4>Sekolah Ramah Anak</h4>
+        <p>Lingkungan bebas perundungan (anti-bullying) dengan guru pendamping yang hangat, sabar, dan komunikatif.</p>
+      </div>
+
+      <div class="pillar-card">
+        <div class="pillar-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <h4>Pramuka Wajib</h4>
+        <p>Pembinaan kedisiplinan, kemandirian, kecintaan alam, dan kepemimpinan melalui regu Kepramukaan Penggalang.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. SCHOOL SERVICES -->
+  <section class="section" id="services-section">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: var(--space-6); flex-wrap:wrap; gap:16px;">
+      <div>
+        <span class="section-label">LAYANAN SEKOLAH</span>
+        <h2 class="section-headline" style="margin-bottom:0;">Layanan dan kehidupan sekolah.</h2>
+      </div>
+      <a href="tentang.html" class="btn btn-secondary">Lihat semua →</a>
+    </div>
+
+    <div class="services-cards-grid" id="services-cards-grid">
+      <div class="service-card-item">
+        <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?w=800&h=600&fit=crop" alt="Kegiatan Akademik" class="service-card-img">
+        <div class="service-card-overlay">
+          <span>PROGRAM AKADEMIK</span>
+          <h3>Pembelajaran Berbasis Kurikulum Merdeka</h3>
+          <p>Mendorong minat baca, nalar kritis, dan pembiasaan karakter.</p>
+        </div>
+      </div>
+
+      <div class="service-card-item">
+        <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=960&h=540&fit=crop" alt="Kegiatan Siswa" class="service-card-img">
+        <div class="service-card-overlay">
+          <span>KEGIATAN SISWA</span>
+          <h3>Pengembangan Bakat & Pramuka</h3>
+          <p>Berbagai kegiatan untuk berkembang dan bersosialisasi di luar kelas.</p>
+        </div>
+      </div>
+
+      <div class="service-card-item">
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=750&fit=crop" alt="Informasi & Konseling" class="service-card-img">
+        <div class="service-card-overlay">
+          <span>BIMBINGAN SISWA</span>
+          <h3>Pendampingan & Komunitas Dekat</h3>
+          <p>Sinergi yang erat antara tenaga pendidik dan orang tua wali siswa.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. ACADEMIC CALENDAR WIDGET SECTION -->
+  <section class="section" id="academic-calendar-sec" style="padding-top:0;">
+    <div id="academic-calendar-widget">
+      <div class="calendar-widget-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
+          <h3 style="font-size: 18px; font-weight: 700; color: var(--primary);">Agenda & Kalender Akademik Mendatang</h3>
+          <a href="kegiatan.html" class="btn-text-link" style="font-size:12px;">Lihat kegiatan →</a>
+        </div>
+        <div class="calendar-item-row">
+          <div class="calendar-date-badge">
+            <div class="day">01</div>
+            <div class="month">SEP 2026</div>
+          </div>
+          <div class="calendar-info">
+            <span>Akademik</span>
+            <h4>Asesmen Nasional Berbasis Komputer (ANBK)</h4>
+          </div>
+        </div>
+        <div class="calendar-item-row">
+          <div class="calendar-date-badge">
+            <div class="day">15</div>
+            <div class="month">SEP 2026</div>
+          </div>
+          <div class="calendar-info">
+            <span>Kepramukaan</span>
+            <h4>Perkemahan Sabtu Minggu (Persami) Pramuka</h4>
+          </div>
+        </div>
+        <div class="calendar-item-row">
+          <div class="calendar-date-badge">
+            <div class="day">28</div>
+            <div class="month">SEP 2026</div>
+          </div>
+          <div class="calendar-info">
+            <span>Ujian</span>
+            <h4>Penilaian Tengah Semester (PTS) Ganjil</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. LATEST NEWS & EVENTS -->
+  <div class="news-section-wrapper" id="news-wrapper">
+    <div style="max-width:1280px; margin: 0 auto; margin-bottom: var(--space-6); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px;">
+      <div>
+        <span class="section-label">KABAR SEKOLAH</span>
+        <h2 class="section-headline" style="margin-bottom:0;">Kabar terbaru dari sekolah.</h2>
+      </div>
+      <a href="kegiatan.html" class="btn btn-secondary">Lihat semua kegiatan →</a>
+    </div>
+
+    <div class="news-grid-container" id="news-grid-container">
+      <div class="news-card-featured">
+        <div class="news-img-box">
+          <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=960&h=540&fit=crop" alt="Latihan Rutin Pramuka Penggalang">
+        </div>
+        <div class="news-content-box">
+          <div class="news-meta-badge">KEGIATAN SEKOLAH • 15 AGUSTUS 2026</div>
+          <h3 class="news-title">Latihan Rutin Pramuka Penggalang & Pembentukan Karakter</h3>
+          <p class="news-desc">Siswa-siswi antusias mengikuti kegiatan persami dan latihan tali temali di lapangan sekolah.</p>
+          <a href="detail-kegiatan.html?id=act1" class="btn-text-link">Baca selengkapnya →</a>
+        </div>
+      </div>
+
+      <div class="news-card-compact">
+        <div class="news-img-box">
+          <img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=960&h=540&fit=crop" alt="Pentas Seni & Lomba Kreasi">
+        </div>
+        <div class="news-content-box">
+          <div class="news-meta-badge">KEGIATAN SEKOLAH • 10 AGUSTUS 2026</div>
+          <h3 class="news-title">Pentas Seni & Lomba Kreasi Mewarnai Siswa</h3>
+          <p class="news-desc">Wadah ekspresi kreativitas siswa dalam memperingati hari kemerdekaan.</p>
+          <a href="detail-kegiatan.html?id=act2" class="btn-text-link">Baca selengkapnya →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. TESTIMONIALS -->
+  <section class="section" id="testimonials-sec">
+    <span class="section-label">KESAN & APRESIASI</span>
+    <h2 class="section-headline">Apa Kata Orang Tua Wali Siswa?</h2>
+    <p class="section-supporting">Kepercayaan dan kebanggaan keluarga wali siswa tumbuh bersama lingkungan sekolah kami.</p>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <p class="testimonial-quote">"Guru-guru di SDN 2 Ngeposari sangat sabar dan penuh perhatian. Anak saya jadi lebih percaya diri, sopan, dan bersemangat berangkat sekolah setiap pagi."</p>
+        <div class="testimonial-author">
+          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop" alt="Ibu Purwanti" class="testimonial-avatar">
+          <div>
+            <div class="testimonial-name">Ibu Purwanti</div>
+            <div class="testimonial-role">Orang Tua Wali Kelas IV</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <p class="testimonial-quote">"Fasilitas perpustakaan dan lab komputer sangat membantu anak-anak belajar teknologi secara sehat. Pembiasaan Pramuka-nya juga melatih kemandirian."</p>
+        <div class="testimonial-author">
+          <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop" alt="Bapak Sugiyanto" class="testimonial-avatar">
+          <div>
+            <div class="testimonial-name">Bapak Sugiyanto</div>
+            <div class="testimonial-role">Orang Tua Wali Kelas VI</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <p class="testimonial-quote">"Lingkungan sekolah yang bersih dan hijau membuat anak-anak merasa nyaman. Komunikasi sekolah dengan orang tua wali siswa juga terjalin sangat dekat."</p>
+        <div class="testimonial-author">
+          <img src="https://images.unsplash.com/photo-1580894732413-87b1c31274cf?w=100&h=100&fit=crop" alt="Ibu Maryati" class="testimonial-avatar">
+          <div>
+            <div class="testimonial-name">Ibu Maryati</div>
+            <div class="testimonial-role">Orang Tua Wali Kelas II</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. CONTACT CTA BOX -->
+  <section class="section">
+    <div class="contact-cta-box" id="contact-cta-box" style="margin:0;">
+      <div class="contact-cta-grid">
+        <div>
+          <h2>Ingin berkunjung atau sekadar bertanya?</h2>
+          <p>Kami dengan senang hati membantu Anda menemukan informasi yang dibutuhkan mengenai SDN 2 Ngeposari.</p>
+          <a href="kontak.html" class="btn btn-primary">Hubungi Kami</a>
+        </div>
+        <div class="contact-details-list">
+          <div class="contact-detail-row">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Alamat: Ngeposari, Semanu, Gunungkidul, DIY</span>
+          </div>
+          <div class="contact-detail-row">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span>Telepon: (0274) 123456</span>
+          </div>
+          <div class="contact-detail-row">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            <span>Email: info@sdn2ngeposari.sch.id</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. FOOTER -->
+  <footer id="main-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <h3>SDN 2 Ngeposari</h3>
+        <p>Sekolah Dasar Negeri di Semanu, Gunungkidul. Tempat belajar, bertumbuh, dan membentuk nalar luhur peserta didik.</p>
+        <p style="color: var(--accent); font-weight: 700; margin-top: 8px;">Semanu, Gunungkidul, DIY</p>
+      </div>
+      <div class="footer-links">
+        <h4>Navigasi</h4>
+        <ul>
+          <li><a href="index.html">Beranda</a></li>
+          <li><a href="tentang.html">Tentang Sekolah</a></li>
+          <li><a href="fasilitas.html">Fasilitas</a></li>
+          <li><a href="kegiatan.html">Kegiatan & Berita</a></li>
+          <li><a href="kontak.html">Kontak & Lokasi</a></li>
+          <li><a href="admin.html" style="font-weight:700;">Portal CMS Admin</a></li>
+        </ul>
+      </div>
+      <div class="footer-contact">
+        <h4>Hubungi Kami</h4>
+        <div class="footer-contact-list" style="display:flex; flex-direction:column; gap:10px; font-size:14px; opacity:0.9;">
+          <div style="display:flex; gap:8px; align-items:flex-start;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Ngeposari, Semanu, Gunungkidul, DIY 55891</span>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span>(0274) 123456 / 0812-3456-7890</span>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            <span>info@sdn2ngeposari.sch.id</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 SDN 2 Ngeposari. KKN 73 Reguler Unit 113. All Rights Reserved.</p>
+      <p>Developed by Zulpadli Syarif Harahap (Informatika)</p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS Admin Panel - SDN 2 Ngeposari</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="admin-body">
+
+  <!-- A. LOGIN CONTAINER SCREEN -->
+  <div id="admin-login-screen" class="login-container" style="display: none;">
+    <div style="background-color: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-6); text-align: center; box-shadow: var(--shadow-thin);">
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: var(--space-4);"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <h2 style="font-size: 1.6rem; margin-bottom: var(--space-2); font-family: var(--font-heading);">CMS Admin Panel</h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: var(--space-5);">Masukkan kata sandi administrator untuk mengelola konten website.</p>
+      
+      <form id="admin-login-form" style="text-align: left;">
+        <div class="form-group">
+          <label for="admin-password">Kata Sandi (Default: <code>admin123</code>)</label>
+          <input type="password" id="admin-password" class="form-control" placeholder="Masukkan kata sandi" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Masuk ke Dashboard</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- B. MAIN ADMIN INTERFACE -->
+  <div id="admin-main-interface" style="display: none;">
+    
+    <!-- Admin Header -->
+    <header class="admin-header">
+      <h1>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        CMS Admin SDN 2 Ngeposari
+      </h1>
+      <div style="display: flex; gap: var(--space-3); align-items: center;">
+        <a href="index.html" class="btn btn-primary" style="padding: 6px 14px; font-size:0.85rem; background-color: var(--primary); color: #ffffff; border: 1px solid var(--primary);">Lihat Website</a>
+        <button id="admin-logout-btn" class="btn btn-accent" style="padding: 6px 14px; font-size:0.85rem;">Keluar</button>
+      </div>
+    </header>
+
+    <!-- Admin Layout -->
+    <div class="admin-layout">
+      
+      <!-- Left Sidebar Navigation -->
+      <aside class="admin-sidebar">
+        <button class="admin-nav-btn active" data-target="pane-dashboard">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          Ringkasan
+        </button>
+        <button class="admin-nav-btn" data-target="pane-profile">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1Z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>
+          Ubah Profil
+        </button>
+        <button class="admin-nav-btn" data-target="pane-teachers">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Kelola Guru & Staf
+        </button>
+        <button class="admin-nav-btn" data-target="pane-facilities">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="9" x2="15" y1="9" y2="15"/><line x1="15" x2="9" y1="9" y2="15"/></svg>
+          Kelola Fasilitas
+        </button>
+        <button class="admin-nav-btn" data-target="pane-activities">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>
+          Kelola Kegiatan
+        </button>
+        <button class="admin-nav-btn" data-target="pane-gallery">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+          Kelola Galeri
+        </button>
+        <button class="admin-nav-btn" data-target="pane-contact">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Ubah Kontak
+        </button>
+      </aside>
+
+      <!-- Main Content Editor -->
+      <main class="admin-content">
+
+        <!-- 1. PANEL DASHBOARD -->
+        <div class="admin-tab-pane active" id="pane-dashboard">
+          <h2 style="margin-bottom: var(--space-5); font-family: var(--font-heading);">Ringkasan Data Konten</h2>
+          
+          <div class="dash-stats">
+            <div class="stat-card">
+              <span class="stat-num" id="stat-teachers-count">0</span>
+              <div>
+                <p class="stat-label">Guru & Staf</p>
+                <p style="font-size:0.8rem; color:var(--text-muted);">Tenaga pendidik</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-num" id="stat-facilities-count">0</span>
+              <div>
+                <p class="stat-label">Fasilitas</p>
+                <p style="font-size:0.8rem; color:var(--text-muted);">Sarana sekolah</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-num" id="stat-activities-count">0</span>
+              <div>
+                <p class="stat-label">Kegiatan</p>
+                <p style="font-size:0.8rem; color:var(--text-muted);">Post cerita aktif</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-num" id="stat-gallery-count">0</span>
+              <div>
+                <p class="stat-label">Galeri Foto</p>
+                <p style="font-size:0.8rem; color:var(--text-muted);">Dokumentasi momen</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="upload-disclaimer-box">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            <div class="upload-disclaimer-content">
+              <h5>Petunjuk Pengelolaan Konten & Disclaimer</h5>
+              <p>Semua perubahan data (profil, guru, fasilitas, berita, galeri) yang Anda simpan akan langsung memperbarui tampilan website secara otomatis di memori lokal browser sekolah (IndexedDB). Disarankan menggunakan file foto JPG/PNG dengan ukuran maksimal 2 MB agar halaman web dimuat sangat cepat.</p>
+            </div>
+          </div>
+
+          <div class="admin-card">
+            <div class="admin-card-title">Profil Aktif Saat Ini</div>
+            <p style="margin-bottom: var(--space-2);"><strong>Nama Sekolah:</strong> <span id="dash-school-name"></span></p>
+            <p style="margin-bottom: var(--space-4);"><strong>Slogan / Tagline:</strong> <span id="dash-school-tagline"></span></p>
+            <p style="color:var(--text-muted); font-size:0.95rem;">Gunakan bilah navigasi samping untuk mengedit detail profil, mengunggah media, menambahkan data guru & staf, menambahkan kegiatan terbaru, atau mengubah kontak resmi sekolah.</p>
+            
+            <div style="margin-top: var(--space-6); border-top: 1px solid var(--border); padding-top: var(--space-5);">
+              <button id="admin-reset-db-btn" class="btn btn-secondary" style="border-color: var(--error); color: var(--error); font-size: 0.9rem;">Reset Seluruh Database ke Bawaan</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. PANEL UBAH PROFIL -->
+        <div class="admin-tab-pane" id="pane-profile">
+          <div class="admin-card">
+            <div class="admin-card-title">Profil & Visi Misi Sekolah</div>
+            <form id="form-edit-profile">
+              <div class="form-group">
+                <label for="profile-name">Nama Sekolah Resmi</label>
+                <input type="text" id="profile-name" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="profile-tagline">Slogan / Tagline Sekolah</label>
+                <input type="text" id="profile-tagline" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="profile-description">Deskripsi Singkat (Beranda & Footer)</label>
+                <textarea id="profile-description" class="form-control" required></textarea>
+              </div>
+              <div class="form-group">
+                <label for="profile-history">Sejarah Sekolah</label>
+                <textarea id="profile-history" class="form-control" style="min-height: 160px;" required></textarea>
+              </div>
+              <div class="form-group">
+                <label for="profile-vision">Visi Sekolah</label>
+                <input type="text" id="profile-vision" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label>Misi Sekolah (Satu baris untuk setiap poin misi)</label>
+                <textarea id="profile-missions" class="form-control" style="min-height: 120px;" placeholder="Tulis satu misi per baris..." required></textarea>
+              </div>
+              
+              <!-- Disclaimer Upload Logo & Hero -->
+              <div class="upload-disclaimer-box" style="margin-top: var(--space-4);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <div class="upload-disclaimer-content">
+                  <h5>Ketentuan Unggah Foto Logo & Banner</h5>
+                  <p>• Logo disarankan berbentuk persegi (PNG transparan atau SVG).<br>• Banner Hero disarankan berasio 16:9 atau landscape tajam (resolusi minimal 1200×600 px).</p>
+                </div>
+              </div>
+
+              <!-- Logo & Banner uploads -->
+              <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: var(--space-5); margin: var(--space-5) 0;">
+                <div>
+                  <label>Logo Sekolah</label>
+                  <div class="image-upload-area">
+                    <p style="font-size:0.85rem; color: var(--text-muted);">Pilih file logo (.png/.svg)</p>
+                    <input type="file" id="upload-logo-file" accept="image/*">
+                    <div id="preview-logo-container" class="upload-preview" style="display:block; width: 80px; aspect-ratio:1/1; margin-top: 10px;">
+                      <img id="preview-logo-img" src="" alt="Pratinjau Logo">
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label>Foto Banner Utama (Hero)</label>
+                  <div class="image-upload-area">
+                    <p style="font-size:0.85rem; color: var(--text-muted);">Pilih file banner (.jpg/.png)</p>
+                    <input type="file" id="upload-hero-file" accept="image/*">
+                    <div id="preview-hero-container" class="upload-preview" style="display:block; margin-top: 10px;">
+                      <img id="preview-hero-img" src="" alt="Pratinjau Banner">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary">Simpan Profil</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- 3. PANEL KELOLA GURU & STAF -->
+        <div class="admin-tab-pane" id="pane-teachers">
+          <div class="admin-card">
+            <div class="admin-card-title">
+              Daftar Guru & Tenaga Pendidik
+              <button id="admin-add-teacher-btn" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.85rem;">+ Tambah Guru</button>
+            </div>
+            
+            <div class="upload-disclaimer-box">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              <div class="upload-disclaimer-content">
+                <h5>Petunjuk Foto Profil Guru</h5>
+                <p>• Disarankan menggunakan foto potret formal / semi-formal berasio 1:1 atau tegak.<br>• Ukuran file foto disarankan kurang dari 2 MB agar halaman memuat dengan mulus pada HP orang tua murid.</p>
+              </div>
+            </div>
+
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Foto</th>
+                    <th>Nama Lengkap & Gelar</th>
+                    <th>Jabatan / Peran</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-teachers-list">
+                  <!-- JS Render -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. PANEL KELOLA FASILITAS -->
+        <div class="admin-tab-pane" id="pane-facilities">
+          <div class="admin-card">
+            <div class="admin-card-title">
+              Daftar Fasilitas Sekolah
+              <button id="admin-add-facility-btn" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.85rem;">+ Tambah Fasilitas</button>
+            </div>
+            
+            <div class="upload-disclaimer-box">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              <div class="upload-disclaimer-content">
+                <h5>Petunjuk Foto Fasilitas</h5>
+                <p>Gunakan foto sudut ruangan yang terang dan bersih berasio 4:3 atau landscape agar ruang kelas/lab terlihat menarik.</p>
+              </div>
+            </div>
+
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Gambar</th>
+                    <th>Nama Fasilitas</th>
+                    <th>Deskripsi Singkat</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-facilities-list">
+                  <!-- JS Render -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. PANEL KELOLA KEGIATAN -->
+        <div class="admin-tab-pane" id="pane-activities">
+          <div class="admin-card">
+            <div class="admin-card-title">
+              Daftar Berita & Kegiatan
+              <button id="admin-add-activity-btn" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.85rem;">+ Tambah Kegiatan</button>
+            </div>
+            
+            <div class="upload-disclaimer-box">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              <div class="upload-disclaimer-content">
+                <h5>Petunjuk Foto Kegiatan Berita</h5>
+                <p>Gunakan foto momen aktivitas nyata (upacara, lomba, pramuka) agar berita sekolah tampak hidup dan profesional.</p>
+              </div>
+            </div>
+
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Gambar</th>
+                    <th>Tanggal</th>
+                    <th>Judul Kegiatan</th>
+                    <th>Ringkasan</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-activities-list">
+                  <!-- JS Render -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. PANEL KELOLA GALERI -->
+        <div class="admin-tab-pane" id="pane-gallery">
+          <div class="admin-card">
+            <div class="admin-card-title">
+              Galeri Dokumentasi Foto
+              <button id="admin-add-gallery-btn" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.85rem;">+ Tambah Foto</button>
+            </div>
+            
+            <div class="upload-disclaimer-box">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              <div class="upload-disclaimer-content">
+                <h5>Petunjuk Unggah Galeri Foto</h5>
+                <p>Setiap foto yang diunggah ke galeri akan disusun secara otomatis dalam tata letak kisi editorial yang indah dan bebas bertabrakan.</p>
+              </div>
+            </div>
+
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Gambar</th>
+                    <th>Keterangan Foto (Caption)</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-gallery-list">
+                  <!-- JS Render -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. PANEL UBAH KONTAK -->
+        <div class="admin-tab-pane" id="pane-contact">
+          <div class="admin-card">
+            <div class="admin-card-title">Informasi Kontak & Lokasi</div>
+            <form id="form-edit-contact">
+              <div class="form-group">
+                <label for="contact-address">Alamat Fisik Sekolah</label>
+                <textarea id="contact-address" class="form-control" required></textarea>
+              </div>
+              <div class="form-group">
+                <label for="contact-phone">Nomor Telepon Resmi</label>
+                <input type="text" id="contact-phone" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="contact-email">Alamat Email Resmi</label>
+                <input type="email" id="contact-email" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label for="contact-maps">Google Maps Embed URL (src iframe)</label>
+                <textarea id="contact-maps" class="form-control" style="min-height: 80px;" placeholder="https://www.google.com/maps/embed?..." required></textarea>
+              </div>
+              
+              <h3 style="font-size:1rem; font-family: var(--font-heading); margin: var(--space-5) 0 var(--space-3); border-top:1px solid var(--border); padding-top: var(--space-4);">Username Media Sosial</h3>
+              <div class="form-group">
+                <label for="contact-facebook">Facebook Page Username</label>
+                <input type="text" id="contact-facebook" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="contact-instagram">Instagram Username</label>
+                <input type="text" id="contact-instagram" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="contact-youtube">Youtube Channel Name</label>
+                <input type="text" id="contact-youtube" class="form-control">
+              </div>
+
+              <button type="submit" class="btn btn-primary">Simpan Kontak</button>
+            </form>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- C. MODAL EDITORS -->
+  <div id="admin-modal-overlay" class="dialog-overlay">
+    <div class="dialog-box" style="max-width: 580px;">
+      <div class="dialog-header">
+        <h4 id="admin-modal-title" style="font-size:1.15rem; font-family: var(--font-heading);">Editor</h4>
+        <button id="admin-modal-close-btn" class="dialog-close" aria-label="Close modal">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="dialog-body">
+        
+        <!-- Form 1: Teacher Form -->
+        <form id="form-teacher" style="display:none;">
+          <input type="hidden" id="teacher-id">
+          <div class="form-group">
+            <label for="teacher-name">Nama Lengkap & Gelar</label>
+            <input type="text" id="teacher-name" class="form-control" placeholder="Contoh: Bapak Hartono, S.Pd." required>
+          </div>
+          <div class="form-group">
+            <label for="teacher-role">Jabatan / Peran</label>
+            <input type="text" id="teacher-role" class="form-control" placeholder="Contoh: Kepala Sekolah / Wali Kelas V" required>
+          </div>
+          <div class="form-group">
+            <label>Foto Guru</label>
+            <div class="image-upload-area">
+              <p id="label-teacher-upload">Klik untuk pilih gambar</p>
+              <input type="file" id="teacher-file" accept="image/*">
+              <div id="preview-teacher-container" class="upload-preview">
+                <img id="preview-teacher-img" src="" alt="Pratinjau Foto Guru">
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; margin-top: var(--space-3);">Simpan Data Guru</button>
+        </form>
+
+        <!-- Form 2: Facility Form -->
+        <form id="form-facility" style="display:none;">
+          <input type="hidden" id="facility-id">
+          <div class="form-group">
+            <label for="facility-name">Nama Fasilitas</label>
+            <input type="text" id="facility-name" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="facility-desc">Deskripsi Fasilitas</label>
+            <textarea id="facility-desc" class="form-control" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Foto Fasilitas</label>
+            <div class="image-upload-area">
+              <p id="label-facility-upload">Klik untuk pilih gambar</p>
+              <input type="file" id="facility-file" accept="image/*">
+              <div id="preview-facility-container" class="upload-preview">
+                <img id="preview-facility-img" src="" alt="Pratinjau Fasilitas">
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; margin-top: var(--space-3);">Simpan Fasilitas</button>
+        </form>
+
+        <!-- Form 3: Activity Form -->
+        <form id="form-activity" style="display:none;">
+          <input type="hidden" id="activity-id">
+          <div class="form-group">
+            <label for="activity-title">Judul Kegiatan</label>
+            <input type="text" id="activity-title" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="activity-date">Tanggal Kegiatan</label>
+            <input type="date" id="activity-date" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="activity-excerpt">Ringkasan Singkat (Daftar Berita)</label>
+            <textarea id="activity-excerpt" class="form-control" style="min-height: 70px;" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="activity-content">Konten Detail Kegiatan</label>
+            <textarea id="activity-content" class="form-control" style="min-height: 140px;" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Foto Kegiatan</label>
+            <div class="image-upload-area">
+              <p id="label-activity-upload">Klik untuk pilih gambar</p>
+              <input type="file" id="activity-file" accept="image/*">
+              <div id="preview-activity-container" class="upload-preview">
+                <img id="preview-activity-img" src="" alt="Pratinjau Kegiatan">
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; margin-top: var(--space-3);">Simpan Kegiatan</button>
+        </form>
+
+        <!-- Form 4: Gallery Form -->
+        <form id="form-gallery" style="display:none;">
+          <input type="hidden" id="gallery-id">
+          <div class="form-group">
+            <label for="gallery-caption">Keterangan Foto (Caption)</label>
+            <input type="text" id="gallery-caption" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Berkas Foto</label>
+            <div class="image-upload-area">
+              <p id="label-gallery-upload">Klik me-pilih gambar</p>
+              <input type="file" id="gallery-file" accept="image/*">
+              <div id="preview-gallery-container" class="upload-preview">
+                <img id="preview-gallery-img" src="" alt="Pratinjau Galeri">
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; margin-top: var(--space-3);">Simpan Foto</button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="js/db.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

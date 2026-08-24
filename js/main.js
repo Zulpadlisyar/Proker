@@ -1,6 +1,19 @@
 // DESIGN.md Compliance - Client-Side Rendering & Core Logic for SDN 2 Ngeposari Website
 // Integrates with SchoolDB in js/db.js to render site elements dynamically.
 
+// Vercel Speed Insights Integration
+(function initSpeedInsights() {
+  if (typeof window !== 'undefined') {
+    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    if (!document.querySelector('script[src*="/_vercel/speed-insights/script.js"]')) {
+      const script = document.createElement('script');
+      script.src = '/_vercel/speed-insights/script.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    }
+  }
+})();
+
 // Alert/Toast Utility
 function showToast(message, type = 'success') {
   const container = document.getElementById('toast-container');

@@ -91,18 +91,21 @@
   </section>
 
   <!-- 3. ADMISSION / HIGHLIGHT BANNER -->
-  <section class="banner-highlight-section" id="banner-highlight-sec" style="margin-top: var(--space-7);">
-    <div class="banner-highlight-content">
-      <h2>Kenali sekolah kami lebih dekat.</h2>
-      <p>Cerita tentang lingkungan belajar, fasilitas pendukung, kegiatan siswa, dan komunitas sekolah yang hangat.</p>
-      <a href="tentang.html" class="btn btn-primary" style="background-color: var(--text); border-color: var(--text);">Selengkapnya</a>
-    </div>
+  <section class="section" style="padding-top: var(--space-7); padding-bottom: 0;">
+    <div class="banner-highlight-section" id="banner-highlight-sec">
+      <div class="banner-highlight-content">
+        <span class="section-label" style="color: var(--primary);">TENTANG SEKOLAH KAMI</span>
+        <h2>Kenali sekolah kami lebih dekat.</h2>
+        <p>Cerita tentang lingkungan belajar, fasilitas pendukung, kegiatan siswa, dan komunitas sekolah yang hangat.</p>
+        <a href="tentang.html" class="btn btn-primary" style="background-color: var(--primary); color: #FFFFFF; border-color: var(--primary);">Selengkapnya →</a>
+      </div>
 
-    <div class="geometric-pattern-box">
-      <svg width="100%" height="60" viewBox="0 0 1200 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0 60 C 60 15, 120 15, 180 60 C 240 15, 300 15, 360 60 C 420 15, 480 15, 540 60 C 600 15, 660 15, 720 60 C 780 15, 840 15, 900 60 C 960 15, 1020 15, 1080 60 C 1140 15, 1200 15, 1260 60 Z" fill="#D7E0F3" opacity="0.9"/>
-        <path d="M90 60 C 150 25, 210 25, 270 60 C 330 25, 390 25, 450 60 C 510 25, 570 25, 630 60 C 690 25, 750 25, 810 60 C 870 25, 930 25, 990 60 C 1050 25, 1110 25, 1170 60 Z" fill="#253B73" opacity="0.8"/>
-      </svg>
+      <div class="geometric-pattern-box">
+        <svg width="100%" height="60" viewBox="0 0 1200 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 60 C 60 15, 120 15, 180 60 C 240 15, 300 15, 360 60 C 420 15, 480 15, 540 60 C 600 15, 660 15, 720 60 C 780 15, 840 15, 900 60 C 960 15, 1020 15, 1080 60 C 1140 15, 1200 15, 1260 60 Z" fill="#D7E0F3" opacity="0.9"/>
+          <path d="M90 60 C 150 25, 210 25, 270 60 C 330 25, 390 25, 450 60 C 510 25, 570 25, 630 60 C 690 25, 750 25, 810 60 C 870 25, 930 25, 990 60 C 1050 25, 1110 25, 1170 60 Z" fill="#253B73" opacity="0.8"/>
+        </svg>
+      </div>
     </div>
   </section>
 
@@ -196,7 +199,7 @@
 
   <!-- 6. SCHOOL SERVICES -->
   <section class="section" id="services-section">
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: var(--space-6); flex-wrap:wrap; gap:16px;">
+    <div class="section-header-flex">
       <div>
         <span class="section-label">LAYANAN SEKOLAH</span>
         <h2 class="section-headline" style="margin-bottom:0;">Layanan dan kehidupan sekolah.</h2>
@@ -206,7 +209,7 @@
 
     <div class="services-cards-grid" id="services-cards-grid">
       <div class="service-card-item">
-        <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?w=800&h=600&fit=crop" alt="Kegiatan Akademik" class="service-card-img">
+        <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?w=800&h=600&fit=crop" alt="Kegiatan Akademik" class="service-card-img" loading="lazy" decoding="async">
         <div class="service-card-overlay">
           <span>PROGRAM AKADEMIK</span>
           <h3>Pembelajaran Berbasis Kurikulum Merdeka</h3>
@@ -215,7 +218,7 @@
       </div>
 
       <div class="service-card-item">
-        <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=960&h=540&fit=crop" alt="Kegiatan Siswa" class="service-card-img">
+        <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=960&h=540&fit=crop" alt="Kegiatan Siswa" class="service-card-img" loading="lazy" decoding="async">
         <div class="service-card-overlay">
           <span>KEGIATAN SISWA</span>
           <h3>Pengembangan Bakat & Pramuka</h3>
@@ -224,7 +227,7 @@
       </div>
 
       <div class="service-card-item">
-        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=750&fit=crop" alt="Informasi & Konseling" class="service-card-img">
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=750&fit=crop" alt="Informasi & Konseling" class="service-card-img" loading="lazy" decoding="async">
         <div class="service-card-overlay">
           <span>BIMBINGAN SISWA</span>
           <h3>Pendampingan & Komunitas Dekat</h3>
@@ -277,8 +280,8 @@
   </section>
 
   <!-- 8. LATEST NEWS & EVENTS -->
-  <div class="news-section-wrapper" id="news-wrapper">
-    <div style="max-width:1280px; margin: 0 auto; margin-bottom: var(--space-6); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px;">
+  <section class="section" id="news-section" style="padding-top:0;">
+    <div class="section-header-flex">
       <div>
         <span class="section-label">KABAR SEKOLAH</span>
         <h2 class="section-headline" style="margin-bottom:0;">Kabar terbaru dari sekolah.</h2>
@@ -289,7 +292,7 @@
     <div class="news-grid-container" id="news-grid-container">
       <div class="news-card-featured">
         <div class="news-img-box">
-          <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=960&h=540&fit=crop" alt="Latihan Rutin Pramuka Penggalang">
+          <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=960&h=540&fit=crop" alt="Latihan Rutin Pramuka Penggalang" loading="lazy" decoding="async">
         </div>
         <div class="news-content-box">
           <div class="news-meta-badge">KEGIATAN SEKOLAH • 15 AGUSTUS 2026</div>
@@ -301,7 +304,7 @@
 
       <div class="news-card-compact">
         <div class="news-img-box">
-          <img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=960&h=540&fit=crop" alt="Pentas Seni & Lomba Kreasi">
+          <img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=960&h=540&fit=crop" alt="Pentas Seni & Lomba Kreasi" loading="lazy" decoding="async">
         </div>
         <div class="news-content-box">
           <div class="news-meta-badge">KEGIATAN SEKOLAH • 10 AGUSTUS 2026</div>
@@ -311,7 +314,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- 9. TESTIMONIALS -->
   <section class="section" id="testimonials-sec">
@@ -323,7 +326,7 @@
       <div class="testimonial-card">
         <p class="testimonial-quote">"Guru-guru di SDN 2 Ngeposari sangat sabar dan penuh perhatian. Anak saya jadi lebih percaya diri, sopan, dan bersemangat berangkat sekolah setiap pagi."</p>
         <div class="testimonial-author">
-          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop" alt="Ibu Purwanti" class="testimonial-avatar">
+          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop" alt="Ibu Purwanti" class="testimonial-avatar" loading="lazy" decoding="async">
           <div>
             <div class="testimonial-name">Ibu Purwanti</div>
             <div class="testimonial-role">Orang Tua Wali Kelas IV</div>
@@ -334,7 +337,7 @@
       <div class="testimonial-card">
         <p class="testimonial-quote">"Fasilitas perpustakaan dan lab komputer sangat membantu anak-anak belajar teknologi secara sehat. Pembiasaan Pramuka-nya juga melatih kemandirian."</p>
         <div class="testimonial-author">
-          <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop" alt="Bapak Sugiyanto" class="testimonial-avatar">
+          <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop" alt="Bapak Sugiyanto" class="testimonial-avatar" loading="lazy" decoding="async">
           <div>
             <div class="testimonial-name">Bapak Sugiyanto</div>
             <div class="testimonial-role">Orang Tua Wali Kelas VI</div>
@@ -345,7 +348,7 @@
       <div class="testimonial-card">
         <p class="testimonial-quote">"Lingkungan sekolah yang bersih dan hijau membuat anak-anak merasa nyaman. Komunikasi sekolah dengan orang tua wali siswa juga terjalin sangat dekat."</p>
         <div class="testimonial-author">
-          <img src="https://images.unsplash.com/photo-1580894732413-87b1c31274cf?w=100&h=100&fit=crop" alt="Ibu Maryati" class="testimonial-avatar">
+          <img src="https://images.unsplash.com/photo-1580894732413-87b1c31274cf?w=100&h=100&fit=crop" alt="Ibu Maryati" class="testimonial-avatar" loading="lazy" decoding="async">
           <div>
             <div class="testimonial-name">Ibu Maryati</div>
             <div class="testimonial-role">Orang Tua Wali Kelas II</div>
@@ -356,26 +359,27 @@
   </section>
 
   <!-- 10. CONTACT CTA BOX -->
-  <section class="section">
-    <div class="contact-cta-box" id="contact-cta-box" style="margin:0;">
+  <section class="section" style="padding-top: 0; padding-bottom: var(--space-7);">
+    <div class="contact-cta-box" id="contact-cta-box">
       <div class="contact-cta-grid">
         <div>
+          <span class="section-label" style="color: var(--primary);">KONSULTASI & INFORMASI</span>
           <h2>Ingin berkunjung atau sekadar bertanya?</h2>
           <p>Kami dengan senang hati membantu Anda menemukan informasi yang dibutuhkan mengenai SDN 2 Ngeposari.</p>
-          <a href="kontak.html" class="btn btn-primary">Hubungi Kami</a>
+          <a href="kontak.html" class="btn btn-primary">Hubungi Kami →</a>
         </div>
         <div class="contact-details-list">
           <div class="contact-detail-row">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span>Alamat: Ngeposari, Semanu, Gunungkidul, DIY</span>
+            <span><strong>Alamat:</strong> Ngeposari, Semanu, Gunungkidul, DIY</span>
           </div>
           <div class="contact-detail-row">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            <span>Telepon: (0274) 123456</span>
+            <span><strong>Telepon:</strong> (0274) 123456 / 0812-3456-7890</span>
           </div>
           <div class="contact-detail-row">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-            <span>Email: info@sdn2ngeposari.sch.id</span>
+            <span><strong>Email:</strong> info@sdn2ngeposari.sch.id</span>
           </div>
         </div>
       </div>

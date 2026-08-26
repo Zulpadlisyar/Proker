@@ -524,11 +524,12 @@ body.hero-page header#main-header.scrolled .menu-toggle {
   background-color: var(--accent);
   border-radius: var(--radius-feature);
   border: 1px solid var(--border);
-  padding: 32px 32px 0;
+  padding: var(--space-6) var(--space-6) 0;
   max-width: 1280px;
-  margin: 0 auto var(--space-7);
+  margin: 0 auto;
   box-sizing: border-box;
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(255, 217, 106, 0.2);
 }
 
 .banner-highlight-content {
@@ -573,6 +574,15 @@ body.hero-page header#main-header.scrolled .menu-toggle {
   max-width: 1280px;
   margin: 0 auto;
   box-sizing: border-box;
+}
+
+.section-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: var(--space-5);
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .section-label, .section-badge {

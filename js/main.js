@@ -248,46 +248,28 @@ function renderHomePage() {
     `;
   }
 
-  // Master Prompt §24, §25, §26: Latest News & Events Layout (Featured Card + Compact Cards)
-  const newsContainer = document.getElementById('news-grid-container');
+  // Latest News & Activities Layout (Editorial Grid)
+  const newsContainer = document.getElementById('news-editorial-grid') || document.getElementById('news-grid-container');
   if (newsContainer) {
     if (activities.length === 0) {
       newsContainer.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:2rem; color:var(--text-muted);">Belum ada kegiatan yang ditampilkan.</div>`;
-      return;
-    }
-
-    const featured = activities[0];
-    const compacts = activities.slice(1, 3);
-
-    newsContainer.innerHTML = `
-      <!-- Featured Card -->
-      <div class="news-card-featured">
-        <div class="news-img-box">
-          <img src="${featured.image}" alt="${featured.title}" loading="lazy" decoding="async">
-        </div>
-        <div class="news-content-box">
-          <div class="news-meta-badge">KEGIATAN SEKOLAH • ${new Date(featured.date).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</div>
-          <h3 class="news-title">${featured.title}</h3>
-          <p class="news-desc">${featured.excerpt}</p>
-          <a href="detail-kegiatan.html?id=${featured.id}" class="btn-text-link">Baca selengkapnya →</a>
-        </div>
-      </div>
-
-      <!-- Compact Cards -->
-      ${compacts.map(a => `
-        <div class="news-card-compact">
-          <div class="news-img-box">
-            <img src="${a.image}" alt="${a.title}" loading="lazy" decoding="async">
+    } else {
+      const latestActivities = activities.slice(0, 3);
+      newsContainer.innerHTML = latestActivities.map(a => `
+        <article class="news-card-item">
+          <div class="news-img-wrap">
+            <img src="${a.image}" alt="${a.title}" width="960" height="540" loading="lazy" decoding="async">
+            <span class="news-badge-tag">${a.category || 'Kegiatan'}</span>
           </div>
-          <div class="news-content-box">
-            <div class="news-meta-badge">KEGIATAN SEKOLAH • ${new Date(a.date).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</div>
+          <div class="news-body-content">
+            <div class="news-meta-row">${new Date(a.date).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</div>
             <h3 class="news-title">${a.title}</h3>
-            <p class="news-desc">${a.excerpt}</p>
-            <a href="detail-kegiatan.html?id=${a.id}" class="btn-text-link">Baca selengkapnya →</a>
+            <p class="news-snippet-text">${a.excerpt || (a.content ? a.content.substring(0, 110) + '...' : '')}</p>
+            <a href="detail-kegiatan.html?id=${a.id}" class="news-read-more">Baca selengkapnya &rarr;</a>
           </div>
-        </div>
-      `).join('')}
-    `;
+        </article>
+      `).join('');
+    }
   }
 
   // Render Academic Calendar Widget

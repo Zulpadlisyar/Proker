@@ -830,16 +830,16 @@ function initHeaderScrollBehavior() {
   
   if (!mainHeader) return;
   
-  // If not on hero-page (i.e. other subpages), ensure it's not transparent
+  // If not on hero-page (i.e. other subpages), ensure it's solid white
   if (!document.body.classList.contains('hero-page') || !heroSec) {
     mainHeader.classList.add('scrolled');
     return;
   }
 
   const updateNavbarState = () => {
-    const heroRect = heroSec.getBoundingClientRect();
-    // When the bottom of the hero section is at or above the navbar bottom (72px)
-    if (heroRect.bottom <= 72) {
+    // When at top of Hero (scrollY <= 50), topbar is 100% transparent.
+    // As soon as user scrolls down onto other sections (scrollY > 50), topbar turns solid white.
+    if (window.scrollY > 50) {
       mainHeader.classList.add('scrolled');
     } else {
       mainHeader.classList.remove('scrolled');

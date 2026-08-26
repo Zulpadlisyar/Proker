@@ -263,7 +263,7 @@ function renderHomePage() {
       <!-- Featured Card -->
       <div class="news-card-featured">
         <div class="news-img-box">
-          <img src="${featured.image}" alt="${featured.title}">
+          <img src="${featured.image}" alt="${featured.title}" loading="lazy" decoding="async">
         </div>
         <div class="news-content-box">
           <div class="news-meta-badge">KEGIATAN SEKOLAH • ${new Date(featured.date).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</div>
@@ -277,7 +277,7 @@ function renderHomePage() {
       ${compacts.map(a => `
         <div class="news-card-compact">
           <div class="news-img-box">
-            <img src="${a.image}" alt="${a.title}">
+            <img src="${a.image}" alt="${a.title}" loading="lazy" decoding="async">
           </div>
           <div class="news-content-box">
             <div class="news-meta-badge">KEGIATAN SEKOLAH • ${new Date(a.date).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}</div>
@@ -377,7 +377,7 @@ function renderTeachersSection() {
     teachersGrid.innerHTML = teachers.map(t => `
       <div class="editorial-card-wrapper">
         <div class="editorial-card-img-container">
-          <img src="${t.image}" alt="${t.name}" class="editorial-card-img">
+          <img src="${t.image}" alt="${t.name}" class="editorial-card-img" loading="lazy" decoding="async">
         </div>
         <div class="editorial-card-body">
           <h3>${t.name}</h3>
@@ -406,7 +406,7 @@ function renderFacilitiesPage() {
     facilityGrid.innerHTML = facilities.map(f => `
       <div class="facility-card">
         <div class="facility-img-wrapper">
-          <img src="${f.image}" alt="${f.name}" class="facility-img">
+          <img src="${f.image}" alt="${f.name}" class="facility-img" loading="lazy" decoding="async">
         </div>
         <div class="facility-info">
           <h3>${f.name}</h3>
@@ -461,7 +461,7 @@ function renderActivitiesPage() {
     newsGrid.innerHTML = filtered.map(act => `
       <div class="news-card">
         <div class="news-img-wrapper">
-          <img src="${act.image}" alt="${act.title}" class="news-img">
+          <img src="${act.image}" alt="${act.title}" class="news-img" loading="lazy" decoding="async">
         </div>
         <div class="news-info">
           <span class="news-date">${act.date ? new Date(act.date).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'}).toUpperCase() : '15 AGUSTUS 2026'}</span>
@@ -506,7 +506,7 @@ function renderActivitiesPage() {
     } else {
       galleryGrid.innerHTML = gallery.map(g => `
         <div class="gallery-card" data-caption="${g.caption}" data-image="${g.image}">
-          <img src="${g.image}" alt="${g.caption}" class="gallery-img">
+          <img src="${g.image}" alt="${g.caption}" class="gallery-img" loading="lazy" decoding="async">
           <div class="gallery-overlay">
             <div class="gallery-caption">${g.caption}</div>
           </div>
@@ -611,7 +611,10 @@ function renderContactPage() {
 // GSAP & MICRO-INTERACTIONS ENGINE
 // ----------------------------------------------------
 function initGSAPAnimations() {
-  // Check if GSAP is available
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return;
+  }
+
   if (typeof gsap === 'undefined') {
     initScrollRevealFallback();
     return;

@@ -5,7 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SDN 2 Ngeposari — Tempat Belajar, Bertumbuh, & Menemukan Arah</title>
   <meta name="description" content="Website Informasi Resmi SDN 2 Ngeposari. Temukan profil sekolah, fasilitas unggulan, layanan siswa, berita kegiatan terbaru, dan informasi kontak lengkap.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@1,400&display=swap">
   <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Preload Critical LCP Hero Image -->
+  <link rel="preload" as="image" href="images/ghibli_hero_bg.webp" imagesrcset="images/ghibli_hero_bg-480.webp 480w, images/ghibli_hero_bg-800.webp 800w, images/ghibli_hero_bg-1200.webp 1200w, images/ghibli_hero_bg.webp 1376w" imagesizes="100vw" fetchpriority="high">
+
   <!-- Vercel Speed Insights -->
   <script>
     window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
@@ -18,7 +25,7 @@
   <header id="main-header">
     <div class="header-container">
       <a href="index.html" class="logo-link">
-        <img src="images/logo.png" alt="Logo SDN 2 Ngeposari" class="logo-img" onerror="this.src='https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=100&h=100&fit=crop'">
+        <img src="images/logo.png" alt="Logo SDN 2 Ngeposari" class="logo-img" width="40" height="40" onerror="this.src='https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=100&h=100&fit=crop'">
         <div class="logo-text">
           <span class="logo-title">SDN 2 Ngeposari</span>
           <p>Semanu, Gunungkidul</p>
@@ -51,7 +58,11 @@
   <section class="hero-fullscreen-section ghibli-hero-section" id="hero-section">
     <!-- Studio Ghibli Scenic Green Rolling Hills Artwork Background -->
     <div class="hero-bg-wrapper">
-      <img src="images/ghibli_hero_bg.jpg" alt="Pemandangan Asri Perbukitan Hijau SDN 2 Ngeposari" class="hero-bg-img">
+      <picture>
+        <source type="image/avif" srcset="images/ghibli_hero_bg-480.avif 480w, images/ghibli_hero_bg-800.avif 800w, images/ghibli_hero_bg.avif 1376w" sizes="100vw">
+        <source type="image/webp" srcset="images/ghibli_hero_bg-480.webp 480w, images/ghibli_hero_bg-800.webp 800w, images/ghibli_hero_bg-1200.webp 1200w, images/ghibli_hero_bg.webp 1376w" sizes="100vw">
+        <img src="images/ghibli_hero_bg.webp" alt="Pemandangan Asri Perbukitan Hijau SDN 2 Ngeposari" class="hero-bg-img" width="1376" height="768" fetchpriority="high" decoding="async">
+      </picture>
       <div class="hero-ghibli-overlay"></div>
     </div>
 

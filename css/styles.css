@@ -1,11 +1,9 @@
 /* ==========================================================================
    SDN 2 NGEPOSARI - MASTER SYSTEM & ALL PAGES LAYOUT STYLES
-   Plus Jakarta Sans ONLY (400, 500, 600, 700)
+   Plus Jakarta Sans (400, 500, 600, 700) + Playfair Display (Italic 400)
    Strict Radius Scale: Small 6px, Default 8px, Card 10px, Feature 12px
    Palette: Warm Canvas #FAF9F6, Deep Blue #253B73, Accent Yellow #FFD96A
    ========================================================================== */
-
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&display=swap');
 
 :root {
   /* Canvas & Surface */
@@ -1522,3 +1520,38 @@ footer, footer#main-footer {
 .dialog-body {
   padding: 24px;
 }
+
+/* Production Rendering & Layout Stability Optimizations */
+.info-card-item,
+.facility-card-item,
+.activity-card-item,
+.editorial-card-wrapper,
+.gallery-teaser-item,
+.gallery-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 320px;
+}
+
+/* Accessibility & Hardware-Friendly Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .organic-floating-shape,
+  .hero-bg-img,
+  .editorial-card-img,
+  .gallery-img {
+    transform: none !important;
+    animation: none !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+

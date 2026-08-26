@@ -681,12 +681,67 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeModal();
 });
 
-function fileToBase64(file) {
+/**
+ * Production Image Upload Optimizer for CMS
+ * Automatically resizes large camera photos (max 1200px) and compresses to modern WebP/JPEG,
+ * reducing payload by up to 90% without visible quality loss.
+ */
+function fileToBase64(file, maxWidth = 1200, quality = 0.82) {
   return new Promise((resolve, reject) => {
+    if (!file) {
+      return reject(new Error('No file provided'));
+    }
+
+    if (!file.type.startsWith('image/')) {
+      showAdminToast('Format file harus berupa gambar (JPG, PNG, WebP).', 'error');
+      return reject(new Error('Invalid image format'));
+    }
+
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
+    reader.onload = (e) => {
+      const img = new Image();
+      img.src = e.target.result;
+      img.onload = () => {
+        let { width, height } = img;
+
+        if (width > maxWidth || height > maxWidth) {
+          if (width > height) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          } else {
+            width = Math.round((width * maxWidth) / height);
+            height = maxWidth;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, width, height);
+
+        let optimizedDataUrl = null;
+        try {
+          optimizedDataUrl = canvas.toDataURL('image/webp', quality);
+          if (!optimizedDataUrl.startsWith('data:image/webp')) {
+            optimizedDataUrl = canvas.toDataURL('image/jpeg', quality);
+          }
+        } catch (err) {
+          optimizedDataUrl = canvas.toDataURL('image/jpeg', quality);
+        }
+
+        const originalKb = Math.round(file.size / 1024);
+        const optimizedKb = Math.round((optimizedDataUrl.length * 3) / 4 / 1024);
+        console.info(`[CMS Optimizer] ${file.name}: ${originalKb} KB -> ${optimizedKb} KB (${width}x${height})`);
+
+        resolve(optimizedDataUrl);
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
   });
 }
 

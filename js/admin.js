@@ -765,4 +765,28 @@ document.getElementById('admin-logout-btn').addEventListener('click', () => {
   setTimeout(() => window.location.reload(), 500);
 });
 
+// Fullscreen Display Handler
+const fullscreenBtn = document.getElementById('admin-fullscreen-btn');
+if (fullscreenBtn) {
+  fullscreenBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.warn('Fullscreen request error:', err);
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  });
+
+  document.addEventListener('fullscreenchange', () => {
+    const fsText = document.getElementById('fs-text');
+    if (fsText) {
+      fsText.textContent = document.fullscreenElement ? 'Keluar Layar Penuh' : 'Layar Penuh';
+    }
+  });
+}
+
 window.addEventListener('DOMContentLoaded', checkAuth);
+

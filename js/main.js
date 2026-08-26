@@ -789,33 +789,6 @@ function initScrollRevealFallback() {
   }
 }
 
-function initBackToTop() {
-  if (document.getElementById('back-to-top')) return;
-  
-  const btn = document.createElement('button');
-  btn.id = 'back-to-top';
-  btn.className = 'back-to-top';
-  btn.setAttribute('aria-label', 'Kembali ke atas');
-  btn.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="18 15 12 9 6 15"></polyline>
-    </svg>
-  `;
-  document.body.appendChild(btn);
-
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 300) {
-      btn.classList.add('visible');
-    } else {
-      btn.classList.remove('visible');
-    }
-  });
-
-  btn.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-}
-
 function renderWhatsAppFloatingButton() {
   if (document.getElementById('whatsapp-floating-btn')) return;
   const contact = window.SchoolDB.getContact();
@@ -869,7 +842,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   initHeaderScrollBehavior();
   setTimeout(() => {
     initGSAPAnimations();
-    initBackToTop();
     renderWhatsAppFloatingButton();
   }, 100);
 });

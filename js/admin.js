@@ -553,22 +553,29 @@ function renderTeachersTable() {
   });
   
   listBody.querySelectorAll('.btn-edit-teacher').forEach(btn => {
-    btn.addEventListener('click', () => openTeacherModal(btn.getAttribute('data-id')));
+    btn.addEventListener('click', (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      openTeacherModal(id);
+    });
   });
   
   listBody.querySelectorAll('.btn-delete-teacher').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const id = btn.getAttribute('data-id');
+    btn.addEventListener('click', async (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
       if (confirm('Hapus data guru/staf ini? Tindakan tidak dapat dibatalkan.')) {
-        btn.disabled = true;
+        e.currentTarget.disabled = true;
         try {
           await window.SchoolDB.deleteTeacher(id);
           showAdminToast('Data guru/staf berhasil dihapus.', 'success', 'Guru Dihapus');
+          const remaining = (window.SchoolDB.getTeachers() || []).length;
+          if (teacherPage > 1 && (teacherPage - 1) * ITEMS_PER_PAGE >= remaining) {
+            teacherPage = Math.max(1, Math.ceil(remaining / ITEMS_PER_PAGE));
+          }
           renderTeachersTable();
           renderDashboard();
         } catch (err) {
           showAdminToast('Gagal menghapus data guru.', 'error');
-          btn.disabled = false;
+          e.currentTarget.disabled = false;
         }
       }
     });
@@ -608,7 +615,7 @@ function openTeacherModal(id = null) {
   
   if (id) {
     title.textContent = 'Edit Data Guru';
-    const teacher = window.SchoolDB.getTeachers().find(t => t.id === id);
+    const teacher = window.SchoolDB.getTeachers().find(t => String(t.id) === String(id));
     if (teacher) {
       document.getElementById('teacher-id').value = teacher.id;
       document.getElementById('teacher-name').value = teacher.name;
@@ -616,6 +623,7 @@ function openTeacherModal(id = null) {
       if (teacher.image) {
         document.getElementById('preview-teacher-img').src = teacher.image;
         document.getElementById('preview-teacher-container').style.display = 'block';
+        document.getElementById('label-teacher-upload').textContent = 'Gambar saat ini (Klik untuk ganti)';
         tempTeacherBase64 = teacher.image;
       }
     }
@@ -648,7 +656,7 @@ if (formTeacher) {
       }
       
       clearDirty();
-      closeModal();
+      closeModal(true);
       renderTeachersTable();
       renderDashboard();
     } catch (err) {
@@ -659,8 +667,9 @@ if (formTeacher) {
   });
 }
 
-if (document.getElementById('admin-add-teacher-btn')) {
-  document.getElementById('admin-add-teacher-btn').addEventListener('click', () => openTeacherModal());
+const addTeacherBtn = document.getElementById('admin-add-teacher-btn');
+if (addTeacherBtn) {
+  addTeacherBtn.addEventListener('click', () => openTeacherModal());
 }
 
 // ----------------------------------------------------
@@ -711,22 +720,29 @@ function renderFacilitiesTable() {
   });
   
   listBody.querySelectorAll('.btn-edit-facility').forEach(btn => {
-    btn.addEventListener('click', () => openFacilityModal(btn.getAttribute('data-id')));
+    btn.addEventListener('click', (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      openFacilityModal(id);
+    });
   });
   
   listBody.querySelectorAll('.btn-delete-facility').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const id = btn.getAttribute('data-id');
+    btn.addEventListener('click', async (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
       if (confirm('Hapus data fasilitas ini? Tindakan tidak dapat dibatalkan.')) {
-        btn.disabled = true;
+        e.currentTarget.disabled = true;
         try {
           await window.SchoolDB.deleteFacility(id);
           showAdminToast('Data fasilitas berhasil dihapus.', 'success', 'Fasilitas Dihapus');
+          const remaining = (window.SchoolDB.getFacilities() || []).length;
+          if (facilityPage > 1 && (facilityPage - 1) * ITEMS_PER_PAGE >= remaining) {
+            facilityPage = Math.max(1, Math.ceil(remaining / ITEMS_PER_PAGE));
+          }
           renderFacilitiesTable();
           renderDashboard();
         } catch (err) {
           showAdminToast('Gagal menghapus fasilitas.', 'error');
-          btn.disabled = false;
+          e.currentTarget.disabled = false;
         }
       }
     });
@@ -766,7 +782,7 @@ function openFacilityModal(id = null) {
   
   if (id) {
     title.textContent = 'Edit Fasilitas';
-    const facility = window.SchoolDB.getFacilities().find(f => f.id === id);
+    const facility = window.SchoolDB.getFacilities().find(f => String(f.id) === String(id));
     if (facility) {
       document.getElementById('facility-id').value = facility.id;
       document.getElementById('facility-name').value = facility.name;
@@ -774,6 +790,7 @@ function openFacilityModal(id = null) {
       if (facility.image) {
         document.getElementById('preview-facility-img').src = facility.image;
         document.getElementById('preview-facility-container').style.display = 'block';
+        document.getElementById('label-facility-upload').textContent = 'Gambar saat ini (Klik untuk ganti)';
         tempFacilityBase64 = facility.image;
       }
     }
@@ -806,7 +823,7 @@ if (formFacility) {
       }
       
       clearDirty();
-      closeModal();
+      closeModal(true);
       renderFacilitiesTable();
       renderDashboard();
     } catch (err) {
@@ -817,7 +834,10 @@ if (formFacility) {
   });
 }
 
-document.getElementById('admin-add-facility-btn').addEventListener('click', () => openFacilityModal());
+const addFacilityBtn = document.getElementById('admin-add-facility-btn');
+if (addFacilityBtn) {
+  addFacilityBtn.addEventListener('click', () => openFacilityModal());
+}
 
 // ----------------------------------------------------
 // ACTIVITIES CRUD WITH SUBMIT LOCK & SAFE DELETE
@@ -868,22 +888,29 @@ function renderActivitiesTable() {
   });
   
   listBody.querySelectorAll('.btn-edit-activity').forEach(btn => {
-    btn.addEventListener('click', () => openActivityModal(btn.getAttribute('data-id')));
+    btn.addEventListener('click', (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      openActivityModal(id);
+    });
   });
   
   listBody.querySelectorAll('.btn-delete-activity').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const id = btn.getAttribute('data-id');
+    btn.addEventListener('click', async (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
       if (confirm('Hapus berita kegiatan ini? Tindakan tidak dapat dibatalkan.')) {
-        btn.disabled = true;
+        e.currentTarget.disabled = true;
         try {
           await window.SchoolDB.deleteActivity(id);
           showAdminToast('Berita kegiatan berhasil dihapus.', 'success', 'Kegiatan Dihapus');
+          const remaining = (window.SchoolDB.getActivities() || []).length;
+          if (activityPage > 1 && (activityPage - 1) * ITEMS_PER_PAGE >= remaining) {
+            activityPage = Math.max(1, Math.ceil(remaining / ITEMS_PER_PAGE));
+          }
           renderActivitiesTable();
           renderDashboard();
         } catch (err) {
           showAdminToast('Gagal menghapus kegiatan.', 'error');
-          btn.disabled = false;
+          e.currentTarget.disabled = false;
         }
       }
     });
@@ -925,7 +952,7 @@ function openActivityModal(id = null) {
   
   if (id) {
     title.textContent = 'Edit Kegiatan';
-    const activity = window.SchoolDB.getActivities().find(a => a.id === id);
+    const activity = window.SchoolDB.getActivities().find(a => String(a.id) === String(id));
     if (activity) {
       document.getElementById('activity-id').value = activity.id;
       document.getElementById('activity-title').value = activity.title;
@@ -935,6 +962,7 @@ function openActivityModal(id = null) {
       if (activity.image) {
         document.getElementById('preview-activity-img').src = activity.image;
         document.getElementById('preview-activity-container').style.display = 'block';
+        document.getElementById('label-activity-upload').textContent = 'Gambar saat ini (Klik untuk ganti)';
         tempActivityBase64 = activity.image;
       }
     }
@@ -969,7 +997,7 @@ if (formActivity) {
       }
       
       clearDirty();
-      closeModal();
+      closeModal(true);
       renderActivitiesTable();
       renderDashboard();
     } catch (err) {
@@ -980,7 +1008,10 @@ if (formActivity) {
   });
 }
 
-document.getElementById('admin-add-activity-btn').addEventListener('click', () => openActivityModal());
+const addActivityBtn = document.getElementById('admin-add-activity-btn');
+if (addActivityBtn) {
+  addActivityBtn.addEventListener('click', () => openActivityModal());
+}
 
 // ----------------------------------------------------
 // GALLERY CRUD WITH SUBMIT LOCK & SAFE DELETE
@@ -1028,22 +1059,29 @@ function renderGalleryTable() {
   });
   
   listBody.querySelectorAll('.btn-edit-gallery').forEach(btn => {
-    btn.addEventListener('click', () => openGalleryModal(btn.getAttribute('data-id')));
+    btn.addEventListener('click', (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      openGalleryModal(id);
+    });
   });
   
   listBody.querySelectorAll('.btn-delete-gallery').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const id = btn.getAttribute('data-id');
+    btn.addEventListener('click', async (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
       if (confirm('Hapus foto galeri ini? Tindakan tidak dapat dibatalkan.')) {
-        btn.disabled = true;
+        e.currentTarget.disabled = true;
         try {
           await window.SchoolDB.deleteGalleryItem(id);
           showAdminToast('Foto berhasil dihapus dari galeri.', 'success', 'Galeri Dihapus');
+          const remaining = (window.SchoolDB.getGallery() || []).length;
+          if (galleryPage > 1 && (galleryPage - 1) * ITEMS_PER_PAGE >= remaining) {
+            galleryPage = Math.max(1, Math.ceil(remaining / ITEMS_PER_PAGE));
+          }
           renderGalleryTable();
           renderDashboard();
         } catch (err) {
           showAdminToast('Gagal menghapus foto galeri.', 'error');
-          btn.disabled = false;
+          e.currentTarget.disabled = false;
         }
       }
     });
@@ -1083,13 +1121,14 @@ function openGalleryModal(id = null) {
   
   if (id) {
     title.textContent = 'Edit Keterangan Foto';
-    const item = window.SchoolDB.getGallery().find(g => g.id === id);
+    const item = window.SchoolDB.getGallery().find(g => String(g.id) === String(id));
     if (item) {
       document.getElementById('gallery-id').value = item.id;
       document.getElementById('gallery-caption').value = item.caption;
       if (item.image) {
         document.getElementById('preview-gallery-img').src = item.image;
         document.getElementById('preview-gallery-container').style.display = 'block';
+        document.getElementById('label-gallery-upload').textContent = 'Gambar saat ini (Klik untuk ganti)';
         tempGalleryBase64 = item.image;
       }
     }
@@ -1126,7 +1165,7 @@ if (formGallery) {
       }
       
       clearDirty();
-      closeModal();
+      closeModal(true);
       renderGalleryTable();
       renderDashboard();
     } catch (err) {
@@ -1137,7 +1176,10 @@ if (formGallery) {
   });
 }
 
-document.getElementById('admin-add-gallery-btn').addEventListener('click', () => openGalleryModal());
+const addGalleryBtn = document.getElementById('admin-add-gallery-btn');
+if (addGalleryBtn) {
+  addGalleryBtn.addEventListener('click', () => openGalleryModal());
+}
 
 // ----------------------------------------------------
 // CONTACT MANAGEMENT WITH SUBMIT LOCK
@@ -1188,20 +1230,27 @@ if (formEditContact) {
 }
 
 // Modal Controllers
-function closeModal() {
-  if (isFormDirty) {
+function closeModal(force = false) {
+  if (isFormDirty && !force) {
     if (!confirm('Perubahan pada formulir belum disimpan. Tutup jendela?')) {
       return;
     }
-    clearDirty();
   }
-  document.getElementById('admin-modal-overlay').classList.remove('open');
+  clearDirty();
+  const overlay = document.getElementById('admin-modal-overlay');
+  if (overlay) overlay.classList.remove('open');
 }
 
-document.getElementById('admin-modal-close-btn').addEventListener('click', closeModal);
-document.getElementById('admin-modal-overlay').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('admin-modal-overlay')) closeModal();
-});
+const modalCloseBtn = document.getElementById('admin-modal-close-btn');
+if (modalCloseBtn) {
+  modalCloseBtn.addEventListener('click', () => closeModal());
+}
+const modalOverlay = document.getElementById('admin-modal-overlay');
+if (modalOverlay) {
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) closeModal();
+  });
+}
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeModal();
 });

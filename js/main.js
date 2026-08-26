@@ -654,7 +654,6 @@ function initGSAPAnimations() {
         }
       });
     }
-  }
 
   // 2. Scroll-Triggered Stagger Animations for Cards & Sections
   if (typeof ScrollTrigger !== 'undefined') {
@@ -752,7 +751,7 @@ function initGSAPAnimations() {
       gsap.to(card, { y: 0, duration: 0.35, ease: 'power2.out' });
     });
   });
-  
+}
 
 // Fallback if GSAP is not loaded
 function initScrollRevealFallback() {

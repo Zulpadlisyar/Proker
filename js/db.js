@@ -417,7 +417,6 @@ window.SchoolDB = {
         this.data = savedData;
         this.data.profile = { ...INITIAL_DATA.profile, ...this.data.profile };
         this.data.contact = { ...INITIAL_DATA.contact, ...this.data.contact };
-        this.data.profile.hero = INITIAL_DATA.profile.hero;
         if (!Array.isArray(this.data.facilities)) this.data.facilities = JSON.parse(JSON.stringify(INITIAL_DATA.facilities));
         if (!Array.isArray(this.data.activities)) this.data.activities = JSON.parse(JSON.stringify(INITIAL_DATA.activities));
         if (!Array.isArray(this.data.gallery)) this.data.gallery = JSON.parse(JSON.stringify(INITIAL_DATA.gallery));
@@ -542,10 +541,9 @@ window.SchoolDB = {
 
   // Facilities CRUD
   async addFacility(facility) {
+    if (!Array.isArray(this.data.facilities)) this.data.facilities = [];
     const name = this.sanitizeText(facility.name || 'Fasilitas Baru');
     const desc = this.sanitizeText(facility.description || '');
-    const idKey = `facility_add_${name}_${desc}`;
-    if (this._checkIdempotency(idKey)) return null;
 
     const newFacility = {
       id: 'f_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
@@ -560,12 +558,15 @@ window.SchoolDB = {
   },
 
   async updateFacility(id, updatedFields) {
-    const index = this.data.facilities.findIndex(f => f.id === id);
+    if (!Array.isArray(this.data.facilities)) this.data.facilities = INITIAL_DATA.facilities;
+    const index = this.data.facilities.findIndex(f => String(f.id) === String(id));
     if (index !== -1) {
       const sanitized = {};
-      if (updatedFields.name) sanitized.name = this.sanitizeText(updatedFields.name);
-      if (updatedFields.description) sanitized.description = this.sanitizeText(updatedFields.description);
-      if (updatedFields.image) sanitized.image = updatedFields.image;
+      if (updatedFields.name !== undefined) sanitized.name = this.sanitizeText(updatedFields.name);
+      if (updatedFields.description !== undefined) sanitized.description = this.sanitizeText(updatedFields.description);
+      if (updatedFields.image !== undefined && updatedFields.image !== null && updatedFields.image !== '') {
+        sanitized.image = updatedFields.image;
+      }
 
       this.data.facilities[index] = { ...this.data.facilities[index], ...sanitized };
       await this.save();
@@ -576,10 +577,11 @@ window.SchoolDB = {
   },
 
   async deleteFacility(id) {
-    const target = this.data.facilities.find(f => f.id === id);
+    if (!Array.isArray(this.data.facilities)) return false;
+    const target = this.data.facilities.find(f => String(f.id) === String(id));
     if (!target) return false;
 
-    this.data.facilities = this.data.facilities.filter(f => f.id !== id);
+    this.data.facilities = this.data.facilities.filter(f => String(f.id) !== String(id));
     await this.save();
     await this.logAudit('HAPUS', 'Fasilitas', `Menghapus fasilitas "${target.name}"`);
     return true;
@@ -587,10 +589,9 @@ window.SchoolDB = {
 
   // Activities CRUD
   async addActivity(activity) {
+    if (!Array.isArray(this.data.activities)) this.data.activities = [];
     const title = this.sanitizeText(activity.title || 'Kegiatan Baru');
     const date = activity.date || new Date().toISOString().split('T')[0];
-    const idKey = `activity_add_${title}_${date}`;
-    if (this._checkIdempotency(idKey)) return null;
 
     const newActivity = {
       id: 'a_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
@@ -607,14 +608,17 @@ window.SchoolDB = {
   },
 
   async updateActivity(id, updatedFields) {
-    const index = this.data.activities.findIndex(a => a.id === id);
+    if (!Array.isArray(this.data.activities)) this.data.activities = INITIAL_DATA.activities;
+    const index = this.data.activities.findIndex(a => String(a.id) === String(id));
     if (index !== -1) {
       const sanitized = {};
-      if (updatedFields.title) sanitized.title = this.sanitizeText(updatedFields.title);
-      if (updatedFields.date) sanitized.date = updatedFields.date;
-      if (updatedFields.excerpt) sanitized.excerpt = this.sanitizeText(updatedFields.excerpt);
-      if (updatedFields.content) sanitized.content = this.sanitizeHTML(updatedFields.content);
-      if (updatedFields.image) sanitized.image = updatedFields.image;
+      if (updatedFields.title !== undefined) sanitized.title = this.sanitizeText(updatedFields.title);
+      if (updatedFields.date !== undefined) sanitized.date = updatedFields.date;
+      if (updatedFields.excerpt !== undefined) sanitized.excerpt = this.sanitizeText(updatedFields.excerpt);
+      if (updatedFields.content !== undefined) sanitized.content = this.sanitizeHTML(updatedFields.content);
+      if (updatedFields.image !== undefined && updatedFields.image !== null && updatedFields.image !== '') {
+        sanitized.image = updatedFields.image;
+      }
 
       this.data.activities[index] = { ...this.data.activities[index], ...sanitized };
       await this.save();
@@ -625,10 +629,11 @@ window.SchoolDB = {
   },
 
   async deleteActivity(id) {
-    const target = this.data.activities.find(a => a.id === id);
+    if (!Array.isArray(this.data.activities)) return false;
+    const target = this.data.activities.find(a => String(a.id) === String(id));
     if (!target) return false;
 
-    this.data.activities = this.data.activities.filter(a => a.id !== id);
+    this.data.activities = this.data.activities.filter(a => String(a.id) !== String(id));
     await this.save();
     await this.logAudit('HAPUS', 'Kegiatan', `Menghapus berita/kegiatan "${target.title}"`);
     return true;
@@ -636,9 +641,8 @@ window.SchoolDB = {
 
   // Gallery CRUD
   async addGalleryItem(item) {
+    if (!Array.isArray(this.data.gallery)) this.data.gallery = [];
     const caption = this.sanitizeText(item.caption || 'Foto Galeri');
-    const idKey = `gallery_add_${caption}`;
-    if (this._checkIdempotency(idKey)) return null;
 
     const newItem = {
       id: 'g_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
@@ -652,11 +656,14 @@ window.SchoolDB = {
   },
 
   async updateGalleryItem(id, updatedFields) {
-    const index = this.data.gallery.findIndex(g => g.id === id);
+    if (!Array.isArray(this.data.gallery)) this.data.gallery = INITIAL_DATA.gallery;
+    const index = this.data.gallery.findIndex(g => String(g.id) === String(id));
     if (index !== -1) {
       const sanitized = {};
-      if (updatedFields.caption) sanitized.caption = this.sanitizeText(updatedFields.caption);
-      if (updatedFields.image) sanitized.image = updatedFields.image;
+      if (updatedFields.caption !== undefined) sanitized.caption = this.sanitizeText(updatedFields.caption);
+      if (updatedFields.image !== undefined && updatedFields.image !== null && updatedFields.image !== '') {
+        sanitized.image = updatedFields.image;
+      }
 
       this.data.gallery[index] = { ...this.data.gallery[index], ...sanitized };
       await this.save();
@@ -667,10 +674,11 @@ window.SchoolDB = {
   },
 
   async deleteGalleryItem(id) {
-    const target = this.data.gallery.find(g => g.id === id);
+    if (!Array.isArray(this.data.gallery)) return false;
+    const target = this.data.gallery.find(g => String(g.id) === String(id));
     if (!target) return false;
 
-    this.data.gallery = this.data.gallery.filter(g => g.id !== id);
+    this.data.gallery = this.data.gallery.filter(g => String(g.id) !== String(id));
     await this.save();
     await this.logAudit('HAPUS', 'Galeri', `Menghapus foto galeri "${target.caption}"`);
     return true;
@@ -681,8 +689,6 @@ window.SchoolDB = {
     if (!Array.isArray(this.data.teachers)) this.data.teachers = [];
     const name = this.sanitizeText(teacher.name || 'Guru Baru');
     const role = this.sanitizeText(teacher.role || 'Tenaga Pendidik');
-    const idKey = `teacher_add_${name}_${role}`;
-    if (this._checkIdempotency(idKey)) return null;
 
     const newTeacher = {
       id: 't_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
@@ -698,12 +704,14 @@ window.SchoolDB = {
 
   async updateTeacher(id, updatedFields) {
     if (!Array.isArray(this.data.teachers)) this.data.teachers = INITIAL_DATA.teachers;
-    const index = this.data.teachers.findIndex(t => t.id === id);
+    const index = this.data.teachers.findIndex(t => String(t.id) === String(id));
     if (index !== -1) {
       const sanitized = {};
-      if (updatedFields.name) sanitized.name = this.sanitizeText(updatedFields.name);
-      if (updatedFields.role) sanitized.role = this.sanitizeText(updatedFields.role);
-      if (updatedFields.image) sanitized.image = updatedFields.image;
+      if (updatedFields.name !== undefined) sanitized.name = this.sanitizeText(updatedFields.name);
+      if (updatedFields.role !== undefined) sanitized.role = this.sanitizeText(updatedFields.role);
+      if (updatedFields.image !== undefined && updatedFields.image !== null && updatedFields.image !== '') {
+        sanitized.image = updatedFields.image;
+      }
 
       this.data.teachers[index] = { ...this.data.teachers[index], ...sanitized };
       await this.save();
@@ -715,10 +723,10 @@ window.SchoolDB = {
 
   async deleteTeacher(id) {
     if (!Array.isArray(this.data.teachers)) return false;
-    const target = this.data.teachers.find(t => t.id === id);
+    const target = this.data.teachers.find(t => String(t.id) === String(id));
     if (!target) return false;
 
-    this.data.teachers = this.data.teachers.filter(t => t.id !== id);
+    this.data.teachers = this.data.teachers.filter(t => String(t.id) !== String(id));
     await this.save();
     await this.logAudit('HAPUS', 'Guru', `Menghapus guru/staf "${target.name}"`);
     return true;

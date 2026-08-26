@@ -1,0 +1,10 @@
+# Robots.txt for SD Negeri 2 Ngeposari (sdn2ngeposari.sch.id)
+User-agent: *
+Allow: /
+
+# Protect Private Admin Portal from Indexing
+Disallow: /admin.html
+Disallow: /admin
+
+# Sitemap Location
+Sitemap: https://sdn2ngeposari.sch.id/sitemap.xml

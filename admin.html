@@ -24,6 +24,15 @@
       <h2 style="font-size: 1.6rem; margin-bottom: var(--space-2); font-family: var(--font-heading);">CMS Admin Panel</h2>
       <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: var(--space-5);">Masukkan kata sandi administrator untuk mengelola konten website.</p>
       
+      <!-- Warning Alert Box -->
+      <div id="login-error-alert" style="display: none; background-color: #FEF2F2; border: 1px solid #FCA5A5; color: #991B1B; padding: 12px 14px; border-radius: var(--radius-sm); margin-bottom: 18px; text-align: left; font-size: 0.88rem; align-items: flex-start; gap: 10px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+        <div>
+          <strong style="display: block; font-weight: 700; color: #991B1B; margin-bottom: 2px;">Kata Sandi Salah!</strong>
+          <span>Kata sandi yang Anda masukkan tidak sesuai. Silakan periksa kembali huruf besar/kecil atau gunakan <code>admin123</code>.</span>
+        </div>
+      </div>
+
       <form id="admin-login-form" style="text-align: left;">
         <div class="form-group">
           <label for="admin-password">Kata Sandi (Default: <code>admin123</code>)</label>

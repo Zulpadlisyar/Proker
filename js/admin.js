@@ -745,19 +745,46 @@ function fileToBase64(file, maxWidth = 1200, quality = 0.82) {
   });
 }
 
-// Authentication Forms
-document.getElementById('admin-login-form').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const password = document.getElementById('admin-password').value;
-  
-  if (password === 'admin123') {
-    sessionStorage.setItem('admin_logged_in', 'true');
-    checkAuth();
-    showAdminToast('Siap memperbarui cerita sekolah hari ini?', 'success');
-  } else {
-    showAdminToast('Kata sandi salah!', 'error');
-  }
-});
+// Authentication Forms & Error Warning
+const adminLoginForm = document.getElementById('admin-login-form');
+const adminPasswordInput = document.getElementById('admin-password');
+const loginErrorAlert = document.getElementById('login-error-alert');
+
+if (adminPasswordInput && loginErrorAlert) {
+  adminPasswordInput.addEventListener('input', () => {
+    loginErrorAlert.style.display = 'none';
+    adminPasswordInput.style.borderColor = 'var(--border)';
+    adminPasswordInput.style.boxShadow = 'none';
+  });
+}
+
+if (adminLoginForm) {
+  adminLoginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const password = adminPasswordInput.value;
+    
+    if (password === 'admin123') {
+      if (loginErrorAlert) loginErrorAlert.style.display = 'none';
+      sessionStorage.setItem('admin_logged_in', 'true');
+      checkAuth();
+      showAdminToast('Siap memperbarui cerita sekolah hari ini?', 'success');
+    } else {
+      if (loginErrorAlert) {
+        loginErrorAlert.style.display = 'flex';
+        loginErrorAlert.style.animation = 'none';
+        void loginErrorAlert.offsetWidth; // Trigger reflow for animation restart
+        loginErrorAlert.style.animation = 'shake 0.4s ease';
+      }
+      if (adminPasswordInput) {
+        adminPasswordInput.style.borderColor = '#DC2626';
+        adminPasswordInput.style.boxShadow = '0 0 0 3px rgba(220, 38, 38, 0.15)';
+        adminPasswordInput.focus();
+        adminPasswordInput.select();
+      }
+      showAdminToast('Kata sandi salah! Silakan coba lagi.', 'error');
+    }
+  });
+}
 
 document.getElementById('admin-logout-btn').addEventListener('click', () => {
   sessionStorage.removeItem('admin_logged_in');

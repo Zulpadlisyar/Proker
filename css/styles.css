@@ -1768,6 +1768,12 @@ body.admin-body {
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
 }
 
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
 /* 2. Admin Header */
 .admin-header {
   background-color: #FFFFFF;

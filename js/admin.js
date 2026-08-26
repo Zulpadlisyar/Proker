@@ -8,25 +8,58 @@ let tempFacilityBase64 = null;
 let tempActivityBase64 = null;
 let tempGalleryBase64 = null;
 
-// Compliance Toast Notification
-function showAdminToast(message, type = 'success') {
-  const container = document.getElementById('toast-container');
+// Modern Floating Toast Notification System
+function showAdminToast(message, type = 'success', title = '') {
+  let container = document.getElementById('toast-container');
   if (!container) {
-    const c = document.createElement('div');
-    c.id = 'toast-container';
-    c.className = 'toast-container';
-    document.body.appendChild(c);
+    container = document.createElement('div');
+    container.id = 'toast-container';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
   }
   
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
-  toast.innerHTML = `<span>${message}</span>`;
-  document.getElementById('toast-container').appendChild(toast);
   
-  setTimeout(() => {
-    toast.style.animation = 'fadeOut 220ms forwards';
-    toast.addEventListener('animationend', () => toast.remove());
-  }, 3000);
+  let iconSvg = '';
+  if (type === 'success') {
+    iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
+    if (!title) title = 'Berhasil';
+  } else if (type === 'error') {
+    iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>`;
+    if (!title) title = 'Perhatian';
+  } else {
+    iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
+    if (!title) title = 'Informasi';
+  }
+  
+  toast.innerHTML = `
+    <div class="toast-icon-wrap">${iconSvg}</div>
+    <div class="toast-content">
+      <div class="toast-title">${title}</div>
+      <div class="toast-message">${message}</div>
+    </div>
+    <button class="toast-close" type="button" aria-label="Tutup notifikasi">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  `;
+  
+  container.appendChild(toast);
+  
+  let isRemoved = false;
+  const removeToast = () => {
+    if (isRemoved) return;
+    isRemoved = true;
+    toast.classList.add('toast-hide');
+    setTimeout(() => toast.remove(), 250);
+  };
+  
+  const closeBtn = toast.querySelector('.toast-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', removeToast);
+  }
+  
+  setTimeout(removeToast, 3500);
 }
 
 // Check Authentication
@@ -96,7 +129,7 @@ function renderDashboard() {
 document.getElementById('admin-reset-db-btn').addEventListener('click', async () => {
   if (confirm('Apakah Anda yakin ingin mereset seluruh database konten? Semua perubahan data akan hilang.')) {
     await window.SchoolDB.reset();
-    showAdminToast('Informasi berhasil diperbarui.', 'success');
+    showAdminToast('Seluruh database telah direset ke data awal bawaan.', 'success', 'Database Direset');
     setTimeout(() => window.location.reload(), 1000);
   }
 });
@@ -168,7 +201,7 @@ document.getElementById('form-edit-profile').addEventListener('submit', async (e
     hero: tempHeroBase64
   });
   
-  showAdminToast('Informasi berhasil diperbarui.', 'success');
+  showAdminToast('Profil dan visi misi sekolah berhasil disimpan.', 'success', 'Profil Disimpan');
   renderDashboard();
 });
 
@@ -209,7 +242,7 @@ function renderTeachersTable() {
     btn.addEventListener('click', async () => {
       if (confirm('Hapus data guru ini?')) {
         await window.SchoolDB.deleteTeacher(btn.getAttribute('data-id'));
-        showAdminToast('Informasi berhasil diperbarui.', 'success');
+        showAdminToast('Data guru/staf berhasil dihapus.', 'success', 'Guru Dihapus');
         renderTeachersTable();
         renderDashboard();
       }
@@ -275,11 +308,12 @@ document.getElementById('form-teacher').addEventListener('submit', async (e) => 
   
   if (id) {
     await window.SchoolDB.updateTeacher(id, { name, role, image: tempTeacherBase64 });
+    showAdminToast(`Data guru/staf "${name}" berhasil diperbarui.`, 'success', 'Guru Diperbarui');
   } else {
     await window.SchoolDB.addTeacher({ name, role, image: tempTeacherBase64 });
+    showAdminToast(`Guru/staf baru "${name}" berhasil ditambahkan!`, 'success', 'Guru Ditambahkan');
   }
   
-  showAdminToast('Informasi berhasil diperbarui.', 'success');
   closeModal();
   renderTeachersTable();
   renderDashboard();
@@ -325,7 +359,7 @@ function renderFacilitiesTable() {
     btn.addEventListener('click', async () => {
       if (confirm('Hapus fasilitas ini?')) {
         await window.SchoolDB.deleteFacility(btn.getAttribute('data-id'));
-        showAdminToast('Informasi berhasil diperbarui.', 'success');
+        showAdminToast('Data fasilitas berhasil dihapus.', 'success', 'Fasilitas Dihapus');
         renderFacilitiesTable();
         renderDashboard();
       }
@@ -391,11 +425,12 @@ document.getElementById('form-facility').addEventListener('submit', async (e) =>
   
   if (id) {
     await window.SchoolDB.updateFacility(id, { name, description, image: tempFacilityBase64 });
+    showAdminToast(`Data fasilitas "${name}" berhasil diperbarui.`, 'success', 'Fasilitas Diperbarui');
   } else {
     await window.SchoolDB.addFacility({ name, description, image: tempFacilityBase64 });
+    showAdminToast(`Fasilitas baru "${name}" berhasil ditambahkan!`, 'success', 'Fasilitas Ditambahkan');
   }
   
-  showAdminToast('Informasi berhasil diperbarui.', 'success');
   closeModal();
   renderFacilitiesTable();
   renderDashboard();
@@ -440,7 +475,7 @@ function renderActivitiesTable() {
     btn.addEventListener('click', async () => {
       if (confirm('Hapus berita kegiatan ini?')) {
         await window.SchoolDB.deleteActivity(btn.getAttribute('data-id'));
-        showAdminToast('Informasi berhasil diperbarui.', 'success');
+        showAdminToast('Berita kegiatan berhasil dihapus.', 'success', 'Kegiatan Dihapus');
         renderActivitiesTable();
         renderDashboard();
       }
@@ -512,11 +547,12 @@ document.getElementById('form-activity').addEventListener('submit', async (e) =>
   
   if (id) {
     await window.SchoolDB.updateActivity(id, { title, date, excerpt, content, image: tempActivityBase64 });
+    showAdminToast(`Berita kegiatan "${title}" berhasil diperbarui.`, 'success', 'Kegiatan Diperbarui');
   } else {
     await window.SchoolDB.addActivity({ title, date, excerpt, content, image: tempActivityBase64 });
+    showAdminToast(`Kegiatan baru "${title}" berhasil ditambahkan!`, 'success', 'Kegiatan Ditambahkan');
   }
   
-  showAdminToast('Informasi berhasil diperbarui.', 'success');
   closeModal();
   renderActivitiesTable();
   renderDashboard();
@@ -559,7 +595,7 @@ function renderGalleryTable() {
     btn.addEventListener('click', async () => {
       if (confirm('Hapus foto galeri ini?')) {
         await window.SchoolDB.deleteGalleryItem(btn.getAttribute('data-id'));
-        showAdminToast('Informasi berhasil diperbarui.', 'success');
+        showAdminToast('Foto berhasil dihapus dari galeri.', 'success', 'Galeri Dihapus');
         renderGalleryTable();
         renderDashboard();
       }
@@ -622,17 +658,18 @@ document.getElementById('form-gallery').addEventListener('submit', async (e) => 
   const caption = document.getElementById('gallery-caption').value;
   
   if (!tempGalleryBase64 && !id) {
-    showAdminToast('Mohon pilih berkas gambar.', 'error');
+    showAdminToast('Mohon pilih berkas gambar terlebih dahulu.', 'error', 'Peringatan');
     return;
   }
   
   if (id) {
     await window.SchoolDB.updateGalleryItem(id, { caption, image: tempGalleryBase64 });
+    showAdminToast('Keterangan foto galeri berhasil diperbarui.', 'success', 'Galeri Diperbarui');
   } else {
     await window.SchoolDB.addGalleryItem({ caption, image: tempGalleryBase64 });
+    showAdminToast('Foto dokumentasi baru berhasil ditambahkan ke galeri!', 'success', 'Galeri Ditambahkan');
   }
   
-  showAdminToast('Informasi berhasil diperbarui.', 'success');
   closeModal();
   renderGalleryTable();
   renderDashboard();
@@ -666,7 +703,7 @@ document.getElementById('form-edit-contact').addEventListener('submit', async (e
   
   await window.SchoolDB.updateContact({ address, phone, email, maps, facebook, instagram, youtube });
   
-  showAdminToast('Informasi berhasil diperbarui.', 'success');
+  showAdminToast('Informasi kontak dan peta lokasi berhasil disimpan.', 'success', 'Kontak Disimpan');
 });
 
 function closeModal() {

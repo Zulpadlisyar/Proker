@@ -625,32 +625,6 @@ function initGSAPAnimations() {
     gsap.registerPlugin(ScrollTrigger);
   }
 
-  // 1. Hero Section Entrance Stagger (Home Page)
-  const heroContent = document.querySelector('.ghibli-hero-content');
-  if (heroContent) {
-    const headline = heroContent.querySelector('.ghibli-hero-headline');
-    const subtitle = heroContent.querySelector('.ghibli-hero-subtitle');
-    const buttons = heroContent.querySelector('.ghibli-hero-buttons');
-    const organicShape = document.querySelector('.organic-floating-shape');
-
-    const heroTl = gsap.timeline({ defaults: { ease: 'power3.out', duration: 1.2 } });
-
-    if (organicShape) {
-      heroTl.fromTo(organicShape, { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 0.75, duration: 1.6 }, 0);
-    }
-
-    if (headline) {
-      heroTl.fromTo(headline, { y: 40, opacity: 0 }, { y: 0, opacity: 1 }, 0.2);
-    }
-
-    if (subtitle) {
-      heroTl.fromTo(subtitle, { y: 30, opacity: 0 }, { y: 0, opacity: 1 }, 0.45);
-    }
-
-    if (buttons) {
-      heroTl.fromTo(buttons.children, { y: 20, opacity: 0, scale: 0.94 }, { y: 0, opacity: 1, scale: 1, stagger: 0.15 }, 0.7);
-    }
-
     // Hero Background Parallax Scroll Effect
     const heroBg = document.querySelector('.hero-bg-img');
     if (heroBg && typeof ScrollTrigger !== 'undefined') {

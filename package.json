@@ -1,5 +1,15 @@
 {
+  "name": "sdn2ngeposari",
+  "version": "1.0.0",
+  "description": "Website Informasi Sekolah SDN 2 Ngeposari",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "preview": "wrangler dev"
+  },
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.126.0"
   }
 }

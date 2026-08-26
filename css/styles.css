@@ -1268,18 +1268,18 @@ body.hero-page header#main-header.scrolled .menu-toggle {
 /* Floating WhatsApp Fast-Action Button */
 .whatsapp-floating-btn {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: 20px;
+  right: 20px;
   background-color: #25D366;
   color: #FFFFFF;
-  padding: 10px 18px;
+  padding: 8px 14px;
   border-radius: var(--radius-pill);
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3);
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.28);
   z-index: 99;
   transition: transform var(--duration-fast) var(--ease), background-color var(--duration-fast) var(--ease);
   border: 1px solid rgba(255, 255, 255, 0.3);

@@ -823,7 +823,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }, 100);
 });
 
-// Robust transparent navbar scroll controller
+// Robust transparent navbar scroll controller with dual detection (Scroll + IntersectionObserver)
 function initHeaderScrollBehavior() {
   const mainHeader = document.getElementById('main-header');
   const heroSec = document.getElementById('hero-section');
@@ -837,9 +837,11 @@ function initHeaderScrollBehavior() {
   }
 
   const updateNavbarState = () => {
-    // When at top of Hero (scrollY <= 50), topbar is 100% transparent.
-    // As soon as user scrolls down onto other sections (scrollY > 50), topbar turns solid white.
-    if (window.scrollY > 50) {
+    const scrollPos = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || window.scrollY || 0;
+    const heroRect = heroSec.getBoundingClientRect();
+    
+    // When scroll position is past 40px OR hero top has scrolled up out of view
+    if (scrollPos > 40 || heroRect.top < -40) {
       mainHeader.classList.add('scrolled');
     } else {
       mainHeader.classList.remove('scrolled');
@@ -847,9 +849,26 @@ function initHeaderScrollBehavior() {
   };
 
   window.addEventListener('scroll', updateNavbarState, { passive: true });
+  document.addEventListener('scroll', updateNavbarState, { passive: true });
   window.addEventListener('resize', updateNavbarState, { passive: true });
   window.addEventListener('wheel', updateNavbarState, { passive: true });
-  document.addEventListener('scroll', updateNavbarState, { passive: true });
+  
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && entry.boundingClientRect.top >= -40) {
+          mainHeader.classList.remove('scrolled');
+        } else {
+          mainHeader.classList.add('scrolled');
+        }
+      });
+    }, {
+      root: null,
+      threshold: [0, 0.1, 0.2, 0.5, 0.9, 1.0],
+      rootMargin: '-50px 0px 0px 0px'
+    });
+    observer.observe(heroSec);
+  }
   
   // Immediate invocation
   updateNavbarState();

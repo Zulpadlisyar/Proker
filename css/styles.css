@@ -98,7 +98,7 @@ img {
   outline-offset: 3px;
 }
 
-/* Header Navbar */
+/* Header Navbar Base */
 header, header#main-header {
   position: sticky;
   top: 0;
@@ -110,22 +110,25 @@ header, header#main-header {
   height: 72px;
   z-index: 1000;
   box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-  transition: background-color 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
+  transition: background-color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
 }
 
 /* Transparent Header exclusively when at top of Hero Section */
-body.hero-page header#main-header {
+body.hero-page header#main-header:not(.scrolled) {
   position: fixed;
   background-color: transparent !important;
-  border-bottom: none !important;
+  border-bottom: 1px solid transparent !important;
   box-shadow: none !important;
 }
 
-/* Scrolled state on Hero page or outside hero */
-body.hero-page header#main-header.scrolled {
+/* Solid White Header when scrolled or outside hero section */
+body.hero-page header#main-header.scrolled,
+body:not(.hero-page) header#main-header,
+header#main-header.scrolled {
+  position: fixed;
   background-color: #FFFFFF !important;
   border-bottom: 1px solid var(--border) !important;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
 }
 
 .header-container {

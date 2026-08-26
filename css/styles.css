@@ -175,35 +175,35 @@ body.hero-page header#main-header.scrolled {
 .nav-menu {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 24px;
   list-style: none;
 }
 
 .nav-link {
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.01em;
   color: var(--text-muted);
-  padding: 7px 15px;
-  border-radius: var(--radius-pill);
-  border: 1px solid transparent;
-  transition: all 200ms ease;
-  display: inline-flex;
-  align-items: center;
+  padding: 6px 0;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  transition: color 200ms ease;
+  display: inline-block;
   text-decoration: none;
 }
 
 .nav-link:hover {
   color: var(--primary);
-  background-color: var(--surface-alt);
+  background: transparent !important;
 }
 
 .nav-link.active {
   color: var(--primary) !important;
-  background-color: rgba(26, 77, 46, 0.11) !important;
-  border-color: rgba(26, 77, 46, 0.22) !important;
   font-weight: 700 !important;
-  box-shadow: 0 1px 4px rgba(26, 77, 46, 0.08);
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 /* Header Pill Action Button ("Let's Talk" in Reference) */
@@ -252,24 +252,25 @@ body.hero-page header#main-header:not(.scrolled) .logo-text p {
 }
 
 body.hero-page header#main-header:not(.scrolled) .nav-link {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.85);
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
-  border-color: transparent;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 body.hero-page header#main-header:not(.scrolled) .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.18);
   color: #FFFFFF;
-  border-color: rgba(255, 255, 255, 0.28);
+  background: transparent !important;
 }
 
 body.hero-page header#main-header:not(.scrolled) .nav-link.active {
-  background-color: #FFFFFF !important;
-  color: var(--primary) !important;
-  border-color: #FFFFFF !important;
+  color: #FFFFFF !important;
   font-weight: 700 !important;
-  text-shadow: none !important;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6) !important;
 }
 
 body.hero-page header#main-header:not(.scrolled) .menu-toggle {
@@ -291,25 +292,62 @@ body.hero-page header#main-header.scrolled .logo-text p {
 body.hero-page header#main-header.scrolled .nav-link {
   color: var(--text-muted) !important;
   text-shadow: none !important;
-  border-color: transparent !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 body.hero-page header#main-header.scrolled .nav-link:hover {
   color: var(--primary) !important;
-  background-color: var(--surface-alt) !important;
+  background: transparent !important;
 }
 
 body.hero-page header#main-header.scrolled .nav-link.active {
   color: var(--primary) !important;
-  background-color: rgba(26, 77, 46, 0.11) !important;
-  border-color: rgba(26, 77, 46, 0.22) !important;
   font-weight: 700 !important;
-  box-shadow: 0 1px 4px rgba(26, 77, 46, 0.08) !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 body.hero-page header#main-header.scrolled .menu-toggle {
   color: var(--text) !important;
   border-color: var(--border) !important;
+}
+
+/* Back Button Component (e.g. Detail Berita) */
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--surface);
+  color: var(--primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 200ms ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.btn-back svg {
+  color: var(--primary);
+  transition: transform 200ms ease, color 200ms ease;
+}
+
+.btn-back:hover {
+  background-color: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
+  transform: translateX(-3px);
+  box-shadow: 0 4px 12px rgba(26, 77, 46, 0.22);
+}
+
+.btn-back:hover svg {
+  color: #FFFFFF;
+  transform: translateX(-2px);
 }
 
 /* Buttons System */
@@ -1662,34 +1700,42 @@ footer, footer#main-footer {
   }
   .nav-menu .nav-link {
     width: 100%;
-    padding: 10px 16px;
+    padding: 8px 0;
     box-sizing: border-box;
-    border-radius: var(--radius-sm);
     color: var(--text-muted);
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
     text-shadow: none;
   }
   .nav-menu .nav-link:hover {
     color: var(--primary);
-    background-color: var(--surface-alt);
+    background: transparent !important;
   }
   .nav-menu .nav-link.active {
     color: var(--primary) !important;
-    background-color: rgba(26, 77, 46, 0.11) !important;
-    border-color: rgba(26, 77, 46, 0.22) !important;
     font-weight: 700 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
   body.hero-page header#main-header:not(.scrolled) .nav-menu .nav-link {
     color: var(--text-muted);
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
     text-shadow: none;
   }
   body.hero-page header#main-header:not(.scrolled) .nav-menu .nav-link:hover {
     color: var(--primary);
-    background-color: var(--surface-alt);
+    background: transparent !important;
   }
   body.hero-page header#main-header:not(.scrolled) .nav-menu .nav-link.active {
     color: var(--primary) !important;
-    background-color: rgba(26, 77, 46, 0.11) !important;
-    border-color: rgba(26, 77, 46, 0.22) !important;
+    font-weight: 700 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
   .nav-menu.open {
     display: flex;

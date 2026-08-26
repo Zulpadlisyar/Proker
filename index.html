@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@1,400&display=swap">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css?v=2.5">
   
   <!-- Preload Critical LCP Hero Image -->
   <link rel="preload" as="image" href="images/ghibli_hero_bg.webp" imagesrcset="images/ghibli_hero_bg-480.webp 480w, images/ghibli_hero_bg-800.webp 800w, images/ghibli_hero_bg-1200.webp 1200w, images/ghibli_hero_bg.webp 1376w" imagesizes="100vw" fetchpriority="high">
@@ -53,6 +53,26 @@
       </div>
     </div>
   </header>
+
+  <script>
+    (function() {
+      function syncHeader() {
+        var h = document.getElementById('main-header');
+        if (!h) return;
+        var y = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || window.scrollY || 0;
+        if (y > 40) {
+          if (!h.classList.contains('scrolled')) h.classList.add('scrolled');
+        } else {
+          if (h.classList.contains('scrolled')) h.classList.remove('scrolled');
+        }
+      }
+      window.addEventListener('scroll', syncHeader, { passive: true });
+      window.addEventListener('resize', syncHeader, { passive: true });
+      window.addEventListener('touchmove', syncHeader, { passive: true });
+      document.addEventListener('scroll', syncHeader, { passive: true });
+      syncHeader();
+    })();
+  </script>
 
   <!-- 2. FULL-SCREEN GHIBLI LIVING ENVIRONMENT HERO SECTION -->
   <section class="hero-fullscreen-section ghibli-hero-section" id="hero-section">
@@ -431,7 +451,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="js/db.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/db.js?v=2.5"></script>
+  <script src="js/main.js?v=2.5"></script>
 </body>
 </html>

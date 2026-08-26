@@ -255,28 +255,29 @@ body.hero-page header#main-header:not(.scrolled) .menu-toggle {
 
 /* Explicit colors when scrolled to guarantee white background contrast */
 body.hero-page header#main-header.scrolled .logo-title {
-  color: var(--primary);
-  text-shadow: none;
+  color: var(--primary) !important;
+  text-shadow: none !important;
 }
 
 body.hero-page header#main-header.scrolled .logo-text p {
-  color: var(--text-muted);
-  text-shadow: none;
+  color: var(--text-muted) !important;
+  text-shadow: none !important;
 }
 
 body.hero-page header#main-header.scrolled .nav-link {
-  color: var(--text-muted);
-  text-shadow: none;
+  color: var(--text-muted) !important;
+  text-shadow: none !important;
 }
 
 body.hero-page header#main-header.scrolled .nav-link:hover,
 body.hero-page header#main-header.scrolled .nav-link.active {
-  color: var(--primary);
+  color: var(--primary) !important;
+  text-shadow: none !important;
 }
 
 body.hero-page header#main-header.scrolled .menu-toggle {
-  color: var(--text);
-  border-color: var(--border);
+  color: var(--text) !important;
+  border-color: var(--border) !important;
 }
 
 /* Buttons System */

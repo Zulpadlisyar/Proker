@@ -71,10 +71,10 @@ async function renderCommonUI() {
         <div style="display: flex; align-items: center; gap: var(--space-3);">
           <nav>
             <ul class="nav-menu" id="nav-menu">
-              <li><a href="index.html" class="nav-link ${pageName === 'index.html' ? 'active' : ''}">Beranda</a></li>
+              <li><a href="index.html" class="nav-link ${pageName === 'index.html' || pageName === '' ? 'active' : ''}">Beranda</a></li>
               <li><a href="tentang.html" class="nav-link ${pageName === 'tentang.html' ? 'active' : ''}">Tentang</a></li>
               <li><a href="fasilitas.html" class="nav-link ${pageName === 'fasilitas.html' ? 'active' : ''}">Fasilitas</a></li>
-              <li><a href="kegiatan.html" class="nav-link ${pageName === 'kegiatan.html' ? 'active' : ''}">Kegiatan</a></li>
+              <li><a href="kegiatan.html" class="nav-link ${pageName === 'kegiatan.html' || pageName === 'detail-kegiatan.html' ? 'active' : ''}">Kegiatan</a></li>
               <li><a href="kontak.html" class="nav-link ${pageName === 'kontak.html' ? 'active' : ''}">Kontak</a></li>
             </ul>
           </nav>
@@ -151,6 +151,17 @@ async function renderCommonUI() {
       </div>
     `;
   }
+
+  // 3. Sync Any Contact CTA Box on the page
+  const ctaBoxes = document.querySelectorAll('.contact-cta-box');
+  ctaBoxes.forEach(box => {
+    const addrEl = box.querySelector('.contact-detail-row:nth-child(1) span');
+    const phoneEl = box.querySelector('.contact-detail-row:nth-child(2) span');
+    const emailEl = box.querySelector('.contact-detail-row:nth-child(3) span');
+    if (addrEl && contact.address) addrEl.innerHTML = `<strong>Alamat:</strong> ${contact.address}`;
+    if (phoneEl && contact.phone) phoneEl.innerHTML = `<strong>Telepon:</strong> ${contact.phone}`;
+    if (emailEl && contact.email) emailEl.innerHTML = `<strong>Email:</strong> ${contact.email}`;
+  });
 
   // 3. Create dialog markup in body
   if (!document.getElementById('dialog-overlay')) {
@@ -741,7 +752,7 @@ function initGSAPAnimations() {
       gsap.to(card, { y: 0, duration: 0.35, ease: 'power2.out' });
     });
   });
-
+}
 
 // Fallback if GSAP is not loaded
 function initScrollRevealFallback() {

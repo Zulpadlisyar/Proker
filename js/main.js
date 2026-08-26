@@ -216,7 +216,18 @@ function openDialog(title, htmlContent) {
 function renderHomePage() {
   const profile = window.SchoolDB.getProfile();
   const activities = window.SchoolDB.getActivities();
+  const contact = window.SchoolDB.getContact();
   
+  // Dynamic Headline in Ghibli Hero Section
+  const ghibliHeadline = document.querySelector('.ghibli-hero-headline');
+  if (ghibliHeadline && profile.name) {
+    ghibliHeadline.innerHTML = `${profile.name}<br><em>Tempat Belajar</em> &amp; Tumbuh Penuh Inspirasi`;
+  }
+  const ghibliSubtitle = document.querySelector('.ghibli-hero-subtitle');
+  if (ghibliSubtitle && profile.description) {
+    ghibliSubtitle.textContent = profile.description;
+  }
+
   // Only render split hero if not using full-screen hero markup
   const heroSection = document.getElementById('hero-section');
   if (heroSection && !heroSection.classList.contains('hero-fullscreen-section')) {
@@ -237,8 +248,8 @@ function renderHomePage() {
 
         <div>
           <span class="hero-eyebrow">TENTANG SEKOLAH KAMI</span>
-          <h1 class="hero-headline">Tempat belajar,<br>bertumbuh,<br>dan menemukan arah.</h1>
-          <p class="hero-subtitle">Kenali sekolah kami lebih dekat — mulai dari lingkungan belajar, fasilitas, kegiatan, hingga cerita di balik keseharian siswa di ${profile.name}.</p>
+          <h1 class="hero-headline">${profile.name}<br>Tempat belajar,<br>dan bertumbuh.</h1>
+          <p class="hero-subtitle">${profile.description}</p>
           <div class="hero-buttons">
             <a href="tentang.html" class="btn btn-primary">Tentang Sekolah</a>
             <a href="kontak.html" class="btn btn-secondary">Kontak</a>
@@ -296,6 +307,17 @@ function renderHomePage() {
         `).join('')}
       </div>
     `;
+  }
+
+  // Contact CTA Details on Homepage
+  const ctaBox = document.getElementById('contact-cta-box');
+  if (ctaBox && contact) {
+    const addrEl = ctaBox.querySelector('.contact-detail-row:nth-child(1) span');
+    const phoneEl = ctaBox.querySelector('.contact-detail-row:nth-child(2) span');
+    const emailEl = ctaBox.querySelector('.contact-detail-row:nth-child(3) span');
+    if (addrEl && contact.address) addrEl.innerHTML = `<strong>Alamat:</strong> ${contact.address}`;
+    if (phoneEl && contact.phone) phoneEl.innerHTML = `<strong>Telepon:</strong> ${contact.phone}`;
+    if (emailEl && contact.email) emailEl.innerHTML = `<strong>Email:</strong> ${contact.email}`;
   }
 }
 
@@ -859,10 +881,16 @@ function initHeaderScrollBehavior() {
 // Render Activity Detail Page (detail-kegiatan.html)
 function renderActivityDetailPage() {
   const params = new URLSearchParams(window.location.search);
-  const actId = params.get('id') || 'act1';
+  const actId = params.get('id');
   
-  const news = window.SchoolDB.getNews();
-  const act = news.find(n => n.id === actId || n.id === 'a1') || news[0];
+  const activities = window.SchoolDB.getActivities();
+  let act = null;
+  if (actId) {
+    act = activities.find(n => n.id === actId);
+  }
+  if (!act && activities.length > 0) {
+    act = activities[0];
+  }
   
   if (!act) return;
   
@@ -873,10 +901,13 @@ function renderActivityDetailPage() {
   
   if (titleEl) titleEl.textContent = act.title;
   if (catDateEl) {
-    const formattedDate = act.date ? new Date(act.date).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'}).toUpperCase() : '15 AGUSTUS 2026';
+    const formattedDate = act.date ? new Date(act.date).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'}).toUpperCase() : 'TERBARU';
     catDateEl.textContent = `KEGIATAN SEKOLAH • ${formattedDate}`;
   }
-  if (imgEl && act.image) imgEl.src = act.image;
+  if (imgEl && act.image) {
+    imgEl.src = act.image;
+    imgEl.alt = act.title;
+  }
   
   if (bodyEl && act.content) {
     const paragraphs = act.content.split('\n\n');

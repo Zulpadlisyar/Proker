@@ -486,6 +486,10 @@ window.SchoolDB = {
     return [...this.data.activities].sort((a, b) => new Date(b.date) - new Date(a.date));
   },
 
+  getNews() {
+    return this.getActivities();
+  },
+
   getGallery() {
     return this.data.gallery;
   },

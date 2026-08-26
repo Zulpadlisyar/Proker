@@ -2106,6 +2106,59 @@ textarea.form-control {
   display: flex;
   gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-action-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  border-radius: var(--radius-sm, 0px);
+  padding: 6px 12px;
+  cursor: pointer;
+  color: #1E40AF;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all 150ms ease;
+  white-space: nowrap;
+}
+
+.btn-action-edit svg {
+  flex-shrink: 0;
+}
+
+.btn-action-edit:hover {
+  background-color: #1E40AF;
+  border-color: #1E40AF;
+  color: #FFFFFF;
+}
+
+.btn-action-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: var(--radius-sm, 0px);
+  padding: 6px 12px;
+  cursor: pointer;
+  color: #DC2626;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all 150ms ease;
+  white-space: nowrap;
+}
+
+.btn-action-delete svg {
+  flex-shrink: 0;
+}
+
+.btn-action-delete:hover {
+  background-color: #DC2626;
+  border-color: #DC2626;
+  color: #FFFFFF;
 }
 
 .btn-icon {

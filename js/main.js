@@ -741,7 +741,7 @@ function initGSAPAnimations() {
       gsap.to(card, { y: 0, duration: 0.35, ease: 'power2.out' });
     });
   });
-}
+
 
 // Fallback if GSAP is not loaded
 function initScrollRevealFallback() {

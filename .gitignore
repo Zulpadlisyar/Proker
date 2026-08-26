@@ -1,6 +1,30 @@
-.DS_Store
+# Dependencies & Environments
 node_modules/
+.npm/
 .wrangler/
+.vercel/
+
+# OS & Editor Files
+.DS_Store
+Thumbs.db
 .vscode/
 .idea/
 *.log
+
+# Duplicate AI Editor Folders (Ignore in Git)
+.augment/
+.claude/
+.codebuddy/
+.codewhale/
+.continue/
+.cursor/
+.factory/
+.gemini/
+.kilocode/
+.kiro/
+.opencode/
+.qoder/
+.roo/
+.trae/
+.warp/
+.windsurf/

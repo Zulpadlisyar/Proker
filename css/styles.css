@@ -98,7 +98,7 @@ img {
   outline-offset: 3px;
 }
 
-/* Header Navbar Base */
+/* Header Navbar Base (Default for subpages: Sticky, Solid White) */
 header, header#main-header {
   position: sticky;
   top: 0;
@@ -110,22 +110,23 @@ header, header#main-header {
   height: 72px;
   z-index: 1000;
   box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-  transition: background-color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+  transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
 }
 
-/* Transparent Header exclusively when at top of Hero Section */
-body.hero-page header#main-header:not(.scrolled) {
+/* Homepage with Hero: Fixed positioning over hero image */
+body.hero-page header#main-header {
   position: fixed;
+}
+
+/* Homepage Top of Hero (not scrolled): 100% Transparent */
+body.hero-page header#main-header:not(.scrolled) {
   background-color: transparent !important;
   border-bottom: 1px solid transparent !important;
   box-shadow: none !important;
 }
 
-/* Solid White Header when scrolled or outside hero section */
-body.hero-page header#main-header.scrolled,
-body:not(.hero-page) header#main-header,
-header#main-header.scrolled {
-  position: fixed;
+/* Homepage Scrolled (outside/below hero): Solid Crisp White */
+body.hero-page header#main-header.scrolled {
   background-color: #FFFFFF !important;
   border-bottom: 1px solid var(--border) !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;

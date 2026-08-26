@@ -823,14 +823,14 @@ window.addEventListener('DOMContentLoaded', async () => {
   }, 100);
 });
 
-// Robust transparent navbar scroll controller with dual detection (Scroll + IntersectionObserver)
+// Robust navbar scroll controller: Transparent ONLY on top of hero, Solid White everywhere else
 function initHeaderScrollBehavior() {
   const mainHeader = document.getElementById('main-header');
   const heroSec = document.getElementById('hero-section');
   
   if (!mainHeader) return;
   
-  // If not on hero-page (i.e. other subpages), ensure it's solid white
+  // If not on hero-page (i.e. other subpages), ensure it's always solid white
   if (!document.body.classList.contains('hero-page') || !heroSec) {
     mainHeader.classList.add('scrolled');
     return;
@@ -838,40 +838,40 @@ function initHeaderScrollBehavior() {
 
   const updateNavbarState = () => {
     const scrollPos = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || window.scrollY || 0;
-    const heroRect = heroSec.getBoundingClientRect();
     
-    // When scroll position is past 40px OR hero top has scrolled up out of view
-    if (scrollPos > 40 || heroRect.top < -40) {
-      mainHeader.classList.add('scrolled');
+    // Transparent ONLY when user is at the very top of hero (scrollPos <= 50)
+    // As soon as user scrolls down onto other sections (scrollPos > 50), navbar turns solid white
+    if (scrollPos > 50) {
+      if (!mainHeader.classList.contains('scrolled')) {
+        mainHeader.classList.add('scrolled');
+      }
     } else {
-      mainHeader.classList.remove('scrolled');
+      if (mainHeader.classList.contains('scrolled')) {
+        mainHeader.classList.remove('scrolled');
+      }
     }
   };
 
+  // Immediate invocation
+  updateNavbarState();
+
+  // Scroll listeners across all browser engines
   window.addEventListener('scroll', updateNavbarState, { passive: true });
   document.addEventListener('scroll', updateNavbarState, { passive: true });
   window.addEventListener('resize', updateNavbarState, { passive: true });
-  window.addEventListener('wheel', updateNavbarState, { passive: true });
+  window.addEventListener('touchmove', updateNavbarState, { passive: true });
   
-  if ('IntersectionObserver' in window) {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting && entry.boundingClientRect.top >= -40) {
-          mainHeader.classList.remove('scrolled');
-        } else {
-          mainHeader.classList.add('scrolled');
-        }
+  // RequestAnimationFrame tick for smooth scrolling
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        updateNavbarState();
+        ticking = false;
       });
-    }, {
-      root: null,
-      threshold: [0, 0.1, 0.2, 0.5, 0.9, 1.0],
-      rootMargin: '-50px 0px 0px 0px'
-    });
-    observer.observe(heroSec);
-  }
-  
-  // Immediate invocation
-  updateNavbarState();
+      ticking = true;
+    }
+  }, { passive: true });
 }
 
 // Render Activity Detail Page (detail-kegiatan.html)

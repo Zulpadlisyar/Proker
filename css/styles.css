@@ -2286,3 +2286,198 @@ textarea.form-control {
   }
 }
 
+/* 14. Admin Production Hardening & Anti-Spam UX */
+.btn-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  border-top-color: #FFFFFF;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.btn[disabled] {
+  opacity: 0.65;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+/* Admin Table Controls (Search & Pagination) */
+.admin-table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.admin-search-box {
+  position: relative;
+  min-width: 260px;
+  flex: 1;
+  max-width: 380px;
+}
+
+.admin-search-box svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.admin-search-input {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  font-size: 0.88rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 0px);
+  background-color: var(--surface);
+  color: var(--text);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.admin-search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.12);
+}
+
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  margin-top: var(--space-3);
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.pagination-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.page-btn {
+  padding: 5px 12px;
+  font-size: 0.85rem;
+  border: 1px solid var(--border);
+  background-color: #FFFFFF;
+  color: var(--text);
+  border-radius: var(--radius-sm, 0px);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 150ms ease;
+}
+
+.page-btn:hover:not([disabled]) {
+  border-color: var(--primary);
+  color: var(--primary);
+  background-color: var(--surface);
+}
+
+.page-btn[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Audit Log Feed Styles */
+.audit-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: var(--space-3);
+}
+
+.audit-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 0px);
+  font-size: 0.86rem;
+  gap: 12px;
+}
+
+.audit-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.audit-badge {
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-radius: var(--radius-sm, 0px);
+  text-transform: uppercase;
+}
+
+.audit-badge-tambah {
+  background-color: #ECFDF5;
+  color: #065F46;
+}
+
+.audit-badge-ubah {
+  background-color: #EFF6FF;
+  color: #1E40AF;
+}
+
+.audit-badge-hapus {
+  background-color: #FEF2F2;
+  color: #991B1B;
+}
+
+.audit-badge-reset {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.audit-detail {
+  color: var(--text);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.audit-time {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Rate Limit Lockout Countdown Badge */
+.lockout-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background-color: #FEF2F2;
+  border-left: 4px solid #DC2626;
+  border-top: 1px solid #FCA5A5;
+  border-right: 1px solid #FCA5A5;
+  border-bottom: 1px solid #FCA5A5;
+  color: #991B1B;
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-sm, 0px);
+}
+
+

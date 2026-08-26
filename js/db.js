@@ -303,10 +303,83 @@ class IndexedStore {
 
 const idbStore = new IndexedStore();
 
-// Core DB Management Object
+// Core DB Management Object with Security & Integrity Hardening
 window.SchoolDB = {
   data: null,
   isInitialized: false,
+  _recentMutations: new Map(),
+
+  // Strict Sanitization to Prevent XSS
+  sanitizeText(str) {
+    if (typeof str !== 'string') return '';
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
+      .trim();
+  },
+
+  sanitizeHTML(str) {
+    if (typeof str !== 'string') return '';
+    // Strip dangerous script, iframe, object, embed, javascript: protocols
+    return str
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+      .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
+      .replace(/<embed\b[^<]*(?:(?!<\/embed>)<[^<]*)*<\/embed>/gi, '')
+      .replace(/on\w+="[^"]*"/gi, '')
+      .replace(/on\w+='[^']*'/gi, '')
+      .replace(/javascript:[^"']*/gi, '')
+      .trim();
+  },
+
+  // Audit Logging
+  async logAudit(action, entity, detail) {
+    if (!this.data) return;
+    if (!Array.isArray(this.data.auditLogs)) {
+      this.data.auditLogs = [];
+    }
+    
+    const newLog = {
+      id: 'log_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+      timestamp: new Date().toISOString(),
+      action: action, // 'TAMBAH', 'UBAH', 'HAPUS', 'RESET'
+      entity: entity, // 'Profil', 'Guru', 'Fasilitas', 'Kegiatan', 'Galeri', 'Kontak'
+      detail: detail,
+      user: 'Administrator'
+    };
+    
+    this.data.auditLogs.unshift(newLog);
+    // Keep max 50 recent audit logs
+    if (this.data.auditLogs.length > 50) {
+      this.data.auditLogs = this.data.auditLogs.slice(0, 50);
+    }
+    await this.save();
+  },
+
+  getAuditLogs(limit = 10) {
+    if (!this.data || !Array.isArray(this.data.auditLogs)) {
+      return [];
+    }
+    return this.data.auditLogs.slice(0, limit);
+  },
+
+  // Idempotency Check
+  _checkIdempotency(key) {
+    const now = Date.now();
+    // Clean old keys > 5s
+    for (const [k, time] of this._recentMutations.entries()) {
+      if (now - time > 5000) this._recentMutations.delete(k);
+    }
+    if (this._recentMutations.has(key)) {
+      console.warn(`[SchoolDB] Duplicate mutation blocked for key: ${key}`);
+      return true; // Duplicate detected
+    }
+    this._recentMutations.set(key, now);
+    return false;
+  },
 
   async init() {
     if (this.isInitialized) return this;
@@ -329,25 +402,37 @@ window.SchoolDB = {
 
       if (!savedData) {
         this.data = JSON.parse(JSON.stringify(INITIAL_DATA));
+        this.data.auditLogs = [
+          {
+            id: 'log_init',
+            timestamp: new Date().toISOString(),
+            action: 'RESET',
+            entity: 'Sistem',
+            detail: 'Inisialisasi database awal bawaan',
+            user: 'Sistem'
+          }
+        ];
         await this.save();
       } else {
         this.data = savedData;
         this.data.profile = { ...INITIAL_DATA.profile, ...this.data.profile };
         this.data.contact = { ...INITIAL_DATA.contact, ...this.data.contact };
         this.data.profile.hero = INITIAL_DATA.profile.hero;
-        this.data.facilities = JSON.parse(JSON.stringify(INITIAL_DATA.facilities));
-        this.data.activities = JSON.parse(JSON.stringify(INITIAL_DATA.activities));
-        this.data.gallery = JSON.parse(JSON.stringify(INITIAL_DATA.gallery));
-        this.data.teachers = JSON.parse(JSON.stringify(INITIAL_DATA.teachers));
+        if (!Array.isArray(this.data.facilities)) this.data.facilities = JSON.parse(JSON.stringify(INITIAL_DATA.facilities));
+        if (!Array.isArray(this.data.activities)) this.data.activities = JSON.parse(JSON.stringify(INITIAL_DATA.activities));
+        if (!Array.isArray(this.data.gallery)) this.data.gallery = JSON.parse(JSON.stringify(INITIAL_DATA.gallery));
+        if (!Array.isArray(this.data.teachers)) this.data.teachers = JSON.parse(JSON.stringify(INITIAL_DATA.teachers));
+        if (!Array.isArray(this.data.auditLogs)) this.data.auditLogs = [];
         await this.save();
       }
 
       this.isInitialized = true;
-      console.log('Database initialized successfully.');
+      console.log('Database initialized successfully with security rules.');
       return this;
     } catch (err) {
       console.error('Database failed to initialize:', err);
       this.data = JSON.parse(JSON.stringify(INITIAL_DATA));
+      this.data.auditLogs = [];
       this.isInitialized = true;
       return this;
     }
@@ -373,6 +458,16 @@ window.SchoolDB = {
 
   async reset() {
     this.data = JSON.parse(JSON.stringify(INITIAL_DATA));
+    this.data.auditLogs = [
+      {
+        id: 'log_' + Date.now(),
+        timestamp: new Date().toISOString(),
+        action: 'RESET',
+        entity: 'Sistem',
+        detail: 'Mereset seluruh database ke pengaturan awal',
+        user: 'Administrator'
+      }
+    ];
     await this.save();
     console.log('Database has been reset to defaults.');
     return this.data;
@@ -403,154 +498,225 @@ window.SchoolDB = {
     return this.data.calendar || INITIAL_DATA.calendar;
   },
 
-  // SETTERS / UPDATERS
+  getTeachers() {
+    return this.data.teachers || INITIAL_DATA.teachers;
+  },
+
+  // SETTERS / UPDATERS WITH VALIDATION & AUDIT LOGGING
   async updateProfile(profileData) {
-    this.data.profile = { ...this.data.profile, ...profileData };
+    const sanitized = {
+      name: this.sanitizeText(profileData.name || this.data.profile.name),
+      tagline: this.sanitizeText(profileData.tagline || this.data.profile.tagline),
+      description: this.sanitizeText(profileData.description || this.data.profile.description),
+      history: this.sanitizeText(profileData.history || this.data.profile.history),
+      vision: this.sanitizeText(profileData.vision || this.data.profile.vision),
+      missions: Array.isArray(profileData.missions) ? profileData.missions.map(m => this.sanitizeText(m)) : this.data.profile.missions,
+      logo: profileData.logo || this.data.profile.logo,
+      hero: profileData.hero || this.data.profile.hero
+    };
+
+    this.data.profile = { ...this.data.profile, ...sanitized };
     await this.save();
+    await this.logAudit('UBAH', 'Profil', `Memperbarui profil sekolah "${sanitized.name}"`);
   },
 
   async updateContact(contactData) {
-    this.data.contact = { ...this.data.contact, ...contactData };
+    const sanitized = {
+      address: this.sanitizeText(contactData.address || this.data.contact.address),
+      phone: this.sanitizeText(contactData.phone || this.data.contact.phone),
+      email: this.sanitizeText(contactData.email || this.data.contact.email),
+      maps: contactData.maps || this.data.contact.maps,
+      facebook: this.sanitizeText(contactData.facebook || ''),
+      instagram: this.sanitizeText(contactData.instagram || ''),
+      youtube: this.sanitizeText(contactData.youtube || '')
+    };
+
+    this.data.contact = { ...this.data.contact, ...sanitized };
     await this.save();
+    await this.logAudit('UBAH', 'Kontak', 'Memperbarui informasi kontak dan media sosial');
   },
 
   // Facilities CRUD
   async addFacility(facility) {
+    const name = this.sanitizeText(facility.name || 'Fasilitas Baru');
+    const desc = this.sanitizeText(facility.description || '');
+    const idKey = `facility_add_${name}_${desc}`;
+    if (this._checkIdempotency(idKey)) return null;
+
     const newFacility = {
-      id: 'f_' + Date.now(),
-      name: facility.name || 'Fasilitas Baru',
-      description: facility.description || '',
-      image: facility.image || generateSVGPlaceholder('general', facility.name || 'Fasilitas')
+      id: 'f_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+      name: name,
+      description: desc,
+      image: facility.image || generateSVGPlaceholder('general', name)
     };
     this.data.facilities.push(newFacility);
     await this.save();
+    await this.logAudit('TAMBAH', 'Fasilitas', `Menambahkan fasilitas "${newFacility.name}"`);
     return newFacility;
   },
 
   async updateFacility(id, updatedFields) {
     const index = this.data.facilities.findIndex(f => f.id === id);
     if (index !== -1) {
-      this.data.facilities[index] = { ...this.data.facilities[index], ...updatedFields };
+      const sanitized = {};
+      if (updatedFields.name) sanitized.name = this.sanitizeText(updatedFields.name);
+      if (updatedFields.description) sanitized.description = this.sanitizeText(updatedFields.description);
+      if (updatedFields.image) sanitized.image = updatedFields.image;
+
+      this.data.facilities[index] = { ...this.data.facilities[index], ...sanitized };
       await this.save();
+      await this.logAudit('UBAH', 'Fasilitas', `Memperbarui fasilitas "${this.data.facilities[index].name}"`);
       return true;
     }
     return false;
   },
 
   async deleteFacility(id) {
-    const initialLen = this.data.facilities.length;
+    const target = this.data.facilities.find(f => f.id === id);
+    if (!target) return false;
+
     this.data.facilities = this.data.facilities.filter(f => f.id !== id);
-    if (this.data.facilities.length !== initialLen) {
-      await this.save();
-      return true;
-    }
-    return false;
+    await this.save();
+    await this.logAudit('HAPUS', 'Fasilitas', `Menghapus fasilitas "${target.name}"`);
+    return true;
   },
 
   // Activities CRUD
   async addActivity(activity) {
+    const title = this.sanitizeText(activity.title || 'Kegiatan Baru');
+    const date = activity.date || new Date().toISOString().split('T')[0];
+    const idKey = `activity_add_${title}_${date}`;
+    if (this._checkIdempotency(idKey)) return null;
+
     const newActivity = {
-      id: 'a_' + Date.now(),
-      title: activity.title || 'Kegiatan Baru',
-      date: activity.date || new Date().toISOString().split('T')[0],
-      excerpt: activity.excerpt || '',
-      content: activity.content || '',
-      image: activity.image || generateSVGPlaceholder('general', activity.title || 'Kegiatan')
+      id: 'a_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+      title: title,
+      date: date,
+      excerpt: this.sanitizeText(activity.excerpt || ''),
+      content: this.sanitizeHTML(activity.content || ''),
+      image: activity.image || generateSVGPlaceholder('general', title)
     };
     this.data.activities.push(newActivity);
     await this.save();
+    await this.logAudit('TAMBAH', 'Kegiatan', `Menambahkan berita/kegiatan "${newActivity.title}"`);
     return newActivity;
   },
 
   async updateActivity(id, updatedFields) {
     const index = this.data.activities.findIndex(a => a.id === id);
     if (index !== -1) {
-      this.data.activities[index] = { ...this.data.activities[index], ...updatedFields };
+      const sanitized = {};
+      if (updatedFields.title) sanitized.title = this.sanitizeText(updatedFields.title);
+      if (updatedFields.date) sanitized.date = updatedFields.date;
+      if (updatedFields.excerpt) sanitized.excerpt = this.sanitizeText(updatedFields.excerpt);
+      if (updatedFields.content) sanitized.content = this.sanitizeHTML(updatedFields.content);
+      if (updatedFields.image) sanitized.image = updatedFields.image;
+
+      this.data.activities[index] = { ...this.data.activities[index], ...sanitized };
       await this.save();
+      await this.logAudit('UBAH', 'Kegiatan', `Memperbarui berita/kegiatan "${this.data.activities[index].title}"`);
       return true;
     }
     return false;
   },
 
   async deleteActivity(id) {
-    const initialLen = this.data.activities.length;
+    const target = this.data.activities.find(a => a.id === id);
+    if (!target) return false;
+
     this.data.activities = this.data.activities.filter(a => a.id !== id);
-    if (this.data.activities.length !== initialLen) {
-      await this.save();
-      return true;
-    }
-    return false;
+    await this.save();
+    await this.logAudit('HAPUS', 'Kegiatan', `Menghapus berita/kegiatan "${target.title}"`);
+    return true;
   },
 
   // Gallery CRUD
   async addGalleryItem(item) {
+    const caption = this.sanitizeText(item.caption || 'Foto Galeri');
+    const idKey = `gallery_add_${caption}`;
+    if (this._checkIdempotency(idKey)) return null;
+
     const newItem = {
-      id: 'g_' + Date.now(),
-      caption: item.caption || 'Foto Galeri',
-      image: item.image || generateSVGPlaceholder('general', item.caption || 'Galeri')
+      id: 'g_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+      caption: caption,
+      image: item.image || generateSVGPlaceholder('general', caption)
     };
     this.data.gallery.push(newItem);
     await this.save();
+    await this.logAudit('TAMBAH', 'Galeri', `Menambahkan foto galeri "${newItem.caption}"`);
     return newItem;
   },
 
   async updateGalleryItem(id, updatedFields) {
     const index = this.data.gallery.findIndex(g => g.id === id);
     if (index !== -1) {
-      this.data.gallery[index] = { ...this.data.gallery[index], ...updatedFields };
+      const sanitized = {};
+      if (updatedFields.caption) sanitized.caption = this.sanitizeText(updatedFields.caption);
+      if (updatedFields.image) sanitized.image = updatedFields.image;
+
+      this.data.gallery[index] = { ...this.data.gallery[index], ...sanitized };
       await this.save();
+      await this.logAudit('UBAH', 'Galeri', `Memperbarui foto galeri "${this.data.gallery[index].caption}"`);
       return true;
     }
     return false;
   },
 
   async deleteGalleryItem(id) {
-    const initialLen = this.data.gallery.length;
+    const target = this.data.gallery.find(g => g.id === id);
+    if (!target) return false;
+
     this.data.gallery = this.data.gallery.filter(g => g.id !== id);
-    if (this.data.gallery.length !== initialLen) {
-      await this.save();
-      return true;
-    }
-    return false;
+    await this.save();
+    await this.logAudit('HAPUS', 'Galeri', `Menghapus foto galeri "${target.caption}"`);
+    return true;
   },
 
   // Teachers CRUD
-  getTeachers() {
-    return this.data.teachers || INITIAL_DATA.teachers;
-  },
-
   async addTeacher(teacher) {
-    if (!this.data.teachers) this.data.teachers = [];
+    if (!Array.isArray(this.data.teachers)) this.data.teachers = [];
+    const name = this.sanitizeText(teacher.name || 'Guru Baru');
+    const role = this.sanitizeText(teacher.role || 'Tenaga Pendidik');
+    const idKey = `teacher_add_${name}_${role}`;
+    if (this._checkIdempotency(idKey)) return null;
+
     const newTeacher = {
-      id: 't_' + Date.now(),
-      name: teacher.name || 'Guru Baru',
-      role: teacher.role || 'Tenaga Pendidik',
-      image: teacher.image || generateSVGPlaceholder('class', teacher.name || 'Guru')
+      id: 't_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+      name: name,
+      role: role,
+      image: teacher.image || generateSVGPlaceholder('class', name)
     };
     this.data.teachers.push(newTeacher);
     await this.save();
+    await this.logAudit('TAMBAH', 'Guru', `Menambahkan guru/staf "${newTeacher.name}" (${newTeacher.role})`);
     return newTeacher;
   },
 
   async updateTeacher(id, updatedFields) {
-    if (!this.data.teachers) this.data.teachers = INITIAL_DATA.teachers;
+    if (!Array.isArray(this.data.teachers)) this.data.teachers = INITIAL_DATA.teachers;
     const index = this.data.teachers.findIndex(t => t.id === id);
     if (index !== -1) {
-      this.data.teachers[index] = { ...this.data.teachers[index], ...updatedFields };
+      const sanitized = {};
+      if (updatedFields.name) sanitized.name = this.sanitizeText(updatedFields.name);
+      if (updatedFields.role) sanitized.role = this.sanitizeText(updatedFields.role);
+      if (updatedFields.image) sanitized.image = updatedFields.image;
+
+      this.data.teachers[index] = { ...this.data.teachers[index], ...sanitized };
       await this.save();
+      await this.logAudit('UBAH', 'Guru', `Memperbarui guru/staf "${this.data.teachers[index].name}"`);
       return true;
     }
     return false;
   },
 
   async deleteTeacher(id) {
-    if (!this.data.teachers) return false;
-    const initialLen = this.data.teachers.length;
+    if (!Array.isArray(this.data.teachers)) return false;
+    const target = this.data.teachers.find(t => t.id === id);
+    if (!target) return false;
+
     this.data.teachers = this.data.teachers.filter(t => t.id !== id);
-    if (this.data.teachers.length !== initialLen) {
-      await this.save();
-      return true;
-    }
-    return false;
+    await this.save();
+    await this.logAudit('HAPUS', 'Guru', `Menghapus guru/staf "${target.name}"`);
+    return true;
   }
 };

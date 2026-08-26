@@ -30,13 +30,14 @@
   /* Font Family - Plus Jakarta Sans ONLY */
   --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   
-  /* Strict Radii */
-  --radius-sm: 6px;
-  --radius-default: 8px;
-  --radius-card: 10px;
-  --radius-image: 10px;
-  --radius-feature: 12px;
-  --radius-pill: 999px;
+  /* Radii (Disabled: 0px) */
+  --radius-sm: 0px;
+  --radius-default: 0px;
+  --radius-card: 0px;
+  --radius-image: 0px;
+  --radius-feature: 0px;
+  --radius-pill: 0px;
+  --radius-lg: 0px;
   
   /* Spacing Scale */
   --space-1: 4px;
@@ -63,6 +64,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  border-radius: 0 !important;
 }
 
 html {

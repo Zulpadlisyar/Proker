@@ -38,7 +38,7 @@ function showToast(message, type = 'success') {
 
 // Common UI Elements (Header, Footer, Dialog container)
 async function renderCommonUI() {
-  let profile = { name: 'SDN 2 Ngeposari', logo: 'images/logo.png', tagline: 'Semanu, Gunungkidul' };
+  let profile = { name: 'SDN 2 Ngeposari', logo: 'images/logo.webp', tagline: 'Semanu, Gunungkidul' };
   let contact = { address: 'Ngeposari, Semanu, Gunungkidul', phone: '(0274) 123456', email: 'info@sdn2ngeposari.sch.id' };
   
   try {
@@ -55,13 +55,19 @@ async function renderCommonUI() {
   // 1. Render Header (Navbar: Height 76px, solid background, border-bottom, exactly 5 links)
   const headerContainer = document.getElementById('main-header');
   if (headerContainer) {
-    const currentPath = window.location.pathname;
-    const pageName = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'index.html';
+    const currentPath = window.location.pathname.toLowerCase().replace(/\/+$/, '') || '/';
+    const lastSegment = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'index.html';
+    
+    const isBeranda = currentPath === '/' || currentPath === '' || lastSegment === 'index.html' || lastSegment === 'index' || lastSegment === '';
+    const isTentang = lastSegment === 'tentang.html' || lastSegment === 'tentang' || currentPath.includes('tentang');
+    const isFasilitas = lastSegment === 'fasilitas.html' || lastSegment === 'fasilitas' || currentPath.includes('fasilitas');
+    const isKegiatan = lastSegment === 'kegiatan.html' || lastSegment === 'kegiatan' || lastSegment === 'detail-kegiatan.html' || lastSegment === 'detail-kegiatan' || currentPath.includes('kegiatan');
+    const isKontak = lastSegment === 'kontak.html' || lastSegment === 'kontak' || currentPath.includes('kontak');
     
     headerContainer.innerHTML = `
       <div class="header-container">
         <a href="index.html" class="logo-link">
-          <img src="${profile.logo}" alt="Logo ${profile.name}" class="logo-img">
+          <img src="${profile.logo || 'images/logo.webp'}" alt="Logo ${profile.name}" class="logo-img">
           <div class="logo-text">
             <span class="logo-title">${profile.name}</span>
             <p>${profile.tagline}</p>
@@ -71,11 +77,11 @@ async function renderCommonUI() {
         <div style="display: flex; align-items: center; gap: var(--space-3);">
           <nav>
             <ul class="nav-menu" id="nav-menu">
-              <li><a href="index.html" class="nav-link ${pageName === 'index.html' || pageName === '' ? 'active' : ''}">Beranda</a></li>
-              <li><a href="tentang.html" class="nav-link ${pageName === 'tentang.html' ? 'active' : ''}">Tentang</a></li>
-              <li><a href="fasilitas.html" class="nav-link ${pageName === 'fasilitas.html' ? 'active' : ''}">Fasilitas</a></li>
-              <li><a href="kegiatan.html" class="nav-link ${pageName === 'kegiatan.html' || pageName === 'detail-kegiatan.html' ? 'active' : ''}">Kegiatan</a></li>
-              <li><a href="kontak.html" class="nav-link ${pageName === 'kontak.html' ? 'active' : ''}">Kontak</a></li>
+              <li><a href="index.html" class="nav-link ${isBeranda ? 'active' : ''}">Beranda</a></li>
+              <li><a href="tentang.html" class="nav-link ${isTentang ? 'active' : ''}">Tentang</a></li>
+              <li><a href="fasilitas.html" class="nav-link ${isFasilitas ? 'active' : ''}">Fasilitas</a></li>
+              <li><a href="kegiatan.html" class="nav-link ${isKegiatan ? 'active' : ''}">Kegiatan</a></li>
+              <li><a href="kontak.html" class="nav-link ${isKontak ? 'active' : ''}">Kontak</a></li>
             </ul>
           </nav>
 
@@ -112,9 +118,12 @@ async function renderCommonUI() {
     footerContainer.innerHTML = `
       <div class="footer-container">
         <div class="footer-brand">
-          <h3>${profile.name}</h3>
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+            <img src="${profile.logo || 'images/logo.webp'}" alt="Logo ${profile.name}" style="width: 44px; height: 44px; object-fit: contain;">
+            <h3 style="margin: 0; font-size: 1.35rem;">${profile.name}</h3>
+          </div>
           <p>${profile.description}</p>
-          <p style="color: var(--accent); font-weight: 700;">${profile.tagline}</p>
+          <p style="color: var(--accent); font-weight: 700; margin-top: 8px;">${profile.tagline}</p>
         </div>
         <div class="footer-links">
           <h4>Navigasi</h4>

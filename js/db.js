@@ -137,7 +137,7 @@ const INITIAL_DATA = {
       { title: 'Berprestasi', desc: 'Semangat belajar tinggi untuk meraih hasil terbaik.' },
       { title: 'Peduli Lingkungan', desc: 'Menjaga kebersihan dan kelestarian lingkungan sekolah.' }
     ],
-    logo: generateLogoSVG(),
+    logo: 'images/logo.webp',
     hero: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&h=1000&fit=crop'
   },
   facilities: [
@@ -416,6 +416,9 @@ window.SchoolDB = {
       } else {
         this.data = savedData;
         this.data.profile = { ...INITIAL_DATA.profile, ...this.data.profile };
+        if (!this.data.profile.logo || this.data.profile.logo.startsWith('data:image/svg+xml')) {
+          this.data.profile.logo = 'images/logo.webp';
+        }
         this.data.contact = { ...INITIAL_DATA.contact, ...this.data.contact };
         if (!Array.isArray(this.data.facilities)) this.data.facilities = JSON.parse(JSON.stringify(INITIAL_DATA.facilities));
         if (!Array.isArray(this.data.activities)) this.data.activities = JSON.parse(JSON.stringify(INITIAL_DATA.activities));

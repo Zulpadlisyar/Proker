@@ -6,19 +6,6 @@
 (function () {
   'use strict';
 
-  // 1. Vercel Speed Insights Integration
-  (function initSpeedInsights() {
-    if (typeof window !== 'undefined') {
-      window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-      if (!document.querySelector('script[src*="/_vercel/speed-insights/script.js"]')) {
-        const script = document.createElement('script');
-        script.src = '/_vercel/speed-insights/script.js';
-        script.defer = true;
-        document.head.appendChild(script);
-      }
-    }
-  })();
-
   // 2. Toast / Notification Primitive
   function showToast(message, type = 'success') {
     let container = document.getElementById('toast-container');

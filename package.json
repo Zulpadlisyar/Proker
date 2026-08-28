@@ -6,9 +6,6 @@
     "deploy": "wrangler deploy",
     "preview": "wrangler dev"
   },
-  "dependencies": {
-    "@vercel/speed-insights": "^2.0.0"
-  },
   "devDependencies": {
     "wrangler": "^4.126.0"
   }

@@ -8,8 +8,26 @@ let tempFacilityBase64 = null;
 let tempActivityBase64 = null;
 let tempGalleryBase64 = null;
 
-// Form Dirty State Tracker (Unsaved Changes)
+// Form Dirty State & Active Form Tracker (Unsaved Changes)
 let isFormDirty = false;
+let activeModalFormId = null;
+
+function normalizeName(str) {
+  if (!str || typeof str !== 'string') return '';
+  return str.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+function attachDirtyListeners(formId) {
+  const form = document.getElementById(formId);
+  if (!form) return;
+  const inputs = form.querySelectorAll('input, textarea, select');
+  inputs.forEach(el => {
+    el.removeEventListener('input', markDirty);
+    el.removeEventListener('change', markDirty);
+    el.addEventListener('input', markDirty);
+    el.addEventListener('change', markDirty);
+  });
+}
 
 // Table Pagination & Search State
 const ITEMS_PER_PAGE = 10;
@@ -600,6 +618,7 @@ document.getElementById('teacher-file').addEventListener('change', async (e) => 
 function openTeacherModal(id = null) {
   const modal = document.getElementById('admin-modal-overlay');
   const title = document.getElementById('admin-modal-title');
+  activeModalFormId = 'form-teacher';
   
   document.getElementById('form-teacher').style.display = 'block';
   document.getElementById('form-facility').style.display = 'none';
@@ -632,6 +651,7 @@ function openTeacherModal(id = null) {
     document.getElementById('teacher-id').value = '';
   }
   
+  attachDirtyListeners('form-teacher');
   modal.classList.add('open');
 }
 
@@ -640,13 +660,27 @@ if (formTeacher) {
   formTeacher.addEventListener('submit', async (e) => {
     e.preventDefault();
     const submitBtn = formTeacher.querySelector('button[type="submit"]');
+    
+    const id = document.getElementById('teacher-id').value;
+    const name = document.getElementById('teacher-name').value;
+    const role = document.getElementById('teacher-role').value;
+
+    // Client-side duplicate check
+    const normName = normalizeName(name);
+    const isDuplicate = window.SchoolDB.getTeachers().some(t => String(t.id) !== String(id) && normalizeName(t.name) === normName);
+    if (isDuplicate) {
+      showAdminToast('Guru dengan nama tersebut sudah terdaftar. Silakan gunakan nama yang berbeda.', 'error', 'Nama Guru Duplikat');
+      const nameInput = document.getElementById('teacher-name');
+      if (nameInput) {
+        nameInput.focus();
+        nameInput.select();
+      }
+      return;
+    }
+    
     setButtonSubmitting(submitBtn, true, 'Menyimpan Data Guru...');
     
     try {
-      const id = document.getElementById('teacher-id').value;
-      const name = document.getElementById('teacher-name').value;
-      const role = document.getElementById('teacher-role').value;
-      
       if (id) {
         await window.SchoolDB.updateTeacher(id, { name, role, image: tempTeacherBase64 });
         showAdminToast(`Data guru/staf "${name}" berhasil diperbarui.`, 'success', 'Guru Diperbarui');
@@ -660,7 +694,7 @@ if (formTeacher) {
       renderTeachersTable();
       renderDashboard();
     } catch (err) {
-      showAdminToast('Terjadi kesalahan saat menyimpan data guru.', 'error');
+      showAdminToast(err.message || 'Terjadi kesalahan saat menyimpan data guru.', 'error');
     } finally {
       setButtonSubmitting(submitBtn, false);
     }
@@ -767,6 +801,7 @@ document.getElementById('facility-file').addEventListener('change', async (e) =>
 function openFacilityModal(id = null) {
   const modal = document.getElementById('admin-modal-overlay');
   const title = document.getElementById('admin-modal-title');
+  activeModalFormId = 'form-facility';
   
   document.getElementById('form-teacher').style.display = 'none';
   document.getElementById('form-facility').style.display = 'block';
@@ -799,6 +834,7 @@ function openFacilityModal(id = null) {
     document.getElementById('facility-id').value = '';
   }
   
+  attachDirtyListeners('form-facility');
   modal.classList.add('open');
 }
 
@@ -807,13 +843,27 @@ if (formFacility) {
   formFacility.addEventListener('submit', async (e) => {
     e.preventDefault();
     const submitBtn = formFacility.querySelector('button[type="submit"]');
+    
+    const id = document.getElementById('facility-id').value;
+    const name = document.getElementById('facility-name').value;
+    const description = document.getElementById('facility-desc').value;
+
+    // Client-side duplicate check
+    const normName = normalizeName(name);
+    const isDuplicate = window.SchoolDB.getFacilities().some(f => String(f.id) !== String(id) && normalizeName(f.name) === normName);
+    if (isDuplicate) {
+      showAdminToast('Fasilitas dengan nama tersebut sudah tersedia. Silakan gunakan nama yang berbeda.', 'error', 'Nama Fasilitas Duplikat');
+      const nameInput = document.getElementById('facility-name');
+      if (nameInput) {
+        nameInput.focus();
+        nameInput.select();
+      }
+      return;
+    }
+    
     setButtonSubmitting(submitBtn, true, 'Menyimpan Fasilitas...');
     
     try {
-      const id = document.getElementById('facility-id').value;
-      const name = document.getElementById('facility-name').value;
-      const description = document.getElementById('facility-desc').value;
-      
       if (id) {
         await window.SchoolDB.updateFacility(id, { name, description, image: tempFacilityBase64 });
         showAdminToast(`Data fasilitas "${name}" berhasil diperbarui.`, 'success', 'Fasilitas Diperbarui');
@@ -827,7 +877,7 @@ if (formFacility) {
       renderFacilitiesTable();
       renderDashboard();
     } catch (err) {
-      showAdminToast('Terjadi kesalahan saat menyimpan fasilitas.', 'error');
+      showAdminToast(err.message || 'Terjadi kesalahan saat menyimpan fasilitas.', 'error');
     } finally {
       setButtonSubmitting(submitBtn, false);
     }
@@ -935,6 +985,7 @@ document.getElementById('activity-file').addEventListener('change', async (e) =>
 function openActivityModal(id = null) {
   const modal = document.getElementById('admin-modal-overlay');
   const title = document.getElementById('admin-modal-title');
+  activeModalFormId = 'form-activity';
   
   document.getElementById('form-teacher').style.display = 'none';
   document.getElementById('form-facility').style.display = 'none';
@@ -971,6 +1022,7 @@ function openActivityModal(id = null) {
     document.getElementById('activity-id').value = '';
   }
   
+  attachDirtyListeners('form-activity');
   modal.classList.add('open');
 }
 
@@ -979,15 +1031,29 @@ if (formActivity) {
   formActivity.addEventListener('submit', async (e) => {
     e.preventDefault();
     const submitBtn = formActivity.querySelector('button[type="submit"]');
+    
+    const id = document.getElementById('activity-id').value;
+    const title = document.getElementById('activity-title').value;
+    const date = document.getElementById('activity-date').value;
+    const excerpt = document.getElementById('activity-excerpt').value;
+    const content = document.getElementById('activity-content').value;
+
+    // Client-side duplicate check
+    const normTitle = normalizeName(title);
+    const isDuplicate = window.SchoolDB.getActivities().some(a => String(a.id) !== String(id) && normalizeName(a.title) === normTitle);
+    if (isDuplicate) {
+      showAdminToast('Kegiatan dengan judul tersebut sudah tersedia. Silakan gunakan judul yang berbeda.', 'error', 'Judul Kegiatan Duplikat');
+      const titleInput = document.getElementById('activity-title');
+      if (titleInput) {
+        titleInput.focus();
+        titleInput.select();
+      }
+      return;
+    }
+    
     setButtonSubmitting(submitBtn, true, 'Menyimpan Kegiatan...');
     
     try {
-      const id = document.getElementById('activity-id').value;
-      const title = document.getElementById('activity-title').value;
-      const date = document.getElementById('activity-date').value;
-      const excerpt = document.getElementById('activity-excerpt').value;
-      const content = document.getElementById('activity-content').value;
-      
       if (id) {
         await window.SchoolDB.updateActivity(id, { title, date, excerpt, content, image: tempActivityBase64 });
         showAdminToast(`Berita kegiatan "${title}" berhasil diperbarui.`, 'success', 'Kegiatan Diperbarui');
@@ -1001,7 +1067,7 @@ if (formActivity) {
       renderActivitiesTable();
       renderDashboard();
     } catch (err) {
-      showAdminToast('Terjadi kesalahan saat menyimpan berita kegiatan.', 'error');
+      showAdminToast(err.message || 'Terjadi kesalahan saat menyimpan berita kegiatan.', 'error');
     } finally {
       setButtonSubmitting(submitBtn, false);
     }
@@ -1106,6 +1172,7 @@ document.getElementById('gallery-file').addEventListener('change', async (e) => 
 function openGalleryModal(id = null) {
   const modal = document.getElementById('admin-modal-overlay');
   const title = document.getElementById('admin-modal-title');
+  activeModalFormId = 'form-gallery';
   
   document.getElementById('form-teacher').style.display = 'none';
   document.getElementById('form-facility').style.display = 'none';
@@ -1137,6 +1204,7 @@ function openGalleryModal(id = null) {
     document.getElementById('gallery-id').value = '';
   }
   
+  attachDirtyListeners('form-gallery');
   modal.classList.add('open');
 }
 
@@ -1229,30 +1297,93 @@ if (formEditContact) {
   });
 }
 
-// Modal Controllers
+// Centralized Modal & Unsaved Changes Controller
+function requestCloseModal(force = false) {
+  if (force || !isFormDirty) {
+    closeModal(true);
+    return;
+  }
+  
+  // Show custom unsaved confirmation modal dialog
+  const unsavedOverlay = document.getElementById('unsaved-confirm-overlay');
+  if (unsavedOverlay) {
+    unsavedOverlay.style.display = 'flex';
+  }
+}
+
 function closeModal(force = false) {
   if (isFormDirty && !force) {
-    if (!confirm('Perubahan pada formulir belum disimpan. Tutup jendela?')) {
-      return;
-    }
+    requestCloseModal(false);
+    return;
   }
+  
+  const unsavedOverlay = document.getElementById('unsaved-confirm-overlay');
+  if (unsavedOverlay) unsavedOverlay.style.display = 'none';
+  
   clearDirty();
   const overlay = document.getElementById('admin-modal-overlay');
   if (overlay) overlay.classList.remove('open');
+  activeModalFormId = null;
+}
+
+// Hook Unsaved Confirmation Action Buttons
+const btnUnsavedKeep = document.getElementById('btn-unsaved-keep');
+if (btnUnsavedKeep) {
+  btnUnsavedKeep.addEventListener('click', () => {
+    const unsavedOverlay = document.getElementById('unsaved-confirm-overlay');
+    if (unsavedOverlay) unsavedOverlay.style.display = 'none';
+  });
+}
+
+const btnUnsavedDiscard = document.getElementById('btn-unsaved-discard');
+if (btnUnsavedDiscard) {
+  btnUnsavedDiscard.addEventListener('click', () => {
+    closeModal(true);
+  });
+}
+
+const btnUnsavedSave = document.getElementById('btn-unsaved-save');
+if (btnUnsavedSave) {
+  btnUnsavedSave.addEventListener('click', () => {
+    const unsavedOverlay = document.getElementById('unsaved-confirm-overlay');
+    if (unsavedOverlay) unsavedOverlay.style.display = 'none';
+    
+    // Trigger submit handler on the active form directly
+    if (activeModalFormId) {
+      const activeForm = document.getElementById(activeModalFormId);
+      if (activeForm) {
+        if (typeof activeForm.requestSubmit === 'function') {
+          activeForm.requestSubmit();
+        } else {
+          activeForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        }
+      }
+    }
+  });
 }
 
 const modalCloseBtn = document.getElementById('admin-modal-close-btn');
 if (modalCloseBtn) {
-  modalCloseBtn.addEventListener('click', () => closeModal());
+  modalCloseBtn.addEventListener('click', () => requestCloseModal());
 }
 const modalOverlay = document.getElementById('admin-modal-overlay');
 if (modalOverlay) {
   modalOverlay.addEventListener('click', (e) => {
-    if (e.target === modalOverlay) closeModal();
+    if (e.target === modalOverlay) requestCloseModal();
   });
 }
 window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Escape') {
+    const unsavedOverlay = document.getElementById('unsaved-confirm-overlay');
+    if (unsavedOverlay && unsavedOverlay.style.display === 'flex') {
+      unsavedOverlay.style.display = 'none';
+    } else {
+      const modal = document.getElementById('admin-modal-overlay');
+      if (modal && modal.classList.contains('open')) {
+        requestCloseModal();
+      }
+    }
+  }
 });
 
 /**

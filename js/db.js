@@ -542,11 +542,22 @@ window.SchoolDB = {
     await this.logAudit('UBAH', 'Kontak', 'Memperbarui informasi kontak dan media sosial');
   },
 
+  normalizeName(str) {
+    if (!str || typeof str !== 'string') return '';
+    return str.trim().toLowerCase().replace(/\s+/g, ' ');
+  },
+
   // Facilities CRUD
   async addFacility(facility) {
     if (!Array.isArray(this.data.facilities)) this.data.facilities = [];
     const name = this.sanitizeText(facility.name || 'Fasilitas Baru');
     const desc = this.sanitizeText(facility.description || '');
+
+    const normName = this.normalizeName(name);
+    const isDuplicate = this.data.facilities.some(f => this.normalizeName(f.name) === normName);
+    if (isDuplicate) {
+      throw new Error('Fasilitas dengan nama tersebut sudah tersedia.');
+    }
 
     const newFacility = {
       id: 'f_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
@@ -565,7 +576,14 @@ window.SchoolDB = {
     const index = this.data.facilities.findIndex(f => String(f.id) === String(id));
     if (index !== -1) {
       const sanitized = {};
-      if (updatedFields.name !== undefined) sanitized.name = this.sanitizeText(updatedFields.name);
+      if (updatedFields.name !== undefined) {
+        sanitized.name = this.sanitizeText(updatedFields.name);
+        const normName = this.normalizeName(sanitized.name);
+        const isDuplicate = this.data.facilities.some(f => String(f.id) !== String(id) && this.normalizeName(f.name) === normName);
+        if (isDuplicate) {
+          throw new Error('Fasilitas dengan nama tersebut sudah tersedia.');
+        }
+      }
       if (updatedFields.description !== undefined) sanitized.description = this.sanitizeText(updatedFields.description);
       if (updatedFields.image !== undefined && updatedFields.image !== null && updatedFields.image !== '') {
         sanitized.image = updatedFields.image;
@@ -596,6 +614,12 @@ window.SchoolDB = {
     const title = this.sanitizeText(activity.title || 'Kegiatan Baru');
     const date = activity.date || new Date().toISOString().split('T')[0];
 
+    const normTitle = this.normalizeName(title);
+    const isDuplicate = this.data.activities.some(a => this.normalizeName(a.title) === normTitle);
+    if (isDuplicate) {
+      throw new Error('Kegiatan dengan nama tersebut sudah tersedia.');
+    }
+
     const newActivity = {
       id: 'a_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
       title: title,
@@ -615,7 +639,14 @@ window.SchoolDB = {
     const index = this.data.activities.findIndex(a => String(a.id) === String(id));
     if (index !== -1) {
       const sanitized = {};
-      if (updatedFields.title !== undefined) sanitized.title = this.sanitizeText(updatedFields.title);
+      if (updatedFields.title !== undefined) {
+        sanitized.title = this.sanitizeText(updatedFields.title);
+        const normTitle = this.normalizeName(sanitized.title);
+        const isDuplicate = this.data.activities.some(a => String(a.id) !== String(id) && this.normalizeName(a.title) === normTitle);
+        if (isDuplicate) {
+          throw new Error('Kegiatan dengan nama tersebut sudah tersedia.');
+        }
+      }
       if (updatedFields.date !== undefined) sanitized.date = updatedFields.date;
       if (updatedFields.excerpt !== undefined) sanitized.excerpt = this.sanitizeText(updatedFields.excerpt);
       if (updatedFields.content !== undefined) sanitized.content = this.sanitizeHTML(updatedFields.content);
@@ -693,6 +724,12 @@ window.SchoolDB = {
     const name = this.sanitizeText(teacher.name || 'Guru Baru');
     const role = this.sanitizeText(teacher.role || 'Tenaga Pendidik');
 
+    const normName = this.normalizeName(name);
+    const isDuplicate = this.data.teachers.some(t => this.normalizeName(t.name) === normName);
+    if (isDuplicate) {
+      throw new Error('Guru dengan nama tersebut sudah terdaftar.');
+    }
+
     const newTeacher = {
       id: 't_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
       name: name,
@@ -710,7 +747,14 @@ window.SchoolDB = {
     const index = this.data.teachers.findIndex(t => String(t.id) === String(id));
     if (index !== -1) {
       const sanitized = {};
-      if (updatedFields.name !== undefined) sanitized.name = this.sanitizeText(updatedFields.name);
+      if (updatedFields.name !== undefined) {
+        sanitized.name = this.sanitizeText(updatedFields.name);
+        const normName = this.normalizeName(sanitized.name);
+        const isDuplicate = this.data.teachers.some(t => String(t.id) !== String(id) && this.normalizeName(t.name) === normName);
+        if (isDuplicate) {
+          throw new Error('Guru dengan nama tersebut sudah terdaftar.');
+        }
+      }
       if (updatedFields.role !== undefined) sanitized.role = this.sanitizeText(updatedFields.role);
       if (updatedFields.image !== undefined && updatedFields.image !== null && updatedFields.image !== '') {
         sanitized.image = updatedFields.image;

@@ -581,6 +581,22 @@
     </div>
   </div>
 
+  <!-- C. UNSAVED CHANGES CONFIRMATION MODAL -->
+  <div id="unsaved-confirm-overlay" class="unsaved-confirm-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="unsaved-confirm-title">
+    <div class="unsaved-confirm-card">
+      <div class="unsaved-confirm-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <h3 id="unsaved-confirm-title" class="unsaved-confirm-title">Perubahan belum disimpan</h3>
+      <p class="unsaved-confirm-desc">Ada informasi yang sudah kamu ubah tetapi belum disimpan. Apa yang ingin kamu lakukan?</p>
+      <div class="unsaved-confirm-actions">
+        <button type="button" id="btn-unsaved-keep" class="btn btn-secondary">Tetap Edit</button>
+        <button type="button" id="btn-unsaved-discard" class="btn btn-danger-outline">Buang Perubahan</button>
+        <button type="button" id="btn-unsaved-save" class="btn btn-primary">Simpan Perubahan</button>
+      </div>
+    </div>
+  </div>
+
   <script src="js/db.js?v=3.5"></script>
   <script src="js/admin.js?v=3.5"></script>
 </body>

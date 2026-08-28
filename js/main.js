@@ -289,7 +289,7 @@ function renderHomePage() {
       newsContainer.innerHTML = latestActivities.map(a => `
         <article class="news-card-item">
           <div class="news-img-wrap">
-            <img src="${a.image}" alt="${a.title}" width="960" height="540" loading="lazy" decoding="async">
+            <img src="${a.image}" alt="${a.title}" width="960" height="540" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.classList.add('img-loaded')">
             <span class="news-badge-tag">${a.category || 'Kegiatan'}</span>
           </div>
           <div class="news-body-content">
@@ -401,7 +401,7 @@ function renderTeachersSection() {
     teachersGrid.innerHTML = teachers.map(t => `
       <div class="editorial-card-wrapper">
         <div class="editorial-card-img-container">
-          <img src="${t.image}" alt="${t.name}" class="editorial-card-img" loading="lazy" decoding="async">
+          <img src="${t.image}" alt="${t.name}" class="editorial-card-img" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.classList.add('img-loaded')">
         </div>
         <div class="editorial-card-body">
           <h3>${t.name}</h3>
@@ -430,7 +430,7 @@ function renderFacilitiesPage() {
     facilityGrid.innerHTML = facilities.map(f => `
       <div class="facility-card">
         <div class="facility-img-wrapper">
-          <img src="${f.image}" alt="${f.name}" class="facility-img" loading="lazy" decoding="async">
+          <img src="${f.image}" alt="${f.name}" class="facility-img" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.classList.add('img-loaded')">
         </div>
         <div class="facility-info">
           <h3>${f.name}</h3>
@@ -485,7 +485,7 @@ function renderActivitiesPage() {
     newsGrid.innerHTML = filtered.map(act => `
       <div class="news-card">
         <div class="news-img-wrapper">
-          <img src="${act.image}" alt="${act.title}" class="news-img" loading="lazy" decoding="async">
+          <img src="${act.image}" alt="${act.title}" class="news-img" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.classList.add('img-loaded')">
         </div>
         <div class="news-info">
           <span class="news-date">${act.date ? new Date(act.date).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'}).toUpperCase() : '15 AGUSTUS 2026'}</span>
@@ -530,7 +530,7 @@ function renderActivitiesPage() {
     } else {
       galleryGrid.innerHTML = gallery.map(g => `
         <div class="gallery-card" data-caption="${g.caption}" data-image="${g.image}">
-          <img src="${g.image}" alt="${g.caption}" class="gallery-img" loading="lazy" decoding="async">
+          <img src="${g.image}" alt="${g.caption}" class="gallery-img" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.classList.add('img-loaded')">
           <div class="gallery-overlay">
             <div class="gallery-caption">${g.caption}</div>
           </div>
@@ -806,6 +806,17 @@ function renderWhatsAppFloatingButton() {
   document.body.appendChild(waBtn);
 }
 
+function revealLoadedImages() {
+  document.querySelectorAll('img').forEach(img => {
+    if (img.complete) {
+      img.classList.add('img-loaded');
+    } else {
+      img.addEventListener('load', () => img.classList.add('img-loaded'), { once: true });
+      img.addEventListener('error', () => img.classList.add('img-loaded'), { once: true });
+    }
+  });
+}
+
 // ----------------------------------------------------
 // BOOTSTRAPPING
 // ----------------------------------------------------
@@ -838,12 +849,12 @@ window.addEventListener('DOMContentLoaded', async () => {
     renderContactPage();
   }
   
-  // Initialize Micro-Interactions & Floating Widgets
+  revealLoadedImages();
+  
+  // Initialize Micro-Interactions & Floating Widgets synchronously
   initHeaderScrollBehavior();
-  setTimeout(() => {
-    initGSAPAnimations();
-    renderWhatsAppFloatingButton();
-  }, 100);
+  initGSAPAnimations();
+  renderWhatsAppFloatingButton();
 });
 
 // Robust navbar scroll controller: Transparent ONLY on top of hero, Solid White everywhere else
@@ -926,6 +937,9 @@ function renderActivityDetailPage() {
   if (imgEl && act.image) {
     imgEl.src = act.image;
     imgEl.alt = act.title;
+    imgEl.onload = () => imgEl.classList.add('img-loaded');
+    imgEl.onerror = () => imgEl.classList.add('img-loaded');
+    if (imgEl.complete) imgEl.classList.add('img-loaded');
   }
   
   if (bodyEl && act.content) {

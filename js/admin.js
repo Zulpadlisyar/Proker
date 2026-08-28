@@ -978,7 +978,7 @@ function renderActivitiesTable() {
       </td>
       <td>
         <span style="font-size: 0.85rem; font-weight: 700; color: var(--text); display:inline-flex; align-items:center; gap:4px;">
-          👁️ ${a.views || 0}
+          ${a.views || 0} pembaca
         </span>
       </td>
       <td>${a.excerpt.substring(0, 70)}${a.excerpt.length > 70 ? '...' : ''}</td>
@@ -1650,11 +1650,11 @@ function updateCloudStatusUI() {
   const cloudBadge = document.getElementById('cloud-badge-status');
   if (cloudBadge) {
     if (isConfigured) {
-      cloudBadge.textContent = '🟢 Terhubung ke Firestore';
+      cloudBadge.textContent = 'Terhubung ke Firestore';
       cloudBadge.style.backgroundColor = '#DCFCE7';
       cloudBadge.style.color = '#166534';
     } else {
-      cloudBadge.textContent = '⚪ Mode Lokal (Offline-First)';
+      cloudBadge.textContent = 'Mode Lokal (Offline-First)';
       cloudBadge.style.backgroundColor = '#F1F5F9';
       cloudBadge.style.color = '#64748B';
     }
@@ -1890,17 +1890,17 @@ function initCategoryManagementUI() {
 
   function openCatModal() {
     if (overlay) {
-      overlay.style.display = 'flex';
+      overlay.classList.add('open');
       renderCategoryTags();
       if (inputNew) {
         inputNew.value = '';
-        inputNew.focus();
+        setTimeout(() => inputNew.focus(), 100);
       }
     }
   }
 
   function closeCatModal() {
-    if (overlay) overlay.style.display = 'none';
+    if (overlay) overlay.classList.remove('open');
   }
 
   if (manageBtn) manageBtn.addEventListener('click', openCatModal);

@@ -395,7 +395,7 @@
     if (catDateEl) {
       const formattedDate = act.date ? new Date(act.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase() : 'TERBARU';
       const category = (act.category || 'KEGIATAN').toUpperCase();
-      const viewsText = typeof act.views === 'number' ? ` • 👁️ ${act.views} pembaca` : '';
+      const viewsText = typeof act.views === 'number' ? ` • ${act.views} pembaca` : '';
       catDateEl.innerHTML = `<span style="color:var(--primary); font-weight:700;">${category}</span> • ${formattedDate}${viewsText}`;
     }
     if (imgEl && act.image) {

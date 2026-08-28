@@ -123,7 +123,7 @@ async function renderCommonUI() {
             <h3 style="margin: 0; font-size: 1.35rem;">${profile.name}</h3>
           </div>
           <p>${profile.description}</p>
-          <p style="color: var(--accent); font-weight: 700; margin-top: 8px;">${profile.tagline}</p>
+          <p class="footer-tagline">${profile.tagline}</p>
         </div>
         <div class="footer-links">
           <h4>Navigasi</h4>

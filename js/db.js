@@ -470,11 +470,8 @@ window.SchoolDB = {
   sanitizeText(str) {
     if (typeof str !== 'string') return '';
     return str
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;')
+      .replace(/<[^>]*>/g, '')
+      .replace(/[<>]/g, '')
       .trim();
   },
 
@@ -581,6 +578,7 @@ window.SchoolDB = {
         if (!Array.isArray(this.data.activities)) this.data.activities = JSON.parse(JSON.stringify(INITIAL_DATA.activities));
         if (!Array.isArray(this.data.gallery)) this.data.gallery = JSON.parse(JSON.stringify(INITIAL_DATA.gallery));
         if (!Array.isArray(this.data.teachers)) this.data.teachers = JSON.parse(JSON.stringify(INITIAL_DATA.teachers));
+        if (!Array.isArray(this.data.categories)) this.data.categories = (INITIAL_DATA.categories ? [...INITIAL_DATA.categories] : ['Akademik', 'Kepramukaan', 'Ekstrakurikuler', 'Prestasi', 'Sosial & Lingkungan', 'Umum']);
         if (!Array.isArray(this.data.auditLogs)) this.data.auditLogs = [];
         await this.save();
       }
@@ -634,6 +632,7 @@ window.SchoolDB = {
       if (Array.isArray(cloudData.teachers)) this.data.teachers = cloudData.teachers;
       if (Array.isArray(cloudData.facilities)) this.data.facilities = cloudData.facilities;
       if (Array.isArray(cloudData.activities)) this.data.activities = cloudData.activities;
+      if (Array.isArray(cloudData.categories)) this.data.categories = cloudData.categories;
       if (Array.isArray(cloudData.gallery)) this.data.gallery = cloudData.gallery;
       if (Array.isArray(cloudData.testimonials)) this.data.testimonials = cloudData.testimonials;
       if (cloudData.contact) this.data.contact = { ...this.data.contact, ...cloudData.contact };
@@ -656,6 +655,7 @@ window.SchoolDB = {
         teachers: this.data.teachers,
         facilities: this.data.facilities,
         activities: this.data.activities,
+        categories: this.data.categories,
         gallery: this.data.gallery,
         testimonials: this.data.testimonials,
         contact: this.data.contact
@@ -682,6 +682,7 @@ window.SchoolDB = {
     if (Array.isArray(payload.teachers)) this.data.teachers = payload.teachers;
     if (Array.isArray(payload.facilities)) this.data.facilities = payload.facilities;
     if (Array.isArray(payload.activities)) this.data.activities = payload.activities;
+    if (Array.isArray(payload.categories)) this.data.categories = payload.categories;
     if (Array.isArray(payload.gallery)) this.data.gallery = payload.gallery;
     if (Array.isArray(payload.testimonials)) this.data.testimonials = payload.testimonials;
     if (payload.contact) this.data.contact = { ...this.data.contact, ...payload.contact };
@@ -718,8 +719,73 @@ window.SchoolDB = {
     return this.data.facilities;
   },
 
+  getCategories() {
+    if (!this.data) {
+      return (typeof INITIAL_DATA !== 'undefined' && INITIAL_DATA.categories) ? [...INITIAL_DATA.categories] : ['Akademik', 'Kepramukaan', 'Ekstrakurikuler', 'Prestasi', 'Sosial & Lingkungan', 'Umum'];
+    }
+    if (!Array.isArray(this.data.categories) || this.data.categories.length === 0) {
+      this.data.categories = (typeof INITIAL_DATA !== 'undefined' && INITIAL_DATA.categories) ? [...INITIAL_DATA.categories] : ['Akademik', 'Kepramukaan', 'Ekstrakurikuler', 'Prestasi', 'Sosial & Lingkungan', 'Umum'];
+    }
+    return this.data.categories;
+  },
+
+  async addCategory(name) {
+    if (!name || typeof name !== 'string') throw new Error('Nama kategori tidak boleh kosong.');
+    const sanitized = this.sanitizeText(name);
+    if (!sanitized) throw new Error('Nama kategori tidak valid.');
+    const categories = this.getCategories();
+    const norm = this.normalizeName(sanitized);
+    if (categories.some(c => this.normalizeName(c) === norm)) {
+      throw new Error(`Kategori "${sanitized}" sudah terdaftar.`);
+    }
+    if (!Array.isArray(this.data.categories)) this.data.categories = [...categories];
+    this.data.categories.push(sanitized);
+    await this.save();
+    await this.logAudit('TAMBAH', 'Kategori', `Menambahkan kategori "${sanitized}"`);
+    return sanitized;
+  },
+
+  async deleteCategory(name) {
+    if (!name || typeof name !== 'string') return false;
+    const categories = this.getCategories();
+    const norm = this.normalizeName(name);
+    const initialLen = categories.length;
+    this.data.categories = categories.filter(c => this.normalizeName(c) !== norm);
+    if (this.data.categories.length !== initialLen) {
+      await this.save();
+      await this.logAudit('HAPUS', 'Kategori', `Menghapus kategori "${name}"`);
+      return true;
+    }
+    return false;
+  },
+
   getActivities() {
     return [...this.data.activities].sort((a, b) => new Date(b.date) - new Date(a.date));
+  },
+
+  async incrementActivityViews(id) {
+    if (!this.data || !Array.isArray(this.data.activities)) return 0;
+    const act = this.data.activities.find(a => String(a.id) === String(id));
+    if (!act) return 0;
+
+    const viewedKey = `viewed_act_${id}`;
+    try {
+      if (typeof sessionStorage !== 'undefined') {
+        if (sessionStorage.getItem(viewedKey)) {
+          return typeof act.views === 'number' ? act.views : 0;
+        }
+        sessionStorage.setItem(viewedKey, 'true');
+      }
+    } catch (e) {}
+
+    act.views = (typeof act.views === 'number' && !isNaN(act.views)) ? act.views + 1 : 1;
+    await this.save();
+    return act.views;
+  },
+
+  getTotalActivityViews() {
+    if (!this.data || !Array.isArray(this.data.activities)) return 0;
+    return this.data.activities.reduce((acc, act) => acc + (typeof act.views === 'number' && !isNaN(act.views) ? act.views : 0), 0);
   },
 
   getNews() {
@@ -858,6 +924,8 @@ window.SchoolDB = {
       id: 'a_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
       title: title,
       date: date,
+      category: this.sanitizeText(activity.category || 'Umum'),
+      views: typeof activity.views === 'number' ? activity.views : 0,
       excerpt: this.sanitizeText(activity.excerpt || ''),
       content: this.sanitizeHTML(activity.content || ''),
       image: activity.image || generateSVGPlaceholder('general', title)
@@ -882,6 +950,8 @@ window.SchoolDB = {
         }
       }
       if (updatedFields.date !== undefined) sanitized.date = updatedFields.date;
+      if (updatedFields.category !== undefined) sanitized.category = this.sanitizeText(updatedFields.category);
+      if (updatedFields.views !== undefined && typeof updatedFields.views === 'number') sanitized.views = updatedFields.views;
       if (updatedFields.excerpt !== undefined) sanitized.excerpt = this.sanitizeText(updatedFields.excerpt);
       if (updatedFields.content !== undefined) sanitized.content = this.sanitizeHTML(updatedFields.content);
       if (updatedFields.image !== undefined && updatedFields.image !== null && updatedFields.image !== '') {

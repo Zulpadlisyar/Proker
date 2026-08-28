@@ -16,19 +16,28 @@
     };
 
     const formattedDate = format.formatDate(activity.date);
-    const category = activity.category || 'Kegiatan';
+    const category = activity.category || 'Umum';
+    const views = typeof activity.views === 'number' ? activity.views : 0;
     const excerpt = activity.excerpt || (activity.content ? format.truncateText(activity.content, 110) : '');
+
+    const eyeIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`;
 
     if (variant === 'list') {
       return `
         <div class="news-card">
           <div class="news-img-wrapper">
             <img src="${activity.image}" alt="${activity.title}" class="news-img" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.classList.add('img-loaded')">
+            <span class="news-badge-tag">${category}</span>
           </div>
           <div class="news-info">
-            <span class="news-date">${activity.date ? formattedDate.toUpperCase() : 'TERBARU'}</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+              <span class="news-date">${activity.date ? formattedDate.toUpperCase() : 'TERBARU'}</span>
+              <span style="font-size:0.78rem; color:var(--text-muted); display:inline-flex; align-items:center; gap:4px;" title="${views} kali dibaca">
+                ${eyeIconSvg} ${views}
+              </span>
+            </div>
             <h3 class="news-title">${activity.title}</h3>
-            <p class="news-excerpt">${activity.excerpt || ''}</p>
+            <p class="news-excerpt">${excerpt}</p>
             <a href="detail-kegiatan.html?id=${activity.id}" class="btn-tertiary">Baca selengkapnya →</a>
           </div>
         </div>
@@ -42,7 +51,12 @@
           <span class="news-badge-tag">${category}</span>
         </div>
         <div class="news-body-content">
-          <div class="news-meta-row">${formattedDate}</div>
+          <div class="news-meta-row" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>${formattedDate}</span>
+            <span style="display:inline-flex; align-items:center; gap:4px; font-size:0.78rem; color:var(--text-muted);" title="${views} kali dibaca">
+              ${eyeIconSvg} ${views}
+            </span>
+          </div>
           <h3 class="news-title">${activity.title}</h3>
           <p class="news-snippet-text">${excerpt}</p>
           <a href="detail-kegiatan.html?id=${activity.id}" class="news-read-more">Baca selengkapnya &rarr;</a>

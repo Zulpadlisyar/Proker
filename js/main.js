@@ -250,13 +250,33 @@
   function renderActivitiesPage() {
     const activities = window.SchoolDB.getActivities();
     const gallery = window.SchoolDB.getGallery();
+    const categories = window.SchoolDB.getCategories();
 
     const newsGrid = document.getElementById('news-grid');
     const searchInput = document.getElementById('news-search-input');
-    const filterTagBtns = document.querySelectorAll('.filter-tag-btn');
+    const filterTagsWrap = document.querySelector('.filter-tags-list') || document.querySelector('.filter-tags-wrap');
 
     let currentCategory = 'Semua';
     let currentSearch = '';
+
+    // Render Dynamic Category Filter Buttons
+    if (filterTagsWrap) {
+      const allCategories = ['Semua', ...categories];
+      const isList = filterTagsWrap.tagName.toLowerCase() === 'ul';
+      filterTagsWrap.innerHTML = allCategories.map((cat, idx) => {
+        const btnHtml = `<button class="filter-tag-btn ${idx === 0 ? 'active' : ''}" data-category="${cat}">${cat === 'Semua' ? 'Semua Kategori' : cat}</button>`;
+        return isList ? `<li>${btnHtml}</li>` : btnHtml;
+      }).join('');
+
+      filterTagsWrap.querySelectorAll('.filter-tag-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterTagsWrap.querySelectorAll('.filter-tag-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentCategory = btn.getAttribute('data-category');
+          applyNewsFilter();
+        });
+      });
+    }
 
     function applyNewsFilter() {
       if (!newsGrid) return;
@@ -264,22 +284,24 @@
 
       if (currentCategory !== 'Semua') {
         filtered = filtered.filter(a => {
+          const actCategory = a.category || 'Umum';
+          const matchCategory = actCategory.toLowerCase() === currentCategory.toLowerCase();
           const text = (a.title + ' ' + (a.excerpt || '') + ' ' + (a.content || '')).toLowerCase();
-          return text.includes(currentCategory.toLowerCase());
+          return matchCategory || text.includes(currentCategory.toLowerCase());
         });
       }
 
       if (currentSearch.trim() !== '') {
         const q = currentSearch.toLowerCase().trim();
         filtered = filtered.filter(a => {
-          const text = (a.title + ' ' + (a.excerpt || '') + ' ' + (a.content || '')).toLowerCase();
+          const text = (a.title + ' ' + (a.excerpt || '') + ' ' + (a.content || '') + ' ' + (a.category || '')).toLowerCase();
           return text.includes(q);
         });
       }
 
       if (filtered.length === 0) {
         newsGrid.innerHTML = window.SchoolEmptyState
-          ? window.SchoolEmptyState.createEmptyState({ title: 'Kegiatan tidak ditemukan', description: 'Tidak ada kegiatan yang sesuai dengan kata kunci pencarian.' })
+          ? window.SchoolEmptyState.createEmptyState({ title: 'Kegiatan tidak ditemukan', description: 'Tidak ada kegiatan yang sesuai dengan filter atau kata kunci pencarian.' })
           : `<div style="grid-column: 1/-1; text-align:center; padding: 4rem 1.5rem; background-color: var(--surface); border-radius: var(--radius-card); border: 1px solid var(--border);"><p style="font-size:1rem; color:var(--text-muted);">Tidak ada kegiatan yang sesuai dengan filter pencarian.</p></div>`;
         return;
       }
@@ -291,17 +313,6 @@
       searchInput.addEventListener('input', (e) => {
         currentSearch = e.target.value;
         applyNewsFilter();
-      });
-    }
-
-    if (filterTagBtns.length > 0) {
-      filterTagBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          filterTagBtns.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          currentCategory = btn.getAttribute('data-category');
-          applyNewsFilter();
-        });
       });
     }
 
@@ -355,7 +366,7 @@
   }
 
   // 9. Detail Kegiatan (detail-kegiatan.html)
-  function renderActivityDetailPage() {
+  async function renderActivityDetailPage() {
     const params = new URLSearchParams(window.location.search);
     const actId = params.get('id');
 
@@ -369,6 +380,12 @@
     }
     if (!act) return;
 
+    // Increment view count
+    if (act.id) {
+      const newViews = await window.SchoolDB.incrementActivityViews(act.id);
+      act.views = newViews;
+    }
+
     const titleEl = document.getElementById('article-title');
     const catDateEl = document.getElementById('article-category-date');
     const imgEl = document.getElementById('article-img');
@@ -377,7 +394,9 @@
     if (titleEl) titleEl.textContent = act.title;
     if (catDateEl) {
       const formattedDate = act.date ? new Date(act.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase() : 'TERBARU';
-      catDateEl.textContent = `KEGIATAN SEKOLAH • ${formattedDate}`;
+      const category = (act.category || 'KEGIATAN').toUpperCase();
+      const viewsText = typeof act.views === 'number' ? ` • 👁️ ${act.views} pembaca` : '';
+      catDateEl.innerHTML = `<span style="color:var(--primary); font-weight:700;">${category}</span> • ${formattedDate}${viewsText}`;
     }
     if (imgEl && act.image) {
       imgEl.src = act.image;

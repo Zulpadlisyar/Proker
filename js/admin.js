@@ -251,6 +251,7 @@ async function initAdminPanel() {
   renderGalleryTable();
   loadContactForm();
   initCloudSyncUI();
+  initCategoryManagementUI();
   
   // Navigation Tabs
   const navBtns = document.querySelectorAll('.admin-nav-btn');
@@ -298,6 +299,10 @@ function renderDashboard() {
   }
   if (document.getElementById('stat-gallery-count')) {
     document.getElementById('stat-gallery-count').textContent = gallery.length;
+  }
+  if (document.getElementById('stat-views-count')) {
+    const totalViews = window.SchoolDB.getTotalActivityViews ? window.SchoolDB.getTotalActivityViews() : 0;
+    document.getElementById('stat-views-count').textContent = totalViews;
   }
   
   if (document.getElementById('dash-school-name')) {
@@ -963,8 +968,20 @@ function renderActivitiesTable() {
     <tr>
       <td><img src="${a.image}" class="admin-thumb" alt="${a.title}"></td>
       <td>${new Date(a.date).toLocaleDateString('id-ID')}</td>
-      <td><strong>${a.title}</strong></td>
-      <td>${a.excerpt.substring(0, 80)}${a.excerpt.length > 80 ? '...' : ''}</td>
+      <td>
+        <strong>${a.title}</strong>
+        <div style="margin-top: 4px;">
+          <span style="font-size: 11px; padding: 2px 8px; border-radius: 12px; background: #EFF6FF; border: 1px solid #BFDBFE; color: #1D4ED8; font-weight: 600;">
+            ${a.category || 'Umum'}
+          </span>
+        </div>
+      </td>
+      <td>
+        <span style="font-size: 0.85rem; font-weight: 700; color: var(--text); display:inline-flex; align-items:center; gap:4px;">
+          👁️ ${a.views || 0}
+        </span>
+      </td>
+      <td>${a.excerpt.substring(0, 70)}${a.excerpt.length > 70 ? '...' : ''}</td>
       <td>
         <div class="table-actions">
           <button class="btn-action-edit btn-edit-activity" data-id="${a.id}" title="Edit Kegiatan">
@@ -1051,6 +1068,7 @@ function openActivityModal(id = null) {
   clearDirty();
   
   document.getElementById('activity-date').value = new Date().toISOString().split('T')[0];
+  populateActivityCategoriesDropdown();
   
   if (id) {
     title.textContent = 'Edit Kegiatan';
@@ -1059,6 +1077,7 @@ function openActivityModal(id = null) {
       document.getElementById('activity-id').value = activity.id;
       document.getElementById('activity-title').value = activity.title;
       document.getElementById('activity-date').value = activity.date;
+      populateActivityCategoriesDropdown(activity.category || 'Umum');
       document.getElementById('activity-excerpt').value = activity.excerpt;
       document.getElementById('activity-content').value = activity.content;
       if (activity.image) {
@@ -1071,6 +1090,7 @@ function openActivityModal(id = null) {
   } else {
     title.textContent = 'Tambah Kegiatan Baru';
     document.getElementById('activity-id').value = '';
+    populateActivityCategoriesDropdown();
   }
   
   attachDirtyListeners('form-activity');
@@ -1085,6 +1105,7 @@ if (formActivity) {
     
     const id = document.getElementById('activity-id').value;
     const title = document.getElementById('activity-title').value;
+    const category = document.getElementById('activity-category') ? document.getElementById('activity-category').value : 'Umum';
     const date = document.getElementById('activity-date').value;
     const excerpt = document.getElementById('activity-excerpt').value;
     const content = document.getElementById('activity-content').value;
@@ -1106,10 +1127,10 @@ if (formActivity) {
     
     try {
       if (id) {
-        await window.SchoolDB.updateActivity(id, { title, date, excerpt, content, image: tempActivityBase64 });
+        await window.SchoolDB.updateActivity(id, { title, category, date, excerpt, content, image: tempActivityBase64 });
         showAdminToast(`Berita kegiatan "${title}" berhasil diperbarui.`, 'success', 'Kegiatan Diperbarui');
       } else {
-        await window.SchoolDB.addActivity({ title, date, excerpt, content, image: tempActivityBase64 });
+        await window.SchoolDB.addActivity({ title, category, date, excerpt, content, image: tempActivityBase64 });
         showAdminToast(`Kegiatan baru "${title}" berhasil ditambahkan!`, 'success', 'Kegiatan Ditambahkan');
       }
       
@@ -1819,6 +1840,102 @@ function initCloudSyncUI() {
         }
       };
       reader.readAsText(file);
+    });
+  }
+}
+
+// ----------------------------------------------------
+// DYNAMIC CATEGORY MANAGEMENT UI & DROPDOWNS
+// ----------------------------------------------------
+function populateActivityCategoriesDropdown(selectedVal = '') {
+  const categorySelect = document.getElementById('activity-category');
+  if (!categorySelect) return;
+  const categories = window.SchoolDB.getCategories();
+  categorySelect.innerHTML = categories.map(cat => `
+    <option value="${cat}" ${cat === selectedVal ? 'selected' : ''}>${cat}</option>
+  `).join('');
+}
+
+function initCategoryManagementUI() {
+  const manageBtn = document.getElementById('admin-manage-categories-btn');
+  const quickAddBtn = document.getElementById('btn-quick-add-category');
+  const overlay = document.getElementById('category-modal-overlay');
+  const closeBtn = document.getElementById('category-modal-close');
+  const saveBtn = document.getElementById('btn-save-new-category');
+  const inputNew = document.getElementById('input-new-category');
+  const tagsList = document.getElementById('admin-categories-tags-list');
+
+  function renderCategoryTags() {
+    if (!tagsList) return;
+    const categories = window.SchoolDB.getCategories();
+    tagsList.innerHTML = categories.map(cat => `
+      <span style="display:inline-flex; align-items:center; gap:6px; background:var(--surface); border:1px solid var(--border); padding:4px 10px; border-radius:16px; font-size:12px; color:var(--text); font-weight:600;">
+        ${cat}
+        <button type="button" class="btn-delete-cat" data-name="${cat}" style="background:none; border:none; cursor:pointer; color:var(--error); font-size:14px; line-height:1; padding:0 2px;" title="Hapus Kategori">&times;</button>
+      </span>
+    `).join('');
+
+    tagsList.querySelectorAll('.btn-delete-cat').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const catName = e.currentTarget.getAttribute('data-name');
+        if (confirm(`Hapus kategori "${catName}"?`)) {
+          await window.SchoolDB.deleteCategory(catName);
+          showAdminToast(`Kategori "${catName}" berhasil dihapus.`, 'success', 'Kategori Dihapus');
+          renderCategoryTags();
+          populateActivityCategoriesDropdown();
+        }
+      });
+    });
+  }
+
+  function openCatModal() {
+    if (overlay) {
+      overlay.style.display = 'flex';
+      renderCategoryTags();
+      if (inputNew) {
+        inputNew.value = '';
+        inputNew.focus();
+      }
+    }
+  }
+
+  function closeCatModal() {
+    if (overlay) overlay.style.display = 'none';
+  }
+
+  if (manageBtn) manageBtn.addEventListener('click', openCatModal);
+  if (quickAddBtn) quickAddBtn.addEventListener('click', openCatModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeCatModal);
+  if (overlay) {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeCatModal();
+    });
+  }
+
+  if (saveBtn && inputNew) {
+    const handleSaveCategory = async () => {
+      const catName = inputNew.value.trim();
+      if (!catName) {
+        showAdminToast('Nama kategori tidak boleh kosong.', 'error');
+        return;
+      }
+      try {
+        await window.SchoolDB.addCategory(catName);
+        showAdminToast(`Kategori "${catName}" berhasil ditambahkan!`, 'success', 'Kategori Ditambahkan');
+        inputNew.value = '';
+        renderCategoryTags();
+        populateActivityCategoriesDropdown(catName);
+      } catch (err) {
+        showAdminToast(err.message || 'Gagal menambahkan kategori.', 'error');
+      }
+    };
+
+    saveBtn.addEventListener('click', handleSaveCategory);
+    inputNew.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleSaveCategory();
+      }
     });
   }
 }

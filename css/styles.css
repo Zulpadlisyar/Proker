@@ -5,23 +5,23 @@
    ========================================================================== */
 
 :root {
-  /* Canvas & Surface (Clean White & Slate) */
-  --bg: #F8FAFC;
+  /* Canvas & Surface (Clean Cool White & Slate Tint) */
+  --bg: #F0F4F8;
   --surface: #FFFFFF;
-  --surface-alt: #F1F5F9;
+  --surface-alt: #E2E8F0;
   
-  /* Brand Colors (White & Blue Theme) */
+  /* Brand Colors (Vibrant Putih & Biru Theme) */
   --primary: #1D4ED8;
-  --primary-dark: #1E3A8A;
-  --primary-light: #3B82F6;
-  --accent: #38BDF8;
-  --accent-soft: #EFF6FF;
+  --primary-dark: #0F2E7A;
+  --primary-light: #2563EB;
+  --accent: #0284C7;
+  --accent-soft: #DBEAFE;
   --accent-glow: #60A5FA;
   
   /* Text & Border */
   --text: #0F172A;
-  --text-muted: #64748B;
-  --border: #E2E8F0;
+  --text-muted: #475569;
+  --border: #CBD5E1;
   
   /* Status Colors */
   --success: #16A34A;
@@ -52,7 +52,7 @@
   --space-9: 80px;
   
   /* Shadows */
-  --shadow-subtle: 0 4px 16px rgba(15, 23, 42, 0.04);
+  --shadow-subtle: 0 4px 16px rgba(15, 23, 42, 0.05);
   
   /* Transitions */
   --duration-fast: 150ms;
@@ -615,15 +615,16 @@ body.hero-page header#main-header.scrolled .menu-toggle {
 
 /* Banner Highlight Section */
 .banner-highlight-section {
-  background-color: var(--accent);
+  background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 60%, #0284C7 100%);
   border-radius: var(--radius-feature);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   padding: var(--space-6) var(--space-6) 0;
   max-width: 1280px;
   margin: 0 auto;
   box-sizing: border-box;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(255, 217, 106, 0.2);
+  box-shadow: 0 10px 30px rgba(29, 78, 216, 0.25);
+  color: #FFFFFF;
 }
 
 .banner-highlight-content {
@@ -633,24 +634,24 @@ body.hero-page header#main-header.scrolled .menu-toggle {
 
 .banner-highlight-content h2 {
   font-size: 30px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.5px;
-  color: var(--text);
+  color: #FFFFFF;
   margin-bottom: var(--space-2);
 }
 
 .banner-highlight-content p {
   font-size: 15px;
-  color: var(--text);
+  color: rgba(255, 255, 255, 0.92);
   margin-bottom: var(--space-3);
-  opacity: 0.9;
+  opacity: 1;
 }
 
 .geometric-pattern-box {
   width: 100%;
   height: 60px;
-  border-top: 1px solid rgba(0,0,0,0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: flex-end;
 }
@@ -682,19 +683,24 @@ body.hero-page header#main-header.scrolled .menu-toggle {
 .section-label, .section-badge {
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: var(--space-2);
-  display: block;
+  color: var(--primary);
+  background-color: var(--accent-soft);
+  border: 1px solid #BFDBFE;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  margin-bottom: var(--space-3);
+  display: inline-block;
+  width: fit-content;
 }
 
 .section-headline {
   font-size: 36px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.5px;
-  color: var(--text);
+  color: var(--primary-dark);
   margin-bottom: var(--space-2);
 }
 
@@ -721,12 +727,14 @@ body.hero-page header#main-header.scrolled .menu-toggle {
   flex-direction: column;
   justify-content: space-between;
   min-height: 200px;
-  transition: border-color var(--duration-fast) var(--ease), transform var(--duration-fast) var(--ease);
+  transition: border-color var(--duration-fast) var(--ease), transform var(--duration-fast) var(--ease), box-shadow var(--duration-fast) var(--ease);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
 .info-card-item:hover {
-  border-color: var(--primary);
-  transform: translateY(-2px);
+  border-color: var(--primary-light);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(29, 78, 216, 0.12);
 }
 
 .info-card-num {
@@ -738,7 +746,7 @@ body.hero-page header#main-header.scrolled .menu-toggle {
 
 .info-card-item h3 {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text);
   margin-bottom: 6px;
 }
@@ -763,19 +771,23 @@ body.hero-page header#main-header.scrolled .menu-toggle {
   border: 1px solid var(--border);
   border-radius: var(--radius-card);
   padding: 20px;
-  transition: border-color var(--duration-fast) var(--ease);
+  transition: border-color var(--duration-fast) var(--ease), transform var(--duration-fast) var(--ease), box-shadow var(--duration-fast) var(--ease);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
 .pillar-card:hover {
-  border-color: var(--primary);
+  border-color: var(--primary-light);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(29, 78, 216, 0.12);
 }
 
 .pillar-icon {
   width: 40px;
   height: 40px;
   border-radius: var(--radius-sm);
-  background-color: var(--accent);
-  color: var(--text);
+  background-color: var(--accent-soft);
+  border: 1px solid #BFDBFE;
+  color: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1418,14 +1430,16 @@ body.hero-page header#main-header.scrolled .menu-toggle {
 
 /* Contact CTA Box - Split Full Width (Tepi Kiri & Tepi Kanan) */
 .contact-cta-box {
-  background-color: var(--surface);
-  border: 1px solid var(--border);
+  background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 60%, #0284C7 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-feature);
   padding: clamp(28px, 4vw, 48px) clamp(24px, 5vw, 56px);
   max-width: 1280px;
   width: 100%;
   margin: 0 auto var(--space-7);
   box-sizing: border-box;
+  box-shadow: 0 10px 30px rgba(29, 78, 216, 0.25);
+  color: #FFFFFF;
 }
 
 .contact-cta-grid {
@@ -1446,16 +1460,28 @@ body.hero-page header#main-header.scrolled .menu-toggle {
 .contact-cta-grid h2 {
   font-size: clamp(24px, 2.5vw, 32px);
   font-weight: 700;
-  color: var(--text);
+  color: #FFFFFF;
   line-height: 1.2;
   margin-bottom: var(--space-2);
 }
 
 .contact-cta-grid p {
   font-size: 15px;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.92);
   line-height: 1.6;
   margin-bottom: var(--space-4);
+}
+
+.contact-cta-box .btn-primary {
+  background-color: #FFFFFF;
+  color: var(--primary);
+  border-color: #FFFFFF;
+  font-weight: 700;
+}
+
+.contact-cta-box .btn-primary:hover {
+  background-color: var(--accent-soft);
+  color: var(--primary-dark);
 }
 
 .contact-details-list {
@@ -1466,11 +1492,12 @@ body.hero-page header#main-header.scrolled .menu-toggle {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  background-color: var(--surface-alt);
-  border: 1px solid var(--border);
+  background-color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--radius-card);
   padding: 22px 26px;
   box-sizing: border-box;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .contact-detail-row {

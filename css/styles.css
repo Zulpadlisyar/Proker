@@ -1521,6 +1521,7 @@ body.hero-page header#main-header.scrolled .menu-toggle {
   grid-template-columns: 1fr 1fr;
   gap: var(--space-7);
   align-items: stretch;
+  margin-top: var(--space-4);
 }
 
 .contact-info-column,
@@ -1530,11 +1531,31 @@ body.hero-page header#main-header.scrolled .menu-toggle {
   height: 100%;
 }
 
+.contact-col-header {
+  min-height: 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-bottom: var(--space-4);
+}
+
+.contact-col-header .section-label {
+  margin-bottom: 4px;
+}
+
+.contact-col-header .contact-col-title {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.25;
+}
+
 .contact-info-cards-wrap {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  margin-top: var(--space-4);
+  gap: 14px;
   flex: 1;
 }
 
@@ -1542,7 +1563,7 @@ body.hero-page header#main-header.scrolled .menu-toggle {
   background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-card);
-  padding: 22px 24px;
+  padding: 20px 22px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1560,7 +1581,6 @@ body.hero-page header#main-header.scrolled .menu-toggle {
   border-radius: var(--radius-card);
   overflow: hidden;
   border: 1px solid var(--border);
-  margin-top: var(--space-4);
   flex: 1;
   min-height: 380px;
   display: flex;
@@ -1575,6 +1595,7 @@ body.hero-page header#main-header.scrolled .menu-toggle {
   min-height: 100%;
   border: 0;
   flex: 1;
+  display: block;
 }
 
 @media (max-width: 900px) {
@@ -1582,10 +1603,91 @@ body.hero-page header#main-header.scrolled .menu-toggle {
     grid-template-columns: 1fr;
     gap: var(--space-6);
   }
+  .contact-col-header {
+    min-height: auto;
+    margin-bottom: var(--space-3);
+  }
   .contact-map-wrapper {
-    min-height: 340px;
+    min-height: 320px;
     aspect-ratio: 16/10;
   }
+}
+
+/* 404 Page & Error States */
+.error-page-section {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+}
+
+.error-404-card {
+  max-width: 620px;
+  margin: 0 auto;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: var(--space-8) var(--space-6);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+}
+
+.error-404-code {
+  font-family: var(--font-heading);
+  font-size: clamp(4.5rem, 10vw, 7.5rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--primary);
+  letter-spacing: -0.04em;
+  margin-bottom: var(--space-2);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.error-404-title {
+  font-size: clamp(1.4rem, 3vw, 1.85rem);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: var(--space-3);
+}
+
+.error-404-desc {
+  font-size: 0.98rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 480px;
+  margin: 0 auto var(--space-6);
+}
+
+.error-404-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Interactive Loading Spinners */
+.loading-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #FFFFFF;
+  animation: spin 0.7s linear infinite;
+  vertical-align: -2px;
+  margin-right: 6px;
+}
+
+.loading-spinner-primary {
+  border-color: rgba(29, 78, 216, 0.2);
+  border-top-color: var(--primary);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* Floating WhatsApp Fast-Action Button */

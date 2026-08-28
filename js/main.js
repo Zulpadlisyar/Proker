@@ -373,12 +373,26 @@
     const activities = window.SchoolDB.getActivities();
     let act = null;
     if (actId) {
-      act = activities.find(n => n.id === actId);
+      act = activities.find(n => String(n.id) === String(actId));
     }
-    if (!act && activities.length > 0) {
+    if (!act && !actId && activities.length > 0) {
       act = activities[0];
     }
-    if (!act) return;
+    
+    if (!act) {
+      const articleContainer = document.querySelector('.article-container') || document.querySelector('.section') || document.body;
+      if (articleContainer) {
+        articleContainer.innerHTML = window.SchoolEmptyState
+          ? window.SchoolEmptyState.createErrorState({
+              title: 'Berita atau Kegiatan Tidak Ditemukan',
+              description: 'Artikel kegiatan yang Anda cari mungkin telah dihapus atau tautan tidak valid.',
+              retryCallback: "window.location.href='kegiatan.html'",
+              retryLabel: 'Kembali ke Daftar Kegiatan'
+            })
+          : '<div style="text-align:center; padding:4rem;"><p>Kegiatan tidak ditemukan.</p><a href="kegiatan.html">Kembali</a></div>';
+      }
+      return;
+    }
 
     // Increment view count
     if (act.id) {
@@ -402,7 +416,10 @@
       imgEl.src = act.image;
       imgEl.alt = act.title;
       imgEl.onload = () => imgEl.classList.add('img-loaded');
-      imgEl.onerror = () => imgEl.classList.add('img-loaded');
+      imgEl.onerror = () => {
+        imgEl.src = 'images/logo.webp';
+        imgEl.classList.add('img-loaded');
+      };
       if (imgEl.complete) imgEl.classList.add('img-loaded');
     }
     if (bodyEl && act.content) {

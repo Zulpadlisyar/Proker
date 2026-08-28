@@ -26,7 +26,7 @@
       return `
         <div class="news-card">
           <div class="news-img-wrapper">
-            <img src="${activity.image}" alt="${activity.title}" class="news-img" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.classList.add('img-loaded')">
+            <img src="${activity.image}" alt="${activity.title}" class="news-img" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.onerror=null; this.src='images/logo.webp'; this.classList.add('img-loaded');">
             <span class="news-badge-tag">${category}</span>
           </div>
           <div class="news-info">
@@ -47,7 +47,7 @@
     return `
       <article class="news-card-item">
         <div class="news-img-wrap">
-          <img src="${activity.image}" alt="${activity.title}" width="960" height="540" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.classList.add('img-loaded')">
+          <img src="${activity.image}" alt="${activity.title}" width="960" height="540" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.onerror=null; this.src='images/logo.webp'; this.classList.add('img-loaded');">
           <span class="news-badge-tag">${category}</span>
         </div>
         <div class="news-body-content">

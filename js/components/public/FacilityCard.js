@@ -12,7 +12,7 @@
     return `
       <div class="facility-card">
         <div class="facility-img-wrapper">
-          <img src="${facility.image}" alt="${facility.name}" class="facility-img" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.classList.add('img-loaded')">
+          <img src="${facility.image}" alt="${facility.name}" class="facility-img" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.onerror=null; this.src='images/logo.webp'; this.classList.add('img-loaded');">
         </div>
         <div class="facility-info">
           <h3>${facility.name}</h3>

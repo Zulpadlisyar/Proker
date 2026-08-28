@@ -11,7 +11,7 @@
 
     return `
       <div class="gallery-card" data-caption="${item.caption}" data-image="${item.image}">
-        <img src="${item.image}" alt="${item.caption}" class="gallery-img" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.classList.add('img-loaded')">
+        <img src="${item.image}" alt="${item.caption}" class="gallery-img" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.onerror=null; this.src='images/logo.webp'; this.classList.add('img-loaded');">
         <div class="gallery-overlay">
           <div class="gallery-caption">${item.caption}</div>
         </div>

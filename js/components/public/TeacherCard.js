@@ -12,7 +12,7 @@
     return `
       <div class="editorial-card-wrapper">
         <div class="editorial-card-img-container">
-          <img src="${teacher.image}" alt="${teacher.name}" class="editorial-card-img" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.classList.add('img-loaded')">
+          <img src="${teacher.image}" alt="${teacher.name}" class="editorial-card-img" loading="lazy" decoding="async" onload="this.classList.add('img-loaded')" onerror="this.onerror=null; this.src='images/logo.webp'; this.classList.add('img-loaded');">
         </div>
         <div class="editorial-card-body">
           <h3>${teacher.name}</h3>

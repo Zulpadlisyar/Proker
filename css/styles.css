@@ -1,36 +1,37 @@
 /* ==========================================================================
    SDN 2 NGEPOSARI - MASTER SYSTEM & ALL PAGES LAYOUT STYLES
    Plus Jakarta Sans (400, 500, 600, 700) + Playfair Display (Italic 400)
-   Strict Radius Scale: Small 6px, Default 8px, Card 10px, Feature 12px
-   Palette: Warm Canvas #FAF9F6, Deep Blue #253B73, Accent Yellow #FFD96A
+   Palette: Clean Canvas #F8FAFC, Royal Blue #1D4ED8, Navy #1E3A8A, Ice Blue #EFF6FF
    ========================================================================== */
 
 :root {
-  /* Canvas & Surface */
-  --bg: #FAF9F6;
+  /* Canvas & Surface (Clean White & Slate) */
+  --bg: #F8FAFC;
   --surface: #FFFFFF;
-  --surface-alt: #F5F3EF;
+  --surface-alt: #F1F5F9;
   
-  /* Brand Colors */
-  --primary: #253B73;
-  --primary-dark: #1A2A54;
-  --accent: #FFD96A;
-  --accent-soft: #D7E0F3;
+  /* Brand Colors (White & Blue Theme) */
+  --primary: #1D4ED8;
+  --primary-dark: #1E3A8A;
+  --primary-light: #3B82F6;
+  --accent: #38BDF8;
+  --accent-soft: #EFF6FF;
+  --accent-glow: #60A5FA;
   
   /* Text & Border */
-  --text: #181818;
-  --text-muted: #626262;
-  --border: #DDDCD6;
+  --text: #0F172A;
+  --text-muted: #64748B;
+  --border: #E2E8F0;
   
   /* Status Colors */
-  --success: #2F7D5B;
-  --error: #C94A4A;
-  --warning: #E6B85C;
+  --success: #16A34A;
+  --error: #DC2626;
+  --warning: #D97706;
   
   /* Font Family - Plus Jakarta Sans ONLY */
   --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   
-  /* Radii (Disabled: 0px) */
+  /* Radii (Clean Flat: 0px) */
   --radius-sm: 0px;
   --radius-default: 0px;
   --radius-card: 0px;
@@ -51,7 +52,7 @@
   --space-9: 80px;
   
   /* Shadows */
-  --shadow-subtle: 0 4px 16px rgba(0, 0, 0, 0.04);
+  --shadow-subtle: 0 4px 16px rgba(15, 23, 42, 0.04);
   
   /* Transitions */
   --duration-fast: 150ms;
@@ -207,15 +208,15 @@ body.hero-page header#main-header.scrolled {
   box-shadow: none !important;
 }
 
-/* Header Pill Action Button ("Let's Talk" in Reference) */
+/* Header Pill Action Button */
 .header-pill-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background-color: #FFFFFF;
-  color: #1A331A;
+  color: var(--primary);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   padding: 8px 20px;
   border-radius: var(--radius-pill);
   border: 1px solid #FFFFFF;
@@ -225,9 +226,10 @@ body.hero-page header#main-header.scrolled {
 }
 
 .header-pill-btn:hover {
-  background-color: #F4F8F3;
+  background-color: var(--accent-soft);
+  color: var(--primary-dark);
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 4px 14px rgba(29, 78, 216, 0.18);
 }
 
 body.hero-page header#main-header.scrolled .header-pill-btn {
@@ -239,6 +241,7 @@ body.hero-page header#main-header.scrolled .header-pill-btn {
 body.hero-page header#main-header.scrolled .header-pill-btn:hover {
   background-color: var(--primary-dark);
   border-color: var(--primary-dark);
+  box-shadow: 0 4px 14px rgba(29, 78, 216, 0.28);
 }
 
 /* Text color contrast adaptations when Topbar is Transparent over dark Hero */
@@ -253,7 +256,7 @@ body.hero-page header#main-header:not(.scrolled) .logo-text p {
 }
 
 body.hero-page header#main-header:not(.scrolled) .nav-link {
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.88);
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
   background: transparent !important;
   border: none !important;
@@ -266,12 +269,12 @@ body.hero-page header#main-header:not(.scrolled) .nav-link:hover {
 }
 
 body.hero-page header#main-header:not(.scrolled) .nav-link.active {
-  color: #4ADE80 !important;
+  color: var(--accent-glow) !important;
   font-weight: 700 !important;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7) !important;
+  text-shadow: 0 2px 12px rgba(29, 78, 216, 0.8) !important;
 }
 
 body.hero-page header#main-header:not(.scrolled) .menu-toggle {
@@ -330,7 +333,7 @@ body.hero-page header#main-header.scrolled .menu-toggle {
   font-weight: 600;
   text-decoration: none;
   transition: all 200ms ease;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
 }
 
 .btn-back svg {
@@ -343,7 +346,7 @@ body.hero-page header#main-header.scrolled .menu-toggle {
   color: #FFFFFF;
   border-color: var(--primary);
   transform: translateX(-3px);
-  box-shadow: 0 4px 12px rgba(26, 77, 46, 0.22);
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
 }
 
 .btn-back:hover svg {
@@ -439,7 +442,7 @@ body.hero-page header#main-header.scrolled .menu-toggle {
   overflow: hidden;
   padding: 120px 24px 80px;
   box-sizing: border-box;
-  background-color: #2D5A27;
+  background-color: var(--primary-dark);
 }
 
 .hero-bg-wrapper {
@@ -455,7 +458,7 @@ body.hero-page header#main-header.scrolled .menu-toggle {
   object-fit: cover;
   object-position: center 38%;
   animation: ghibliBgPan 30s infinite alternate ease-in-out;
-  filter: brightness(0.95) contrast(1.02);
+  filter: brightness(0.92) contrast(1.05);
 }
 
 @keyframes ghibliBgPan {
@@ -466,11 +469,11 @@ body.hero-page header#main-header.scrolled .menu-toggle {
 .hero-ghibli-overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, rgba(15, 35, 15, 0.12) 0%, rgba(15, 35, 15, 0.38) 100%);
+  background: radial-gradient(circle at center, rgba(15, 23, 42, 0.28) 0%, rgba(15, 23, 42, 0.65) 100%);
   z-index: 2;
 }
 
-/* Translucent Organic Watermark Shape in Background (Matching Reference) */
+/* Translucent Organic Watermark Shape in Background */
 .organic-floating-shape {
   position: absolute;
   top: 15%;
@@ -543,12 +546,12 @@ body.hero-page header#main-header.scrolled .menu-toggle {
   animation: heroEntranceFadeUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.32s backwards;
 }
 
-/* Solid White Pill Button (Matching "Let's Talk" in Reference) */
+/* Solid White Pill Button */
 .btn-ghibli-solid {
   background-color: #FFFFFF;
-  color: #1A331A;
+  color: var(--primary);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   padding: 13px 28px;
   border-radius: var(--radius-pill);
   border: 1px solid #FFFFFF;
@@ -558,17 +561,18 @@ body.hero-page header#main-header.scrolled .menu-toggle {
 }
 
 .btn-ghibli-solid:hover {
-  background-color: #F4F8F3;
+  background-color: var(--accent-soft);
+  color: var(--primary-dark);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 8px 24px rgba(29, 78, 216, 0.25);
 }
 
-/* Frosted Glass Pill Button (Matching "Explore Our Services" in Reference) */
+/* Frosted Glass Pill Button */
 .btn-ghibli-glass {
   background: rgba(255, 255, 255, 0.22);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   color: #FFFFFF;
   font-size: 14px;
   font-weight: 600;
@@ -581,7 +585,7 @@ body.hero-page header#main-header.scrolled .menu-toggle {
 
 .btn-ghibli-glass:hover {
   background: rgba(255, 255, 255, 0.36);
-  border-color: rgba(255, 255, 255, 0.6);
+  border-color: rgba(255, 255, 255, 0.65);
   transform: translateY(-2px);
   color: #FFFFFF;
 }
@@ -1164,7 +1168,8 @@ body.hero-page header#main-header.scrolled .menu-toggle {
 }
 
 .calendar-date-badge {
-  background-color: var(--accent);
+  background-color: var(--accent-soft);
+  border: 1px solid #BFDBFE;
   border-radius: var(--radius-sm);
   padding: 6px 10px;
   text-align: center;
@@ -1175,7 +1180,7 @@ body.hero-page header#main-header.scrolled .menu-toggle {
 .calendar-date-badge .day {
   font-size: 18px;
   font-weight: 700;
-  color: var(--text);
+  color: var(--primary);
   line-height: 1;
 }
 
@@ -1183,7 +1188,7 @@ body.hero-page header#main-header.scrolled .menu-toggle {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.05em;
-  color: var(--text);
+  color: var(--primary);
   text-transform: uppercase;
 }
 
@@ -1894,7 +1899,7 @@ body.admin-body {
   justify-content: center;
   min-height: 100vh;
   padding: 24px;
-  background: radial-gradient(circle at 50% 30%, #F5F3EF 0%, #EAE8E3 100%);
+  background: radial-gradient(circle at 50% 30%, #EFF6FF 0%, #DBEAFE 100%);
 }
 
 .login-container > div {
@@ -1903,7 +1908,7 @@ body.admin-body {
   background-color: #FFFFFF;
   border-radius: var(--radius-feature);
   border: 1px solid var(--border);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
 }
 
 @keyframes shake {
@@ -1923,7 +1928,7 @@ body.admin-body {
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -1987,20 +1992,20 @@ body.admin-body {
 .admin-nav-btn.active {
   background-color: var(--primary);
   color: #FFFFFF;
-  box-shadow: 0 4px 12px rgba(37, 59, 115, 0.2);
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
 }
 
 .admin-nav-btn.active svg {
   stroke: #FFFFFF;
 }
 
-/* 5. Admin Main Content (Expands all the way to right edge) */
+/* 5. Admin Main Content */
 .admin-content {
   padding: 28px 32px;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  background-color: #F8F9FA;
+  background-color: var(--bg);
   overflow-y: auto;
 }
 
@@ -2036,13 +2041,14 @@ body.admin-body {
   display: flex;
   align-items: center;
   gap: 18px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.02);
   transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
 .stat-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  border-color: var(--primary-light);
+  box-shadow: 0 6px 18px rgba(29, 78, 216, 0.08);
 }
 
 .stat-num {
@@ -2061,8 +2067,8 @@ body.admin-body {
 
 /* 7. Disclaimer & Info Callouts */
 .upload-disclaimer-box {
-  background-color: #F0F4FA;
-  border: 1px solid #D7E0F3;
+  background-color: var(--accent-soft);
+  border: 1px solid #BFDBFE;
   border-radius: var(--radius-default);
   padding: 16px 20px;
   display: flex;
@@ -2087,7 +2093,7 @@ body.admin-body {
 .upload-disclaimer-content p {
   font-size: 13px;
   line-height: 1.55;
-  color: #334155;
+  color: #1E293B;
   margin: 0;
 }
 
@@ -2097,7 +2103,7 @@ body.admin-body {
   border: 1px solid var(--border);
   border-radius: var(--radius-feature);
   padding: 28px 32px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.02);
   margin-bottom: 28px;
 }
 
@@ -2142,7 +2148,7 @@ body.admin-body {
 .form-control:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37, 59, 115, 0.12);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
 }
 
 textarea.form-control {
@@ -2689,7 +2695,7 @@ textarea.form-control {
 .gallery-teaser-item,
 .gallery-card {
   position: relative;
-  background: linear-gradient(90deg, #f0f2f0 25%, #e6eae6 37%, #f0f2f0 63%);
+  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 37%, #F1F5F9 63%);
   background-size: 400% 100%;
   animation: skeletonPulse 1.8s ease infinite;
 }

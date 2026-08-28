@@ -8,53 +8,44 @@ const STORE_NAME = 'siteData';
 // Dynamic Clean Flat Editorial SVG Mockups for SDN 2 Ngeposari
 function generateSVGPlaceholder(type, title) {
   let icon = '';
-  let bgFill = '#F8F8F5';
-  let iconColor = '#1E40AF';
-  let textColor = '#171717';
-  let borderStroke = '#E7E7E2';
+  let bgFill = '#EFF6FF';
+  let iconColor = '#1D4ED8';
+  let textColor = '#0F172A';
+  let borderStroke = '#DBEAFE';
 
-  if (type === 'library') {
+  if (type === 'library' || type === 'perpus') {
     icon = '<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 6h10M6 10h10M6 14h10" stroke="currentColor" stroke-width="2"/>';
-    bgFill = '#EFF6FF'; iconColor = '#1E40AF';
+    bgFill = '#EFF6FF'; iconColor = '#1D4ED8';
   } else if (type === 'computer') {
     icon = '<rect x="2" y="3" width="20" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="2"/>';
-    bgFill = '#EFF6FF'; iconColor = '#1E40AF';
-  } else if (type === 'sports') {
+    bgFill = '#EFF6FF'; iconColor = '#1D4ED8';
+  } else if (type === 'sports' || type === 'senam') {
     icon = '<circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 12a6 6 0 0 1 12 0M12 6a6 6 0 0 1 0 12" stroke="currentColor" stroke-width="2"/>';
-    bgFill = '#FEF3C7'; iconColor = '#D97706';
+    bgFill = '#EFF6FF'; iconColor = '#2563EB';
   } else if (type === 'health') {
     icon = '<path d="M19 5H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 9v6M9 12h6" stroke="currentColor" stroke-width="2"/>';
-    bgFill = '#FEE2E2'; iconColor = '#C94A4A';
-  } else if (type === 'scout') {
+    bgFill = '#FEE2E2'; iconColor = '#DC2626';
+  } else if (type === 'scout' || type === 'pramuka') {
     icon = '<path d="M12 2L2 7l10 5 10-5-10-5Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2"/>';
-    bgFill = '#ECFDF5'; iconColor = '#2F7D5B';
+    bgFill = '#EFF6FF'; iconColor = '#1D4ED8';
   } else if (type === 'art') {
     icon = '<path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 14.7255 3.09032 17.1962 4.85857 19" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="7.5" cy="10.5" r="1.5" fill="currentColor"/><circle cx="11.5" cy="7.5" r="1.5" fill="currentColor"/><circle cx="16.5" cy="9.5" r="1.5" fill="currentColor"/>';
-    bgFill = '#FDF2F8'; iconColor = '#DB2777';
+    bgFill = '#F0F9FF'; iconColor = '#0284C7';
   } else if (type === 'garden') {
     icon = '<path d="M12 2a15 15 0 0 0-9 9 9 9 0 0 0 9 9 9 9 0 0 0 9-9 15 15 0 0 0-9-9Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 12a3 3 0 1 0 6 0" stroke="currentColor" stroke-width="2"/><path d="M12 2v18" stroke="currentColor" stroke-width="2"/>';
-    bgFill = '#ECFDF5'; iconColor = '#2F7D5B';
+    bgFill = '#ECFDF5'; iconColor = '#16A34A';
   } else if (type === 'upacara') {
     icon = '<path d="M4 22V2m0 2h14l-3 4 3 4H4" fill="none" stroke="currentColor" stroke-width="2"/>';
-    bgFill = '#EFF6FF'; iconColor = '#1E40AF';
-  } else if (type === 'kelas') {
+    bgFill = '#EFF6FF'; iconColor = '#1D4ED8';
+  } else if (type === 'kelas' || type === 'class') {
     icon = '<rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="2"/>';
-    bgFill = '#F8F8F5'; iconColor = '#171717';
-  } else if (type === 'perpus') {
-    icon = '<path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" fill="none" stroke="currentColor" stroke-width="2"/>';
-    bgFill = '#EFF6FF'; iconColor = '#1E40AF';
-  } else if (type === 'pramuka') {
-    icon = '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-1.5-3-1.5-3s-1.5 1.62-1.5 3a2.5 2.5 0 0 0 2.5 2.5z" fill="currentColor"/><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="currentColor" stroke-width="2"/>';
-    bgFill = '#FEF2F2'; iconColor = '#C94A4A';
-  } else if (type === 'senam') {
-    icon = '<circle cx="12" cy="5" r="2" fill="currentColor"/><path d="M6 22V12h12v10M12 7v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
-    bgFill = '#F5F3FF'; iconColor = '#1E40AF';
+    bgFill = '#F8FAFC'; iconColor = '#1D4ED8';
   } else if (type === 'juara') {
     icon = '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34M12 2a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z" fill="none" stroke="currentColor" stroke-width="2"/>';
-    bgFill = '#FEF3C7'; iconColor = '#D97706';
+    bgFill = '#EFF6FF'; iconColor = '#1D4ED8';
   } else {
     icon = '<rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="2"/>';
-    bgFill = '#F8F8F5'; iconColor = '#666666';
+    bgFill = '#F8FAFC'; iconColor = '#64748B';
   }
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="100%" height="100%">

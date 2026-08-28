@@ -1540,7 +1540,7 @@ body.hero-page header#main-header.scrolled .menu-toggle {
   transform: translateY(-2px);
 }
 
-/* Footer - High-Contrast Deep Midnight Navy & Sky Blue Highlights */
+/* Footer - High-Contrast Pure White on Deep Midnight Navy */
 footer, footer#main-footer {
   background-color: #0F172A;
   color: #FFFFFF;
@@ -1557,41 +1557,43 @@ footer, footer#main-footer {
   grid-template-columns: 1.4fr 0.8fr 1.1fr;
   gap: var(--space-7);
   padding-bottom: var(--space-7);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .footer-brand h3 {
   font-size: 1.4rem;
   font-weight: 800;
-  color: #FFFFFF;
+  color: #FFFFFF !important;
   margin-bottom: var(--space-3);
   letter-spacing: -0.2px;
 }
 
 .footer-brand p {
   font-size: 14.5px;
-  color: #E2E8F0;
-  opacity: 1;
+  color: #FFFFFF !important;
+  opacity: 1 !important;
   line-height: 1.8;
   margin-bottom: var(--space-3);
   max-width: 440px;
 }
 
 .footer-brand .footer-tagline {
-  color: #38BDF8 !important;
+  color: #FFFFFF !important;
   font-weight: 700;
   font-size: 13.5px;
   letter-spacing: 0.03em;
   margin-top: 8px;
+  opacity: 1 !important;
 }
 
 .footer-links h4, .footer-contact h4 {
-  color: #FFFFFF;
+  color: #FFFFFF !important;
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin-bottom: var(--space-4);
+  opacity: 1 !important;
 }
 
 .footer-links ul {
@@ -1605,8 +1607,8 @@ footer, footer#main-footer {
 
 .footer-links a {
   font-size: 14.5px;
-  color: #E2E8F0;
-  opacity: 1;
+  color: #FFFFFF !important;
+  opacity: 1 !important;
   line-height: 1.6;
   display: inline-block;
   transition: all var(--duration-fast) var(--ease);
@@ -1615,7 +1617,8 @@ footer, footer#main-footer {
 }
 
 .footer-links a:hover {
-  color: #38BDF8;
+  color: #FFFFFF !important;
+  text-decoration: underline;
   transform: translateX(4px);
 }
 
@@ -1633,8 +1636,14 @@ footer, footer#main-footer {
   align-items: flex-start;
   font-size: 14.5px;
   line-height: 1.6;
-  color: #F8FAFC;
+  color: #FFFFFF !important;
   font-weight: 500;
+  opacity: 1 !important;
+}
+
+.footer-contact-item span,
+.footer-contact-list > div span {
+  color: #FFFFFF !important;
   opacity: 1 !important;
 }
 
@@ -1642,9 +1651,10 @@ footer, footer#main-footer {
 .footer-contact-list > div svg {
   flex-shrink: 0;
   margin-top: 2px;
-  color: #38BDF8;
-  background-color: rgba(56, 189, 248, 0.15);
-  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+  background-color: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 6px;
   padding: 5px;
   box-sizing: content-box;
@@ -1660,14 +1670,15 @@ footer, footer#main-footer {
   flex-wrap: wrap;
   gap: var(--space-4);
   font-size: 13.5px;
-  color: #CBD5E1;
-  opacity: 1;
+  color: #FFFFFF !important;
+  opacity: 1 !important;
   line-height: 1.7;
 }
 
 .footer-bottom p {
   margin: 0;
-  color: #CBD5E1;
+  color: #FFFFFF !important;
+  opacity: 1 !important;
 }
 
 /* Scroll Reveal */

@@ -11,6 +11,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@1,400&display=swap">
   <link rel="stylesheet" href="css/styles.css?v=4.0">
+  
+  <!-- Firebase SDK App & Firestore Compat -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
   <!-- Vercel Speed Insights -->
   <script>
     window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
@@ -102,6 +107,10 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
           Ubah Kontak
         </button>
+        <button class="admin-nav-btn" data-target="pane-cloud-sync">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M12 13v6"/><path d="m9 16 3-3 3 3"/></svg>
+          Sinkronisasi Cloud
+        </button>
       </aside>
 
       <!-- Main Content Editor -->
@@ -130,24 +139,12 @@
               <span class="stat-num" id="stat-activities-count">0</span>
               <div>
                 <p class="stat-label">Kegiatan</p>
-                <p style="font-size:0.8rem; color:var(--text-muted);">Post cerita aktif</p>
+                <p style="font-size:0.8rem; color:var(--text-muted);">Agenda & Berita</p>
               </div>
             </div>
             <div class="stat-card">
               <span class="stat-num" id="stat-gallery-count">0</span>
               <div>
-                <p class="stat-label">Galeri Foto</p>
-                <p style="font-size:0.8rem; color:var(--text-muted);">Dokumentasi momen</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="upload-disclaimer-box">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-            <div class="upload-disclaimer-content">
-              <h5>Petunjuk Pengelolaan Konten & Disclaimer</h5>
-              <p>Semua perubahan data (profil, guru, fasilitas, berita, galeri) yang Anda simpan akan langsung memperbarui tampilan website secara otomatis di memori lokal browser sekolah (IndexedDB). Disarankan menggunakan file foto JPG/PNG dengan ukuran maksimal 2 MB agar halaman web dimuat sangat cepat.</p>
-            </div>
           </div>
 
           <div class="admin-card">
@@ -223,6 +220,7 @@
                       <img id="preview-logo-img" src="" alt="Pratinjau Logo">
                     </div>
                   </div>
+                  <div id="compression-badge-logo" class="compression-info-badge" style="display:none; margin-top:8px; font-size:12px; padding:6px 10px; border-radius:4px; background:#EFF6FF; border:1px solid #BFDBFE; color:#1D4ED8; font-weight:600;"></div>
                 </div>
                 <div>
                   <label>Foto Banner Utama (Hero)</label>
@@ -233,6 +231,7 @@
                       <img id="preview-hero-img" src="" alt="Pratinjau Banner">
                     </div>
                   </div>
+                  <div id="compression-badge-hero" class="compression-info-badge" style="display:none; margin-top:8px; font-size:12px; padding:6px 10px; border-radius:4px; background:#EFF6FF; border:1px solid #BFDBFE; color:#1D4ED8; font-weight:600;"></div>
                 </div>
               </div>
 
@@ -462,6 +461,73 @@
           </div>
         </div>
 
+        <!-- 8. PANEL SINKRONISASI CLOUD & BACKUP -->
+        <div class="admin-tab-pane" id="pane-cloud-sync">
+          <div class="admin-card">
+            <div class="admin-card-title">
+              <span>Sinkronisasi Cloud Antar Perangkat (Firebase Firestore)</span>
+              <span id="cloud-badge-status" style="font-size: 12px; padding: 4px 10px; border-radius: 9999px; background-color: #F1F5F9; color: #64748B; font-weight: 700;">Mode Lokal</span>
+            </div>
+
+            <div class="upload-disclaimer-box" style="margin-bottom: 24px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M12 13v6"/><path d="m9 16 3-3 3 3"/></svg>
+              <div class="upload-disclaimer-content">
+                <h5>Tentang Sinkronisasi Cloud Antar Perangkat</h5>
+                <p>Website ini secara bawaan menggunakan penyimpanan <strong>Offline-First</strong> (IndexedDB/LocalStorage) yang sangat cepat. Dengan menghubungkan project <strong>Google Firebase Firestore (Gratis Spark Plan)</strong>, seluruh perubahan data guru, fasilitas, dan berita akan langsung tersinkronisasi otomatis ke semua HP, laptop, dan pengunjung web!</p>
+              </div>
+            </div>
+
+            <!-- Cloud Actions -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 28px;">
+              <div style="background-color: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 18px;">
+                <h4 style="margin: 0 0 6px; font-size: 14px; font-weight: 700; color: var(--primary);">📤 Unggah Data Lokal ke Cloud</h4>
+                <p style="margin: 0 0 14px; font-size: 12.5px; color: var(--text-muted);">Kirim seluruh data lokal saat ini ke database Firebase Firestore.</p>
+                <button type="button" id="btn-sync-to-cloud" class="btn btn-primary" style="width: 100%; padding: 8px 14px; font-size: 13px;">Sinkronkan ke Cloud</button>
+              </div>
+              <div style="background-color: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 18px;">
+                <h4 style="margin: 0 0 6px; font-size: 14px; font-weight: 700; color: var(--primary);">📥 Tarik Data Terbaru dari Cloud</h4>
+                <p style="margin: 0 0 14px; font-size: 12.5px; color: var(--text-muted);">Perbarui data di browser ini dengan data cloud terkini.</p>
+                <button type="button" id="btn-sync-from-cloud" class="btn btn-secondary" style="width: 100%; padding: 8px 14px; font-size: 13px;">Tarik Data Cloud</button>
+              </div>
+            </div>
+
+            <!-- Firebase Configuration Form -->
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--primary); margin: 0 0 16px; border-top: 1px solid var(--border); padding-top: 20px;">Konfigurasi Firebase Project</h3>
+            <form id="form-cloud-config">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
+                <div class="form-group">
+                  <label for="firebase-api-key">API Key</label>
+                  <input type="text" id="firebase-api-key" class="form-control" placeholder="AIzaSy...">
+                </div>
+                <div class="form-group">
+                  <label for="firebase-project-id">Project ID (Wajib)</label>
+                  <input type="text" id="firebase-project-id" class="form-control" placeholder="sdn2-ngeposari-..." required>
+                </div>
+                <div class="form-group">
+                  <label for="firebase-app-id">App ID</label>
+                  <input type="text" id="firebase-app-id" class="form-control" placeholder="1:123456789:web:...">
+                </div>
+                <div class="form-group">
+                  <label for="firebase-auth-domain">Auth Domain</label>
+                  <input type="text" id="firebase-auth-domain" class="form-control" placeholder="sdn2-ngeposari.firebaseapp.com">
+                </div>
+              </div>
+              <div style="display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap;">
+                <button type="submit" id="btn-save-cloud-config" class="btn btn-primary">Uji & Simpan Koneksi Cloud</button>
+                <button type="button" id="btn-reset-cloud-config" class="btn btn-danger-outline">Putuskan Koneksi Cloud</button>
+              </div>
+            </form>
+
+            <!-- Backup and Restore Section -->
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--primary); margin: 32px 0 16px; border-top: 1px solid var(--border); padding-top: 20px;">Arsip & Pemulihan Data Cadangan (Backup / Restore)</h3>
+            <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center;">
+              <button type="button" id="btn-export-backup" class="btn btn-secondary">💾 Unduh Cadangan Data (Backup JSON)</button>
+              <button type="button" id="btn-import-backup-trigger" class="btn btn-secondary">📂 Pulihkan Data dari JSON (Restore)</button>
+              <input type="file" id="import-backup-file" accept=".json" style="display: none;">
+            </div>
+          </div>
+        </div>
+
       </main>
     </div>
   </div>
@@ -497,6 +563,7 @@
                 <img id="preview-teacher-img" src="" alt="Pratinjau Foto Guru">
               </div>
             </div>
+            <div id="compression-badge-teacher" class="compression-info-badge" style="display:none; margin-top:8px; font-size:12px; padding:6px 10px; border-radius:4px; background:#EFF6FF; border:1px solid #BFDBFE; color:#1D4ED8; font-weight:600;"></div>
           </div>
           <button type="submit" class="btn btn-primary" style="width:100%; margin-top: var(--space-3);">Simpan Data Guru</button>
         </form>
@@ -521,6 +588,7 @@
                 <img id="preview-facility-img" src="" alt="Pratinjau Fasilitas">
               </div>
             </div>
+            <div id="compression-badge-facility" class="compression-info-badge" style="display:none; margin-top:8px; font-size:12px; padding:6px 10px; border-radius:4px; background:#EFF6FF; border:1px solid #BFDBFE; color:#1D4ED8; font-weight:600;"></div>
           </div>
           <button type="submit" class="btn btn-primary" style="width:100%; margin-top: var(--space-3);">Simpan Fasilitas</button>
         </form>
@@ -553,6 +621,7 @@
                 <img id="preview-activity-img" src="" alt="Pratinjau Kegiatan">
               </div>
             </div>
+            <div id="compression-badge-activity" class="compression-info-badge" style="display:none; margin-top:8px; font-size:12px; padding:6px 10px; border-radius:4px; background:#EFF6FF; border:1px solid #BFDBFE; color:#1D4ED8; font-weight:600;"></div>
           </div>
           <button type="submit" class="btn btn-primary" style="width:100%; margin-top: var(--space-3);">Simpan Kegiatan</button>
         </form>
@@ -573,6 +642,7 @@
                 <img id="preview-gallery-img" src="" alt="Pratinjau Galeri">
               </div>
             </div>
+            <div id="compression-badge-gallery" class="compression-info-badge" style="display:none; margin-top:8px; font-size:12px; padding:6px 10px; border-radius:4px; background:#EFF6FF; border:1px solid #BFDBFE; color:#1D4ED8; font-weight:600;"></div>
           </div>
           <button type="submit" class="btn btn-primary" style="width:100%; margin-top: var(--space-3);">Simpan Foto</button>
         </form>

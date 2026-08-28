@@ -250,6 +250,7 @@ async function initAdminPanel() {
   renderActivitiesTable();
   renderGalleryTable();
   loadContactForm();
+  initCloudSyncUI();
   
   // Navigation Tabs
   const navBtns = document.querySelectorAll('.admin-nav-btn');
@@ -380,14 +381,53 @@ function loadProfileForm() {
   });
 }
 
-// File Readers with Validation
+// Helper: Byte Formatting & Compression Badge Feedback
+function formatBytes(bytes) {
+  if (bytes === 0 || !bytes) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+function showCompressionBadge(badgeId, res) {
+  const badge = document.getElementById(badgeId);
+  if (!badge || !res) return;
+  badge.style.display = 'block';
+  if (res.reductionPercent > 0) {
+    badge.innerHTML = `<span style="display:inline-flex; align-items:center; gap:4px;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      Foto terkompresi otomatis: ${formatBytes(res.originalSize)} &rarr; ${formatBytes(res.compressedSize)} (-${res.reductionPercent}%)
+    </span>`;
+    badge.style.background = '#EFF6FF';
+    badge.style.borderColor = '#BFDBFE';
+    badge.style.color = '#1D4ED8';
+  } else {
+    badge.innerHTML = `<span>Ukuran File: ${formatBytes(res.compressedSize)}</span>`;
+    badge.style.background = '#F8FAFC';
+    badge.style.borderColor = '#E2E8F0';
+    badge.style.color = '#475569';
+  }
+}
+
+function hideCompressionBadge(badgeId) {
+  const badge = document.getElementById(badgeId);
+  if (badge) {
+    badge.style.display = 'none';
+    badge.innerHTML = '';
+  }
+}
+
+// File Readers with Validation & Auto-Compression
 document.getElementById('upload-logo-file').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (file) {
     try {
-      tempLogoBase64 = await fileToBase64(file, 400);
+      const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 400, maxHeight: 400, quality: 0.85 }) : fileToBase64(file, 400));
+      tempLogoBase64 = typeof res === 'object' ? res.dataUrl : res;
       document.getElementById('preview-logo-img').src = tempLogoBase64;
       document.getElementById('preview-logo-container').style.display = 'block';
+      if (typeof res === 'object') showCompressionBadge('compression-badge-logo', res);
       markDirty();
     } catch (err) {
       showAdminToast(err.message || 'Gagal memproses berkas logo.', 'error', 'Format Tidak Didukung');
@@ -399,9 +439,11 @@ document.getElementById('upload-hero-file').addEventListener('change', async (e)
   const file = e.target.files[0];
   if (file) {
     try {
-      tempHeroBase64 = await fileToBase64(file, 1600);
+      const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 1600, maxHeight: 1000, quality: 0.82 }) : fileToBase64(file, 1600));
+      tempHeroBase64 = typeof res === 'object' ? res.dataUrl : res;
       document.getElementById('preview-hero-img').src = tempHeroBase64;
       document.getElementById('preview-hero-container').style.display = 'block';
+      if (typeof res === 'object') showCompressionBadge('compression-badge-hero', res);
       markDirty();
     } catch (err) {
       showAdminToast(err.message || 'Gagal memproses berkas banner.', 'error', 'Format Tidak Didukung');
@@ -604,10 +646,12 @@ document.getElementById('teacher-file').addEventListener('change', async (e) => 
   const file = e.target.files[0];
   if (file) {
     try {
-      tempTeacherBase64 = await fileToBase64(file, 600);
+      const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 600, maxHeight: 600, quality: 0.82 }) : fileToBase64(file, 600));
+      tempTeacherBase64 = typeof res === 'object' ? res.dataUrl : res;
       document.getElementById('preview-teacher-img').src = tempTeacherBase64;
       document.getElementById('preview-teacher-container').style.display = 'block';
       document.getElementById('label-teacher-upload').textContent = 'Gambar siap';
+      if (typeof res === 'object') showCompressionBadge('compression-badge-teacher', res);
       markDirty();
     } catch (err) {
       showAdminToast(err.message || 'Gagal memproses berkas.', 'error', 'Format Tidak Didukung');
@@ -630,6 +674,7 @@ function openTeacherModal(id = null) {
   document.getElementById('preview-teacher-img').src = '';
   document.getElementById('label-teacher-upload').textContent = 'Klik untuk pilih gambar';
   tempTeacherBase64 = null;
+  hideCompressionBadge('compression-badge-teacher');
   clearDirty();
   
   if (id) {
@@ -787,10 +832,12 @@ document.getElementById('facility-file').addEventListener('change', async (e) =>
   const file = e.target.files[0];
   if (file) {
     try {
-      tempFacilityBase64 = await fileToBase64(file, 800);
+      const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 800, maxHeight: 600, quality: 0.82 }) : fileToBase64(file, 800));
+      tempFacilityBase64 = typeof res === 'object' ? res.dataUrl : res;
       document.getElementById('preview-facility-img').src = tempFacilityBase64;
       document.getElementById('preview-facility-container').style.display = 'block';
       document.getElementById('label-facility-upload').textContent = 'Gambar siap';
+      if (typeof res === 'object') showCompressionBadge('compression-badge-facility', res);
       markDirty();
     } catch (err) {
       showAdminToast(err.message || 'Gagal memproses berkas.', 'error', 'Format Tidak Didukung');
@@ -813,6 +860,7 @@ function openFacilityModal(id = null) {
   document.getElementById('preview-facility-img').src = '';
   document.getElementById('label-facility-upload').textContent = 'Klik untuk pilih gambar';
   tempFacilityBase64 = null;
+  hideCompressionBadge('compression-badge-facility');
   clearDirty();
   
   if (id) {
@@ -971,10 +1019,12 @@ document.getElementById('activity-file').addEventListener('change', async (e) =>
   const file = e.target.files[0];
   if (file) {
     try {
-      tempActivityBase64 = await fileToBase64(file, 1000);
+      const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 1000, maxHeight: 700, quality: 0.82 }) : fileToBase64(file, 1000));
+      tempActivityBase64 = typeof res === 'object' ? res.dataUrl : res;
       document.getElementById('preview-activity-img').src = tempActivityBase64;
       document.getElementById('preview-activity-container').style.display = 'block';
       document.getElementById('label-activity-upload').textContent = 'Gambar siap';
+      if (typeof res === 'object') showCompressionBadge('compression-badge-activity', res);
       markDirty();
     } catch (err) {
       showAdminToast(err.message || 'Gagal memproses berkas.', 'error', 'Format Tidak Didukung');
@@ -997,6 +1047,7 @@ function openActivityModal(id = null) {
   document.getElementById('preview-activity-img').src = '';
   document.getElementById('label-activity-upload').textContent = 'Klik untuk pilih gambar';
   tempActivityBase64 = null;
+  hideCompressionBadge('compression-badge-activity');
   clearDirty();
   
   document.getElementById('activity-date').value = new Date().toISOString().split('T')[0];
@@ -1158,10 +1209,12 @@ document.getElementById('gallery-file').addEventListener('change', async (e) => 
   const file = e.target.files[0];
   if (file) {
     try {
-      tempGalleryBase64 = await fileToBase64(file, 900);
+      const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 900, maxHeight: 700, quality: 0.82 }) : fileToBase64(file, 900));
+      tempGalleryBase64 = typeof res === 'object' ? res.dataUrl : res;
       document.getElementById('preview-gallery-img').src = tempGalleryBase64;
       document.getElementById('preview-gallery-container').style.display = 'block';
       document.getElementById('label-gallery-upload').textContent = 'Gambar siap';
+      if (typeof res === 'object') showCompressionBadge('compression-badge-gallery', res);
       markDirty();
     } catch (err) {
       showAdminToast(err.message || 'Gagal memproses berkas.', 'error', 'Format Tidak Didukung');
@@ -1184,6 +1237,7 @@ function openGalleryModal(id = null) {
   document.getElementById('preview-gallery-img').src = '';
   document.getElementById('label-gallery-upload').textContent = 'Klik untuk pilih gambar';
   tempGalleryBase64 = null;
+  hideCompressionBadge('compression-badge-gallery');
   clearDirty();
   
   if (id) {
@@ -1544,6 +1598,229 @@ if (logoutBtn) {
     showAdminToast('Anda telah keluar dari sesi administrator.', 'success', 'Sampai Jumpa');
     setTimeout(() => window.location.reload(), 600);
   });
+}
+
+// ----------------------------------------------------
+// CLOUD SYNC & JSON BACKUP / RESTORE CONTROLLER
+// ----------------------------------------------------
+function updateCloudStatusUI() {
+  const isConfigured = window.CloudSyncManager && window.CloudSyncManager.isConfigured();
+  
+  // Dashboard banner
+  const dashDot = document.getElementById('dash-cloud-status-dot');
+  const dashTitle = document.getElementById('dash-cloud-status-title');
+  const dashDesc = document.getElementById('dash-cloud-status-desc');
+  
+  if (dashDot && dashTitle && dashDesc) {
+    if (isConfigured) {
+      dashDot.style.backgroundColor = '#22C55E';
+      dashTitle.textContent = 'Status Sinkronisasi Cloud: Tersambung ke Firebase Firestore';
+      dashTitle.style.color = '#15803D';
+      dashDesc.textContent = 'Setiap perubahan data akan otomatis tersinkronisasi antar perangkat dan pengunjung web.';
+    } else {
+      dashDot.style.backgroundColor = '#94A3B8';
+      dashTitle.textContent = 'Status Sinkronisasi Cloud: Mode Lokal (Offline-First)';
+      dashTitle.style.color = 'var(--primary)';
+      dashDesc.textContent = 'Data tersimpan di browser Anda. Hubungkan ke Firebase untuk sinkronisasi antar HP/Laptop.';
+    }
+  }
+
+  // Cloud Tab badge
+  const cloudBadge = document.getElementById('cloud-badge-status');
+  if (cloudBadge) {
+    if (isConfigured) {
+      cloudBadge.textContent = '🟢 Terhubung ke Firestore';
+      cloudBadge.style.backgroundColor = '#DCFCE7';
+      cloudBadge.style.color = '#166534';
+    } else {
+      cloudBadge.textContent = '⚪ Mode Lokal (Offline-First)';
+      cloudBadge.style.backgroundColor = '#F1F5F9';
+      cloudBadge.style.color = '#64748B';
+    }
+  }
+}
+
+function initCloudSyncUI() {
+  updateCloudStatusUI();
+
+  // Populate config fields if exists
+  if (window.CloudSyncManager) {
+    const config = window.CloudSyncManager.getConfig();
+    if (config) {
+      if (document.getElementById('firebase-api-key')) document.getElementById('firebase-api-key').value = config.apiKey || '';
+      if (document.getElementById('firebase-project-id')) document.getElementById('firebase-project-id').value = config.projectId || '';
+      if (document.getElementById('firebase-app-id')) document.getElementById('firebase-app-id').value = config.appId || '';
+      if (document.getElementById('firebase-auth-domain')) document.getElementById('firebase-auth-domain').value = config.authDomain || '';
+    }
+  }
+
+  // Save Cloud Config Form
+  const formCloudConfig = document.getElementById('form-cloud-config');
+  if (formCloudConfig) {
+    formCloudConfig.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const apiKey = document.getElementById('firebase-api-key').value.trim();
+      const projectId = document.getElementById('firebase-project-id').value.trim();
+      const appId = document.getElementById('firebase-app-id').value.trim();
+      const authDomain = document.getElementById('firebase-auth-domain').value.trim() || `${projectId}.firebaseapp.com`;
+      
+      const submitBtn = document.getElementById('btn-save-cloud-config');
+      setButtonSubmitting(submitBtn, true, 'Menguji Koneksi Cloud...');
+
+      try {
+        const config = { apiKey, projectId, appId, authDomain };
+        await window.CloudSyncManager.testConnection(config);
+        window.CloudSyncManager.saveConfig(config);
+        
+        // Push initial data
+        await window.CloudSyncManager.syncToCloud(window.SchoolDB.data);
+        
+        updateCloudStatusUI();
+        showAdminToast('Koneksi Firebase Firestore terverifikasi dan aktif! Data berhasil disinkronkan.', 'success', 'Cloud Aktif');
+      } catch (err) {
+        showAdminToast(err.message || 'Gagal menyambung ke Firebase Firestore.', 'error', 'Koneksi Cloud Gagal');
+      } finally {
+        setButtonSubmitting(submitBtn, false);
+      }
+    });
+  }
+
+  // Reset Cloud Config Button
+  const btnResetCloud = document.getElementById('btn-reset-cloud-config');
+  if (btnResetCloud) {
+    btnResetCloud.addEventListener('click', () => {
+      if (confirm('Yakin ingin memutuskan koneksi Cloud? Data lokal Anda tetap aman.')) {
+        if (window.CloudSyncManager) window.CloudSyncManager.saveConfig(null);
+        if (document.getElementById('firebase-api-key')) document.getElementById('firebase-api-key').value = '';
+        if (document.getElementById('firebase-project-id')) document.getElementById('firebase-project-id').value = '';
+        if (document.getElementById('firebase-app-id')) document.getElementById('firebase-app-id').value = '';
+        if (document.getElementById('firebase-auth-domain')) document.getElementById('firebase-auth-domain').value = '';
+        updateCloudStatusUI();
+        showAdminToast('Koneksi Cloud diputuskan. Sistem kembali ke mode lokal.', 'info', 'Mode Offline');
+      }
+    });
+  }
+
+  // Manual Push to Cloud
+  const btnSyncToCloud = document.getElementById('btn-sync-to-cloud');
+  if (btnSyncToCloud) {
+    btnSyncToCloud.addEventListener('click', async () => {
+      if (!window.CloudSyncManager || !window.CloudSyncManager.isConfigured()) {
+        showAdminToast('Konfigurasikan Firebase Project ID terlebih dahulu di bawah.', 'error', 'Cloud Belum Terhubung');
+        return;
+      }
+      setButtonSubmitting(btnSyncToCloud, true, 'Mengunggah ke Cloud...');
+      try {
+        const success = await window.CloudSyncManager.syncToCloud(window.SchoolDB.data);
+        if (success) {
+          showAdminToast('Semua data lokal berhasil diunggah dan tersinkronisasi di Firestore.', 'success', 'Sinkronisasi Berhasil');
+        } else {
+          showAdminToast('Gagal mengunggah data ke Cloud.', 'error');
+        }
+      } catch (err) {
+        showAdminToast('Terjadi kesalahan saat sinkronisasi cloud.', 'error');
+      } finally {
+        setButtonSubmitting(btnSyncToCloud, false);
+      }
+    });
+  }
+
+  // Manual Pull from Cloud
+  const btnSyncFromCloud = document.getElementById('btn-sync-from-cloud');
+  if (btnSyncFromCloud) {
+    btnSyncFromCloud.addEventListener('click', async () => {
+      if (!window.CloudSyncManager || !window.CloudSyncManager.isConfigured()) {
+        showAdminToast('Konfigurasikan Firebase Project ID terlebih dahulu di bawah.', 'error', 'Cloud Belum Terhubung');
+        return;
+      }
+      setButtonSubmitting(btnSyncFromCloud, true, 'Mengunduh dari Cloud...');
+      try {
+        const success = await window.SchoolDB.syncFromCloud();
+        if (success) {
+          renderDashboard();
+          loadProfileForm();
+          renderTeachersTable();
+          renderFacilitiesTable();
+          renderActivitiesTable();
+          renderGalleryTable();
+          loadContactForm();
+          showAdminToast('Data terbaru dari Firestore berhasil dimuat ke browser ini.', 'success', 'Sinkronisasi Berhasil');
+        } else {
+          showAdminToast('Belum ada data baru di Cloud Firestore.', 'info', 'Data Terkini');
+        }
+      } catch (err) {
+        showAdminToast('Gagal mengunduh data dari Cloud.', 'error');
+      } finally {
+        setButtonSubmitting(btnSyncFromCloud, false);
+      }
+    });
+  }
+
+  // Export JSON Backup
+  const btnExportBackup = document.getElementById('btn-export-backup');
+  if (btnExportBackup) {
+    btnExportBackup.addEventListener('click', () => {
+      try {
+        const jsonStr = window.SchoolDB.exportBackupJSON();
+        if (!jsonStr) {
+          showAdminToast('Database belum siap.', 'error');
+          return;
+        }
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const d = new Date();
+        const dateStr = d.toISOString().split('T')[0].replace(/-/g, '');
+        a.href = url;
+        a.download = `sdn2ngeposari_backup_${dateStr}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showAdminToast('Berkas cadangan JSON berhasil diunduh.', 'success', 'Backup Selesai');
+      } catch (err) {
+        showAdminToast('Gagal membuat berkas cadangan.', 'error');
+      }
+    });
+  }
+
+  // Import JSON Backup Trigger & Handler
+  const btnImportTrigger = document.getElementById('btn-import-backup-trigger');
+  const importFileInput = document.getElementById('import-backup-file');
+  if (btnImportTrigger && importFileInput) {
+    btnImportTrigger.addEventListener('click', () => {
+      importFileInput.click();
+    });
+
+    importFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          if (!confirm(`Yakin ingin memulihkan database dari berkas "${file.name}"? Data saat ini akan diperbarui.`)) {
+            importFileInput.value = '';
+            return;
+          }
+          await window.SchoolDB.importBackupJSON(event.target.result);
+          renderDashboard();
+          loadProfileForm();
+          renderTeachersTable();
+          renderFacilitiesTable();
+          renderActivitiesTable();
+          renderGalleryTable();
+          loadContactForm();
+          showAdminToast('Data sekolah berhasil dipulihkan dari berkas cadangan JSON!', 'success', 'Pemulihan Berhasil');
+        } catch (err) {
+          showAdminToast(err.message || 'Berkas JSON tidak valid atau rusak.', 'error', 'Gagal Memulihkan');
+        } finally {
+          importFileInput.value = '';
+        }
+      };
+      reader.readAsText(file);
+    });
+  }
 }
 
 // Check initial auth and lockout state on boot

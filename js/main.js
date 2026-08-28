@@ -947,3 +947,14 @@ function renderActivityDetailPage() {
     bodyEl.innerHTML = paragraphs.map(p => `<p style="margin-bottom: 1.5rem;">${p}</p>`).join('');
   }
 }
+
+// Listen to Cloud Sync / Backup Import updates and dynamically refresh UI
+window.addEventListener('schooldb-synced', async () => {
+  console.info('[SchoolDB] Real-time synced event received. Refreshing page components...');
+  await renderCommonUI();
+  if (document.getElementById('teacher-grid')) renderTeachersPage();
+  if (document.getElementById('facility-grid')) renderFacilitiesPage();
+  if (document.getElementById('activities-grid')) renderActivitiesPage();
+  if (document.getElementById('home-activities-grid')) renderHomePage();
+  if (document.getElementById('article-title')) renderActivityDetailPage();
+});

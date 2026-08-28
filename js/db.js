@@ -1,9 +1,102 @@
-// DESIGN.md Compliance - Database Wrapper for SDN 2 Ngeposari Website
-// Handles LocalStorage for text/metadata and IndexedDB for images.
+// DESIGN.md Compliance - Database & Cloud Sync Wrapper for SDN 2 Ngeposari Website
+// Handles LocalStorage / IndexedDB for local-first speed and Firebase Firestore for cross-device sync.
 
 const DB_NAME = 'SDN2NgeposariDB';
 const DB_VERSION = 1;
 const STORE_NAME = 'siteData';
+
+/**
+ * Client-Side Canvas Image Auto-Compression Utility
+ * Compresses heavy mobile photos (5MB–10MB) into lightweight WebP/JPEG (~100KB–250KB)
+ * @param {File} file - Original file from input
+ * @param {Object} options - { maxWidth, maxHeight, quality, mimeType }
+ * @returns {Promise<{dataUrl: string, originalSize: number, compressedSize: number, width: number, height: number, reductionPercent: number}>}
+ */
+async function compressImageFile(file, options = {}) {
+  const {
+    maxWidth = 1280,
+    maxHeight = 1280,
+    quality = 0.82,
+    mimeType = 'image/webp'
+  } = options;
+
+  if (!file) throw new Error('File tidak valid.');
+
+  // SVG images are vector: read directly as text/DataURL without rasterization
+  if (file.type === 'image/svg+xml') {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve({
+        dataUrl: e.target.result,
+        originalSize: file.size,
+        compressedSize: file.size,
+        width: 0,
+        height: 0,
+        reductionPercent: 0
+      });
+      reader.onerror = () => reject(new Error('Gagal membaca berkas SVG.'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+
+        // Scale down dimensions while preserving exact aspect ratio
+        if (width > maxWidth || height > maxHeight) {
+          if (width > height) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          } else {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, width, height);
+
+        let optimizedDataUrl = null;
+        try {
+          optimizedDataUrl = canvas.toDataURL(mimeType, quality);
+          if (!optimizedDataUrl.startsWith(`data:${mimeType}`)) {
+            optimizedDataUrl = canvas.toDataURL('image/jpeg', quality);
+          }
+        } catch (err) {
+          optimizedDataUrl = canvas.toDataURL('image/jpeg', quality);
+        }
+
+        const compressedSize = Math.round((optimizedDataUrl.length * 3) / 4);
+        const reductionPercent = file.size > 0 
+          ? Math.max(0, Math.round(((file.size - compressedSize) / file.size) * 100))
+          : 0;
+
+        resolve({
+          dataUrl: optimizedDataUrl,
+          originalSize: file.size,
+          compressedSize: compressedSize,
+          width,
+          height,
+          reductionPercent
+        });
+      };
+      img.onerror = () => reject(new Error('Berkas gambar rusak atau tidak dapat diproses.'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('Gagal membaca file.'));
+    reader.readAsDataURL(file);
+  });
+}
+window.compressImageFile = compressImageFile;
 
 // Dynamic Clean Flat Editorial SVG Mockups for SDN 2 Ngeposari
 function generateSVGPlaceholder(type, title) {
@@ -294,6 +387,144 @@ class IndexedStore {
 
 const idbStore = new IndexedStore();
 
+// ==========================================================================
+// CLOUD SYNC MANAGER (Firebase Firestore Cross-Device Offline-First Sync)
+// ==========================================================================
+window.CloudSyncManager = {
+  firestore: null,
+  app: null,
+  isSyncing: false,
+  lastSyncTime: null,
+  
+  getConfig() {
+    try {
+      const raw = localStorage.getItem('sdn2_firebase_config');
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  },
+
+  saveConfig(config) {
+    if (!config || !config.projectId) {
+      localStorage.removeItem('sdn2_firebase_config');
+      this.firestore = null;
+      this.app = null;
+      return false;
+    }
+    localStorage.setItem('sdn2_firebase_config', JSON.stringify(config));
+    return this.initFirebase(config);
+  },
+
+  initFirebase(config = null) {
+    const cfg = config || this.getConfig();
+    if (!cfg || !cfg.projectId || typeof firebase === 'undefined') {
+      return false;
+    }
+
+    try {
+      if (!firebase.apps || firebase.apps.length === 0) {
+        this.app = firebase.initializeApp(cfg);
+      } else {
+        this.app = firebase.app();
+      }
+      this.firestore = firebase.firestore();
+      return true;
+    } catch (e) {
+      console.warn('[CloudSync] Firebase initialization error:', e);
+      return false;
+    }
+  },
+
+  isConfigured() {
+    if (!this.firestore) {
+      this.initFirebase();
+    }
+    return !!this.firestore;
+  },
+
+  async testConnection(config) {
+    if (typeof firebase === 'undefined') {
+      throw new Error('Firebase SDK belum termuat. Periksa koneksi internet Anda.');
+    }
+    if (!config || !config.projectId) {
+      throw new Error('Project ID Firebase wajib diisi.');
+    }
+    
+    let tempApp = null;
+    try {
+      const appName = 'test_conn_' + Date.now();
+      tempApp = firebase.initializeApp(config, appName);
+      const db = tempApp.firestore();
+      
+      // Ping check doc
+      await db.collection('system').doc('healthcheck').set({
+        lastCheck: new Date().toISOString(),
+        school: 'SDN 2 Ngeposari'
+      }, { merge: true });
+      
+      await tempApp.delete();
+      return true;
+    } catch (err) {
+      if (tempApp) {
+        try { await tempApp.delete(); } catch(e) {}
+      }
+      throw err;
+    }
+  },
+
+  async syncToCloud(data) {
+    if (!this.isConfigured() || !data || this.isSyncing) return false;
+    this.isSyncing = true;
+    try {
+      const cleanData = {
+        profile: data.profile || {},
+        teachers: data.teachers || [],
+        facilities: data.facilities || [],
+        activities: data.activities || [],
+        gallery: data.gallery || [],
+        testimonials: data.testimonials || [],
+        contact: data.contact || {},
+        updatedAt: new Date().toISOString(),
+        syncedBy: 'Admin Web CMS'
+      };
+      
+      await this.firestore.collection('school_data').doc('main_state').set(cleanData, { merge: true });
+      this.lastSyncTime = new Date();
+      localStorage.setItem('sdn2_last_cloud_sync', this.lastSyncTime.toISOString());
+      console.info('[CloudSync] Berhasil menyinkronkan data ke Cloud Firestore');
+      window.dispatchEvent(new CustomEvent('cloud-sync-success', { detail: { time: this.lastSyncTime } }));
+      return true;
+    } catch (err) {
+      console.warn('[CloudSync] Gagal upload data ke cloud:', err);
+      return false;
+    } finally {
+      this.isSyncing = false;
+    }
+  },
+
+  async syncFromCloud() {
+    if (!this.isConfigured() || this.isSyncing) return null;
+    this.isSyncing = true;
+    try {
+      const doc = await this.firestore.collection('school_data').doc('main_state').get();
+      if (doc.exists) {
+        const cloudData = doc.data();
+        this.lastSyncTime = new Date();
+        localStorage.setItem('sdn2_last_cloud_sync', this.lastSyncTime.toISOString());
+        console.info('[CloudSync] Berhasil mengunduh data terbaru dari Cloud Firestore');
+        return cloudData;
+      }
+      return null;
+    } catch (err) {
+      console.warn('[CloudSync] Gagal mengunduh data dari cloud:', err);
+      return null;
+    } finally {
+      this.isSyncing = false;
+    }
+  }
+};
+
 // Core DB Management Object with Security & Integrity Hardening
 window.SchoolDB = {
   data: null,
@@ -421,6 +652,13 @@ window.SchoolDB = {
 
       this.isInitialized = true;
       console.log('Database initialized successfully with security rules.');
+
+      // Initialize Cloud Sync in background
+      CloudSyncManager.initFirebase();
+      if (CloudSyncManager.isConfigured()) {
+        this.syncFromCloud().catch(e => console.warn('[SchoolDB] Background cloud sync deferred:', e));
+      }
+
       return this;
     } catch (err) {
       console.error('Database failed to initialize:', err);
@@ -444,9 +682,79 @@ window.SchoolDB = {
       } catch (e) {
         console.warn('LocalStorage backup quota exceeded or blocked.');
       }
+
+      // Automatically sync changes to Cloud Firestore if connected
+      if (CloudSyncManager.isConfigured()) {
+        CloudSyncManager.syncToCloud(this.data).catch(err => console.warn('[SchoolDB] Async cloud push failed:', err));
+      }
     } catch (err) {
       console.error('Error saving data to database:', err);
     }
+  },
+
+  async syncFromCloud() {
+    const cloudData = await CloudSyncManager.syncFromCloud();
+    if (cloudData) {
+      if (cloudData.profile) this.data.profile = { ...this.data.profile, ...cloudData.profile };
+      if (Array.isArray(cloudData.teachers)) this.data.teachers = cloudData.teachers;
+      if (Array.isArray(cloudData.facilities)) this.data.facilities = cloudData.facilities;
+      if (Array.isArray(cloudData.activities)) this.data.activities = cloudData.activities;
+      if (Array.isArray(cloudData.gallery)) this.data.gallery = cloudData.gallery;
+      if (Array.isArray(cloudData.testimonials)) this.data.testimonials = cloudData.testimonials;
+      if (cloudData.contact) this.data.contact = { ...this.data.contact, ...cloudData.contact };
+      
+      await idbStore.set('siteData', this.data);
+      window.dispatchEvent(new CustomEvent('schooldb-synced', { detail: this.data }));
+      return true;
+    }
+    return false;
+  },
+
+  exportBackupJSON() {
+    if (!this.data) return null;
+    const backupObj = {
+      version: '4.0',
+      exportDate: new Date().toISOString(),
+      school: 'SDN 2 Ngeposari',
+      data: {
+        profile: this.data.profile,
+        teachers: this.data.teachers,
+        facilities: this.data.facilities,
+        activities: this.data.activities,
+        gallery: this.data.gallery,
+        testimonials: this.data.testimonials,
+        contact: this.data.contact
+      }
+    };
+    return JSON.stringify(backupObj, null, 2);
+  },
+
+  async importBackupJSON(jsonString) {
+    if (!jsonString) throw new Error('Berkas cadangan kosong.');
+    let parsed;
+    try {
+      parsed = typeof jsonString === 'string' ? JSON.parse(jsonString) : jsonString;
+    } catch (e) {
+      throw new Error('Format berkas JSON tidak valid.');
+    }
+
+    const payload = parsed.data || parsed;
+    if (!payload.profile && !payload.teachers && !payload.facilities) {
+      throw new Error('Struktur data cadangan tidak sesuai.');
+    }
+
+    if (payload.profile) this.data.profile = { ...this.data.profile, ...payload.profile };
+    if (Array.isArray(payload.teachers)) this.data.teachers = payload.teachers;
+    if (Array.isArray(payload.facilities)) this.data.facilities = payload.facilities;
+    if (Array.isArray(payload.activities)) this.data.activities = payload.activities;
+    if (Array.isArray(payload.gallery)) this.data.gallery = payload.gallery;
+    if (Array.isArray(payload.testimonials)) this.data.testimonials = payload.testimonials;
+    if (payload.contact) this.data.contact = { ...this.data.contact, ...payload.contact };
+
+    await this.save();
+    await this.logAudit('PULIHKAN', 'Sistem', 'Memulihkan data dari berkas cadangan JSON');
+    window.dispatchEvent(new CustomEvent('schooldb-synced', { detail: this.data }));
+    return true;
   },
 
   async reset() {

@@ -66,25 +66,72 @@
   <!-- 1. NAVBAR (Mounted dynamically via SchoolNavbar) -->
   <header id="main-header"></header>
 
-  <!-- 2. PAGE HEADER BANNER -->
+  <!-- 2. PAGE HEADER BANNER SECTION (LEFT-RIGHT GRID) -->
   <section class="section" style="padding-top: var(--space-7); padding-bottom: var(--space-5);">
-    <span class="section-label">HUBUNGI KAMI</span>
-    <h1 class="section-headline" style="font-size: 48px; max-width: 700px;">Ingin berkunjung atau sekadar bertanya?</h1>
-    <p class="section-supporting">Kami dengan senang hati membantu Anda menemukan informasi yang dibutuhkan mengenai SDN 2 Ngeposari.</p>
+    <div class="contact-section-grid">
+      <div class="section-left">
+        <span class="section-label">HUBUNGI KAMI</span>
+        <h1 class="section-headline" style="font-size: 42px; margin-bottom: var(--space-3);">Ingin berkunjung atau sekadar bertanya?</h1>
+        <p class="section-supporting" style="margin-bottom: 0;">Pintu kami selalu terbuka bagi orang tua siswa, alumni, dinas pendidikan, serta masyarakat yang ingin memperoleh informasi resmi mengenai SD Negeri 2 Ngeposari.</p>
+      </div>
+
+      <div class="section-right">
+        <div class="contact-overview-card">
+          <h3 style="font-size: 17px; font-weight: 700; color: var(--primary); margin: 0 0 14px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Pusat Informasi & Pelayanan</h3>
+          <div class="contact-overview-item">
+            <div class="contact-overview-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div>
+              <strong style="font-size: 14px; color: var(--text); display: block;">Jam Pelayanan Kantor</strong>
+              <span style="font-size: 13px; color: var(--text-muted);">Senin – Sabtu, Pukul 07.00 – 14.00 WIB</span>
+            </div>
+          </div>
+
+          <div class="contact-overview-item">
+            <div class="contact-overview-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div>
+              <strong style="font-size: 14px; color: var(--text); display: block;">Layanan WhatsApp</strong>
+              <span style="font-size: 13px; color: var(--text-muted);">Respons cepat selama hari dan jam kerja</span>
+            </div>
+          </div>
+
+          <div class="contact-overview-item">
+            <div class="contact-overview-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div>
+              <strong style="font-size: 14px; color: var(--text); display: block;">Wilayah Administrasi</strong>
+              <span style="font-size: 13px; color: var(--text-muted);">Ngeposari, Semanu, Gunungkidul, DIY</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <div class="section-divider"></div>
 
-  <!-- 3. CONTACT INFORMATION & MAP SECTION (PARALLEL LEVEL LAYOUT) -->
+  <!-- 3. DETAIL ALAMAT & KONTAK RESMI SECTION (LEFT-RIGHT GRID) -->
   <section class="section" id="contact-info-sec">
-    <div class="contact-layout-grid">
-      <!-- Left Column: Informasi Alamat & Kontak -->
-      <div class="contact-info-column">
-        <div class="contact-col-header">
-          <span class="section-label">INFORMASI ALAMAT</span>
-          <h2 class="contact-col-title">Lokasi & Kontak Resmi</h2>
+    <div class="contact-section-grid">
+      <div class="section-left">
+        <span class="section-label">DETAIL KONTAK</span>
+        <h2 class="section-headline" style="font-size: 32px; margin-bottom: var(--space-3);">Saluran Komunikasi Resmi</h2>
+        <p class="section-supporting" style="font-size: 1rem; line-height: 1.7; color: var(--text-muted); margin-bottom: var(--space-4);">
+          Hubungi kami secara langsung untuk keperluan administrasi sekolah, verifikasi data peserta didik baru (PPDB), koordinasi program kurikulum, maupun agenda kemitraan institusi.
+        </p>
+        <div>
+          <a href="https://wa.me/6281234567890" target="_blank" rel="noopener" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; font-weight: 600;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span>Hubungi via WhatsApp</span>
+          </a>
         </div>
-        
+      </div>
+
+      <div class="section-right">
         <div class="contact-info-cards-wrap">
           <div class="contact-item-card">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
@@ -111,16 +158,76 @@
           </div>
         </div>
       </div>
+    </div>
+  </section>
 
-      <!-- Right Column: Peta Lokasi Google Maps -->
-      <div class="contact-map-column">
-        <div class="contact-col-header">
-          <span class="section-label">PETA LOKASI</span>
-          <h2 class="contact-col-title">Google Maps Navigasi</h2>
+  <div class="section-divider"></div>
+
+  <!-- 4. PETA LOKASI GOOGLE MAPS SECTION (LEFT-RIGHT GRID) -->
+  <section class="section" id="contact-map-sec">
+    <div class="contact-section-grid">
+      <div class="section-left">
+        <span class="section-label">PETA LOKASI</span>
+        <h2 class="section-headline" style="font-size: 32px; margin-bottom: var(--space-3);">Navigasi & Petunjuk Arah</h2>
+        <p class="section-supporting" style="font-size: 1rem; line-height: 1.7; color: var(--text-muted); margin-bottom: var(--space-4);">
+          Gedung SD Negeri 2 Ngeposari terletak strategis di pinggir jalan raya utama Karangmojo - Semanu. Akses jalan aspal yang lebar sangat nyaman dilalui kendaraan pribadi roda dua, roda empat, maupun rombongan bus dinas.
+        </p>
+        <div>
+          <a href="https://maps.google.com/?q=SD+Negeri+2+Ngeposari" target="_blank" rel="noopener" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; font-weight: 600;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+            <span>Buka di Aplikasi Google Maps</span>
+          </a>
         </div>
-        
+      </div>
+
+      <div class="section-right">
         <div class="contact-map-wrapper">
           <iframe id="contact-map-frame" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3950.563823439498!2d110.6473063!3d-7.9734185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a372132eb2c0b%3A0xc48cd4d0ee0ca2df!2sSD%20Negeri%202%20Ngeposari!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid" title="Lokasi Google Maps SDN 2 Ngeposari" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- 5. FORMULIR KIRIM PESAN SECTION (LEFT-RIGHT GRID) -->
+  <section class="section" id="contact-form-sec">
+    <div class="contact-section-grid">
+      <div class="section-left">
+        <span class="section-label">LAYANAN KONSULTASI</span>
+        <h2 class="section-headline" style="font-size: 32px; margin-bottom: var(--space-3);">Kirim Pesan Langsung</h2>
+        <p class="section-supporting" style="font-size: 1rem; line-height: 1.7; color: var(--text-muted); margin-bottom: 0;">
+          Punya pertanyaan seputar penerimaan peserta didik baru, kegiatan ekstrakurikuler, atau ingin menyampaikan apresiasi dan masukan? Silakan isi formulir di samping dan tim sekolah akan segera menindaklanjuti.
+        </p>
+      </div>
+
+      <div class="section-right">
+        <div class="contact-form-card">
+          <form id="contact-form">
+            <div class="form-group" style="margin-bottom: 14px;">
+              <label for="form-name" style="font-size: 13px; font-weight: 600; color: var(--text); display: block; margin-bottom: 4px;">Nama Lengkap</label>
+              <input type="text" id="form-name" class="form-control" placeholder="Contoh: Bapak Ahmad / Ibu Maria" required style="width: 100%; padding: 10px 14px; font-size: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 14px;">
+              <label for="form-email" style="font-size: 13px; font-weight: 600; color: var(--text); display: block; margin-bottom: 4px;">Email atau Nomor WhatsApp</label>
+              <input type="text" id="form-email" class="form-control" placeholder="nama@email.com / 0812xxxx" required style="width: 100%; padding: 10px 14px; font-size: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 14px;">
+              <label for="form-subject" style="font-size: 13px; font-weight: 600; color: var(--text); display: block; margin-bottom: 4px;">Subjek / Keperluan</label>
+              <input type="text" id="form-subject" class="form-control" placeholder="Contoh: Pertanyaan Pendaftaran Siswa Baru" required style="width: 100%; padding: 10px 14px; font-size: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 18px;">
+              <label for="form-message" style="font-size: 13px; font-weight: 600; color: var(--text); display: block; margin-bottom: 4px;">Isi Pesan</label>
+              <textarea id="form-message" class="form-control" rows="4" placeholder="Tuliskan pesan atau pertanyaan Anda di sini..." required style="width: 100%; padding: 10px 14px; font-size: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); resize: vertical;"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 600; cursor: pointer;">
+              Kirim Pesan Sekarang
+            </button>
+          </form>
         </div>
       </div>
     </div>

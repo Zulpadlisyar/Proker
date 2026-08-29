@@ -75,78 +75,96 @@
 
   <div class="section-divider"></div>
 
-  <!-- 3. MAIN CONTACT SECTION (DUAL GRID: FORM ON LEFT, INFO & MAP ON RIGHT) -->
-  <section class="section" id="contact-main-sec" style="padding-bottom: var(--space-8);">
-    <div class="contact-grid-container">
-      
-      <!-- Sisi Kiri: Formulir Kontak Interaktif -->
-      <div class="contact-form-pane">
-        <form id="contact-form" class="contact-styled-form">
-          <div class="contact-form-group">
-            <label for="form-name" class="contact-form-label">Nama Lengkap <span class="required-star">*</span></label>
-            <input type="text" id="form-name" class="contact-form-input" placeholder="Masukkan nama lengkap Anda" required>
-          </div>
-
-          <div class="contact-form-group">
-            <label for="form-email" class="contact-form-label">Email <span class="required-star">*</span></label>
-            <input type="email" id="form-email" class="contact-form-input" placeholder="nama@email.com" required>
-          </div>
-
-          <div class="contact-form-group">
-            <label for="form-subject" class="contact-form-label">Nomor Telepon / WhatsApp <span class="required-star">*</span></label>
-            <input type="text" id="form-subject" class="contact-form-input" placeholder="0812-xxxx-xxxx" required>
-          </div>
-
-          <div class="contact-form-group">
-            <label for="form-message" class="contact-form-label">Pesan / Deskripsi <span class="required-star">*</span></label>
-            <textarea id="form-message" class="contact-form-input contact-form-textarea" rows="5" placeholder="Tuliskan pesan atau pertanyaan Anda di sini..." required></textarea>
-          </div>
-
-          <button type="submit" class="btn btn-primary contact-submit-btn">
-            <span>Kirim Pesan</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-          </button>
-        </form>
-      </div>
-
-      <!-- Sisi Kanan: Informasi Kontak & Google Maps -->
-      <div class="contact-info-pane">
-        <!-- Info List (Top) -->
-        <div class="contact-info-list">
-          <div class="contact-info-row">
-            <div class="contact-info-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            </div>
-            <div class="contact-info-text">
-              <span id="contact-phone-val">(0274) 123456 / 0812-3456-7890</span>
-            </div>
-          </div>
-
-          <div class="contact-info-row">
-            <div class="contact-info-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-            </div>
-            <div class="contact-info-text">
-              <span id="contact-email-val">info@sdn2ngeposari.sch.id</span>
-            </div>
-          </div>
-
-          <div class="contact-info-row">
-            <div class="contact-info-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-            </div>
-            <div class="contact-info-text">
-              <span id="contact-address-val">Ngeposari, Semanu, Gunungkidul, DIY 55891</span>
-            </div>
-          </div>
+  <!-- 3. ATAS: INFORMASI ALAMAT (KIRI) & PETA LOKASI (KANAN) -->
+  <section class="section" id="contact-info-sec">
+    <div class="contact-top-grid">
+      <!-- Kiri Atas: Informasi Alamat & Kontak Resmi -->
+      <div class="contact-info-col">
+        <div class="contact-col-header">
+          <span class="section-label">INFORMASI ALAMAT</span>
+          <h2 class="contact-col-title">Lokasi & Kontak Resmi</h2>
         </div>
 
-        <!-- Google Maps (Bottom) -->
-        <div class="contact-map-frame-box">
+        <div class="contact-cards-stack">
+          <div class="contact-item-card">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              <strong style="font-size: 15px; color: var(--text);">Alamat Sekolah</strong>
+            </div>
+            <span id="contact-address-val" style="font-size: 14.5px; color: var(--text-muted); line-height: 1.6;">Ngeposari, Semanu, Gunungkidul, DIY 55891</span>
+          </div>
+
+          <div class="contact-item-card">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <strong style="font-size: 15px; color: var(--text);">Telepon / WhatsApp</strong>
+            </div>
+            <span id="contact-phone-val" style="font-size: 14.5px; color: var(--text-muted); line-height: 1.6;">(0274) 123456 / 0812-3456-7890</span>
+          </div>
+
+          <div class="contact-item-card">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <strong style="font-size: 15px; color: var(--text);">Email Resmi</strong>
+            </div>
+            <span id="contact-email-val" style="font-size: 14.5px; color: var(--text-muted); line-height: 1.6;">info@sdn2ngeposari.sch.id</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kanan Atas: Peta Lokasi Google Maps -->
+      <div class="contact-map-col">
+        <div class="contact-col-header">
+          <span class="section-label">PETA LOKASI</span>
+          <h2 class="contact-col-title">Google Maps Navigasi</h2>
+        </div>
+
+        <div class="contact-map-wrapper">
           <iframe id="contact-map-frame" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3950.563823439498!2d110.6473063!3d-7.9734185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a372132eb2c0b%3A0xc48cd4d0ee0ca2df!2sSD%20Negeri%202%20Ngeposari!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid" title="Lokasi Google Maps SDN 2 Ngeposari" allowfullscreen="" loading="lazy"></iframe>
         </div>
       </div>
+    </div>
+  </section>
 
+  <div class="section-divider"></div>
+
+  <!-- 4. BAWAH SENDIRI: FULL-WIDTH LAYANAN KONSULTASI / FORMULIR KIRIM PESAN -->
+  <section class="section" id="consultation-sec" style="padding-bottom: var(--space-8);">
+    <div style="margin-bottom: var(--space-6);">
+      <span class="section-label">LAYANAN KONSULTASI</span>
+      <h2 class="section-headline" style="font-size: 36px; margin-bottom: var(--space-2);">Kirim Pesan Langsung</h2>
+      <p class="section-supporting" style="margin-bottom: 0;">Punya pertanyaan seputar penerimaan siswa baru, kurikulum, atau ingin menyampaikan masukan? Silakan isi formulir di bawah ini.</p>
+    </div>
+
+    <div class="consultation-full-card">
+      <form id="contact-form">
+        <div class="consultation-form-grid">
+          <div class="consultation-group">
+            <label for="form-name" class="consultation-label">Nama Lengkap <span class="required-star">*</span></label>
+            <input type="text" id="form-name" class="consultation-input" placeholder="Masukkan nama lengkap Anda" required>
+          </div>
+
+          <div class="consultation-group">
+            <label for="form-email" class="consultation-label">Email <span class="required-star">*</span></label>
+            <input type="email" id="form-email" class="consultation-input" placeholder="contoh@email.com" required>
+          </div>
+
+          <div class="consultation-group full-span">
+            <label for="form-subject" class="consultation-label">Nomor Telepon / WhatsApp <span class="required-star">*</span></label>
+            <input type="text" id="form-subject" class="consultation-input" placeholder="0812-xxxx-xxxx" required>
+          </div>
+
+          <div class="consultation-group full-span">
+            <label for="form-message" class="consultation-label">Pesan / Deskripsi <span class="required-star">*</span></label>
+            <textarea id="form-message" class="consultation-input consultation-textarea" rows="5" placeholder="Tuliskan pertanyaan, keperluan, atau masukan Anda di sini..." required></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary consultation-submit-btn">
+          <span>Kirim Pesan Sekarang</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </form>
     </div>
   </section>
 

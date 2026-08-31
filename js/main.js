@@ -138,30 +138,61 @@
       }
     }
 
-    // Calendar Widget
-    const calendarWidget = document.getElementById('academic-calendar-widget');
-    if (calendarWidget) {
-      const calendarEvents = window.SchoolDB.getCalendar();
-      calendarWidget.innerHTML = `
-        <div class="calendar-widget-box">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
-            <h3 style="font-size: 18px; font-weight: 700; color: var(--primary);">Agenda & Kalender Akademik Mendatang</h3>
-            <a href="kegiatan.html" class="btn-text-link" style="font-size:12px;">Lihat kegiatan →</a>
+    // Dynamic School Habits / Pembiasaan Baik
+    const pillarsGrid = document.getElementById('pillars-grid');
+    if (pillarsGrid) {
+      const habits = window.SchoolDB.getHabits();
+      if (habits && habits.length > 0) {
+        pillarsGrid.innerHTML = habits.map(h => `
+          <div class="pillar-card">
+            <div class="pillar-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 14.7255 3.09032 17.1962 4.85857 19" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="7.5" cy="10.5" r="1.5" fill="currentColor"/><circle cx="11.5" cy="7.5" r="1.5" fill="currentColor"/><circle cx="16.5" cy="9.5" r="1.5" fill="currentColor"/></svg>
+            </div>
+            <h4>${h.title}</h4>
+            <p>${h.desc || h.description || ''}</p>
           </div>
-          ${calendarEvents.map(ev => `
-            <div class="calendar-item-row">
-              <div class="calendar-date-badge">
-                <div class="day">${ev.day}</div>
-                <div class="month">${ev.month}</div>
-              </div>
-              <div class="calendar-info">
-                <span>${ev.category}</span>
-                <h4>${ev.title}</h4>
+        `).join('');
+      }
+    }
+
+    // Dynamic Academic Calendar Grid
+    const calendarGrid = document.getElementById('academic-calendar-grid');
+    if (calendarGrid) {
+      const calendarEvents = window.SchoolDB.getCalendar();
+      if (calendarEvents && calendarEvents.length > 0) {
+        calendarGrid.innerHTML = calendarEvents.map(ev => `
+          <div style="display: flex; gap: 16px; align-items: center; padding: 16px; background-color: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius-sm);">
+            <div style="background-color: var(--primary); color: #fff; text-align: center; border-radius: var(--radius-sm); padding: 8px 12px; min-width: 50px;">
+              <div style="font-size: 11px; text-transform: uppercase; font-weight: 700;">${ev.month || 'BLN'}</div>
+              <div style="font-size: 18px; font-weight: 800; line-height: 1;">${ev.date || '01'}</div>
+            </div>
+            <div>
+              <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 2px; color: var(--text);">${ev.title}</h4>
+              <p style="font-size: 12px; color: var(--text-muted);">${ev.desc || ev.description || ''}</p>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Dynamic Testimonials / Kesan & Apresiasi
+    const testimonialsGrid = document.getElementById('testimonials-grid');
+    if (testimonialsGrid) {
+      const testimonials = window.SchoolDB.getTestimonials();
+      if (testimonials && testimonials.length > 0) {
+        testimonialsGrid.innerHTML = testimonials.map(t => `
+          <div class="testimonial-card">
+            <p class="testimonial-quote">"${t.quote}"</p>
+            <div class="testimonial-author">
+              <img src="${t.avatar || 'images/logo.webp'}" alt="${t.name}" class="testimonial-avatar" loading="lazy" decoding="async" onerror="this.src='images/logo.webp'">
+              <div>
+                <div class="testimonial-name">${t.name}</div>
+                <div class="testimonial-role">${t.role || 'Orang Tua Wali'}</div>
               </div>
             </div>
-          `).join('')}
-        </div>
-      `;
+          </div>
+        `).join('');
+      }
     }
   }
 
@@ -190,13 +221,23 @@
     }
 
     const valuesGrid = document.getElementById('values-grid');
-    if (valuesGrid && Array.isArray(profile.values)) {
-      valuesGrid.innerHTML = profile.values.map(v => `
-        <div class="value-card">
-          <h4>${v.title}</h4>
-          <p>${v.desc}</p>
-        </div>
-      `).join('');
+    if (valuesGrid) {
+      const habits = window.SchoolDB.getHabits();
+      if (habits && habits.length > 0) {
+        valuesGrid.innerHTML = habits.map(h => `
+          <div class="value-card">
+            <h4>${h.title}</h4>
+            <p>${h.desc || h.description || ''}</p>
+          </div>
+        `).join('');
+      } else if (Array.isArray(profile.values)) {
+        valuesGrid.innerHTML = profile.values.map(v => `
+          <div class="value-card">
+            <h4>${v.title}</h4>
+            <p>${v.desc}</p>
+          </div>
+        `).join('');
+      }
     }
 
     renderTeachersSection();
@@ -227,9 +268,23 @@
         facilityGrid.innerHTML = window.SchoolEmptyState
           ? window.SchoolEmptyState.createEmptyState({ title: 'Belum ada fasilitas', description: 'Belum ada fasilitas yang dimasukkan.' })
           : `<div style="grid-column: 1/-1; text-align:center; padding: 4rem 1.5rem; background-color: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border);"><p style="font-size:1rem; color:var(--text-muted);">Belum ada fasilitas yang dimasukkan.</p></div>`;
-        return;
+      } else {
+        facilityGrid.innerHTML = facilities.map(f => window.SchoolFacilityCard.createFacilityCard(f)).join('');
       }
-      facilityGrid.innerHTML = facilities.map(f => window.SchoolFacilityCard.createFacilityCard(f)).join('');
+    }
+
+    // Dynamic Comfort Standards Grid
+    const comfortGrid = document.getElementById('comfort-standards-grid');
+    if (comfortGrid) {
+      const standards = window.SchoolDB.getComfortStandards();
+      if (standards && standards.length > 0) {
+        comfortGrid.innerHTML = standards.map(s => `
+          <div style="background-color: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 24px;">
+            <h4 style="font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">${s.title}</h4>
+            <p style="font-size: 14px; color: var(--text-muted); line-height: 1.55;">${s.desc || s.description || ''}</p>
+          </div>
+        `).join('');
+      }
     }
   }
 
@@ -432,18 +487,39 @@
 
     const contactForm = document.getElementById('contact-form');
     if (contactForm) {
-      contactForm.addEventListener('submit', (e) => {
+      contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const name = document.getElementById('form-name').value;
-        const email = document.getElementById('form-email').value;
-        const subject = document.getElementById('form-subject').value;
-        const message = document.getElementById('form-message').value;
+        const name = document.getElementById('form-name')?.value?.trim() || '';
+        const email = document.getElementById('form-email')?.value?.trim() || '';
+        const phone = document.getElementById('form-subject')?.value?.trim() || '';
+        const message = document.getElementById('form-message')?.value?.trim() || '';
 
-        if (name && email && subject && message) {
-          showToast('Pesan berhasil terkirim! Terima kasih.', 'success');
-          contactForm.reset();
+        if (name && email && phone && message) {
+          const submitBtn = contactForm.querySelector('button[type="submit"]');
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Mengirim Pesan...';
+          }
+          try {
+            await window.SchoolDB.addInquiry({
+              name,
+              email,
+              phone,
+              subject: 'Layanan Konsultasi Publik',
+              message
+            });
+            showToast('Pesan konsultasi Anda berhasil dikirim ke Admin Sekolah! Terima kasih.', 'success');
+            contactForm.reset();
+          } catch (err) {
+            showToast('Gagal mengirim pesan: ' + err.message, 'error');
+          } finally {
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = `<span>Kirim Pesan Sekarang</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`;
+            }
+          }
         } else {
-          showToast('Mohon lengkapi semua kolom formulir.', 'error');
+          showToast('Mohon lengkapi semua kolom bertanda bintang (*).', 'error');
         }
       });
     }

@@ -270,24 +270,32 @@ class IndexedStore {
 
   init() {
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, DB_VERSION);
+      if (typeof indexedDB === 'undefined') {
+        return resolve(this);
+      }
+      try {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-      request.onupgradeneeded = (event) => {
-        const db = event.target.result;
-        if (!db.objectStoreNames.contains(STORE_NAME)) {
-          db.createObjectStore(STORE_NAME);
-        }
-      };
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME);
+          }
+        };
 
-      request.onsuccess = (event) => {
-        this.db = event.target.result;
+        request.onsuccess = (event) => {
+          this.db = event.target.result;
+          resolve(this);
+        };
+
+        request.onerror = (event) => {
+          console.warn('IndexedDB unavailable, falling back to LocalStorage:', event.target.error);
+          resolve(this);
+        };
+      } catch (e) {
+        console.warn('IndexedDB open error:', e);
         resolve(this);
-      };
-
-      request.onerror = (event) => {
-        console.error('IndexedDB error:', event.target.error);
-        reject(event.target.error);
-      };
+      }
     });
   }
 
@@ -296,26 +304,34 @@ class IndexedStore {
       if (!this.db) {
         return resolve(null);
       }
-      const transaction = this.db.transaction([STORE_NAME], 'readonly');
-      const store = transaction.objectStore(STORE_NAME);
-      const request = store.get(key);
+      try {
+        const transaction = this.db.transaction([STORE_NAME], 'readonly');
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.get(key);
 
-      request.onsuccess = () => resolve(request.result || null);
-      request.onerror = () => reject(request.error);
+        request.onsuccess = () => resolve(request.result || null);
+        request.onerror = () => resolve(null);
+      } catch (e) {
+        resolve(null);
+      }
     });
   }
 
   set(key, val) {
     return new Promise((resolve, reject) => {
       if (!this.db) {
-        return reject(new Error('DB not initialized'));
+        return resolve(true);
       }
-      const transaction = this.db.transaction([STORE_NAME], 'readwrite');
-      const store = transaction.objectStore(STORE_NAME);
-      const request = store.put(val, key);
+      try {
+        const transaction = this.db.transaction([STORE_NAME], 'readwrite');
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.put(val, key);
 
-      request.onsuccess = () => resolve(true);
-      request.onerror = () => reject(request.error);
+        request.onsuccess = () => resolve(true);
+        request.onerror = () => reject(request.error);
+      } catch (e) {
+        resolve(true);
+      }
     });
   }
 }
@@ -419,6 +435,10 @@ window.CloudSyncManager = {
         activities: data.activities || [],
         gallery: data.gallery || [],
         testimonials: data.testimonials || [],
+        academicCalendar: data.academicCalendar || [],
+        schoolHabits: data.schoolHabits || [],
+        comfortStandards: data.comfortStandards || [],
+        inquiries: data.inquiries || [],
         contact: data.contact || {},
         updatedAt: new Date().toISOString(),
         syncedBy: 'Admin Web CMS'
@@ -428,7 +448,9 @@ window.CloudSyncManager = {
       this.lastSyncTime = new Date();
       localStorage.setItem('sdn2_last_cloud_sync', this.lastSyncTime.toISOString());
       console.info('[CloudSync] Berhasil menyinkronkan data ke Cloud Firestore');
-      window.dispatchEvent(new CustomEvent('cloud-sync-success', { detail: { time: this.lastSyncTime } }));
+      if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+        window.dispatchEvent(new CustomEvent('cloud-sync-success', { detail: { time: this.lastSyncTime } }));
+      }
       return true;
     } catch (err) {
       console.warn('[CloudSync] Gagal upload data ke cloud:', err);
@@ -574,10 +596,15 @@ window.SchoolDB = {
           this.data.profile.logo = 'images/logo.webp';
         }
         this.data.contact = { ...INITIAL_DATA.contact, ...this.data.contact };
-        if (!Array.isArray(this.data.facilities)) this.data.facilities = JSON.parse(JSON.stringify(INITIAL_DATA.facilities));
-        if (!Array.isArray(this.data.activities)) this.data.activities = JSON.parse(JSON.stringify(INITIAL_DATA.activities));
-        if (!Array.isArray(this.data.gallery)) this.data.gallery = JSON.parse(JSON.stringify(INITIAL_DATA.gallery));
-        if (!Array.isArray(this.data.teachers)) this.data.teachers = JSON.parse(JSON.stringify(INITIAL_DATA.teachers));
+        if (!Array.isArray(this.data.facilities)) this.data.facilities = JSON.parse(JSON.stringify(INITIAL_DATA.facilities || []));
+        if (!Array.isArray(this.data.activities)) this.data.activities = JSON.parse(JSON.stringify(INITIAL_DATA.activities || []));
+        if (!Array.isArray(this.data.gallery)) this.data.gallery = JSON.parse(JSON.stringify(INITIAL_DATA.gallery || []));
+        if (!Array.isArray(this.data.teachers)) this.data.teachers = JSON.parse(JSON.stringify(INITIAL_DATA.teachers || []));
+        if (!Array.isArray(this.data.testimonials)) this.data.testimonials = JSON.parse(JSON.stringify(INITIAL_DATA.testimonials || []));
+        if (!Array.isArray(this.data.academicCalendar)) this.data.academicCalendar = JSON.parse(JSON.stringify(INITIAL_DATA.academicCalendar || []));
+        if (!Array.isArray(this.data.schoolHabits)) this.data.schoolHabits = JSON.parse(JSON.stringify(INITIAL_DATA.schoolHabits || []));
+        if (!Array.isArray(this.data.comfortStandards)) this.data.comfortStandards = JSON.parse(JSON.stringify(INITIAL_DATA.comfortStandards || []));
+        if (!Array.isArray(this.data.inquiries)) this.data.inquiries = JSON.parse(JSON.stringify(INITIAL_DATA.inquiries || []));
         if (!Array.isArray(this.data.categories)) this.data.categories = (INITIAL_DATA.categories ? [...INITIAL_DATA.categories] : ['Akademik', 'Kepramukaan', 'Ekstrakurikuler', 'Prestasi', 'Sosial & Lingkungan', 'Umum']);
         if (!Array.isArray(this.data.auditLogs)) this.data.auditLogs = [];
         await this.save();
@@ -635,10 +662,16 @@ window.SchoolDB = {
       if (Array.isArray(cloudData.categories)) this.data.categories = cloudData.categories;
       if (Array.isArray(cloudData.gallery)) this.data.gallery = cloudData.gallery;
       if (Array.isArray(cloudData.testimonials)) this.data.testimonials = cloudData.testimonials;
+      if (Array.isArray(cloudData.academicCalendar)) this.data.academicCalendar = cloudData.academicCalendar;
+      if (Array.isArray(cloudData.schoolHabits)) this.data.schoolHabits = cloudData.schoolHabits;
+      if (Array.isArray(cloudData.comfortStandards)) this.data.comfortStandards = cloudData.comfortStandards;
+      if (Array.isArray(cloudData.inquiries)) this.data.inquiries = cloudData.inquiries;
       if (cloudData.contact) this.data.contact = { ...this.data.contact, ...cloudData.contact };
       
       await idbStore.set('siteData', this.data);
-      window.dispatchEvent(new CustomEvent('schooldb-synced', { detail: this.data }));
+      if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+        window.dispatchEvent(new CustomEvent('schooldb-synced', { detail: this.data }));
+      }
       return true;
     }
     return false;
@@ -647,7 +680,7 @@ window.SchoolDB = {
   exportBackupJSON() {
     if (!this.data) return null;
     const backupObj = {
-      version: '4.0',
+      version: '4.6',
       exportDate: new Date().toISOString(),
       school: 'SDN 2 Ngeposari',
       data: {
@@ -658,6 +691,10 @@ window.SchoolDB = {
         categories: this.data.categories,
         gallery: this.data.gallery,
         testimonials: this.data.testimonials,
+        academicCalendar: this.data.academicCalendar,
+        schoolHabits: this.data.schoolHabits,
+        comfortStandards: this.data.comfortStandards,
+        inquiries: this.data.inquiries,
         contact: this.data.contact
       }
     };
@@ -685,11 +722,17 @@ window.SchoolDB = {
     if (Array.isArray(payload.categories)) this.data.categories = payload.categories;
     if (Array.isArray(payload.gallery)) this.data.gallery = payload.gallery;
     if (Array.isArray(payload.testimonials)) this.data.testimonials = payload.testimonials;
+    if (Array.isArray(payload.academicCalendar)) this.data.academicCalendar = payload.academicCalendar;
+    if (Array.isArray(payload.schoolHabits)) this.data.schoolHabits = payload.schoolHabits;
+    if (Array.isArray(payload.comfortStandards)) this.data.comfortStandards = payload.comfortStandards;
+    if (Array.isArray(payload.inquiries)) this.data.inquiries = payload.inquiries;
     if (payload.contact) this.data.contact = { ...this.data.contact, ...payload.contact };
 
     await this.save();
     await this.logAudit('PULIHKAN', 'Sistem', 'Memulihkan data dari berkas cadangan JSON');
-    window.dispatchEvent(new CustomEvent('schooldb-synced', { detail: this.data }));
+    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+      window.dispatchEvent(new CustomEvent('schooldb-synced', { detail: this.data }));
+    }
     return true;
   },
 
@@ -1081,5 +1124,308 @@ window.SchoolDB = {
     await this.save();
     await this.logAudit('HAPUS', 'Guru', `Menghapus guru/staf "${target.name}"`);
     return true;
+  },
+
+  // ==========================================
+  // Testimonials / Kesan & Apresiasi CRUD
+  // ==========================================
+  getTestimonials() {
+    if (!this.data) return (INITIAL_DATA && INITIAL_DATA.testimonials) ? [...INITIAL_DATA.testimonials] : [];
+    if (!Array.isArray(this.data.testimonials)) {
+      this.data.testimonials = (INITIAL_DATA && INITIAL_DATA.testimonials) ? JSON.parse(JSON.stringify(INITIAL_DATA.testimonials)) : [];
+    }
+    return this.data.testimonials;
+  },
+
+  async addTestimonial(item) {
+    if (!Array.isArray(this.data.testimonials)) this.data.testimonials = [];
+    const name = this.sanitizeText(item.name || 'Wali Murid');
+    const role = this.sanitizeText(item.role || 'Orang Tua Wali');
+    const quote = this.sanitizeText(item.quote || '');
+
+    const newTesti = {
+      id: 'testi_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+      name: name,
+      role: role,
+      quote: quote,
+      avatar: item.avatar || generateSVGPlaceholder('class', name)
+    };
+    this.data.testimonials.push(newTesti);
+    await this.save();
+    await this.logAudit('TAMBAH', 'Kesan & Apresiasi', `Menambahkan kesan dari "${newTesti.name}"`);
+    return newTesti;
+  },
+
+  async updateTestimonial(id, updatedFields) {
+    if (!Array.isArray(this.data.testimonials)) this.data.testimonials = this.getTestimonials();
+    const index = this.data.testimonials.findIndex(t => String(t.id) === String(id));
+    if (index !== -1) {
+      const sanitized = {};
+      if (updatedFields.name !== undefined) sanitized.name = this.sanitizeText(updatedFields.name);
+      if (updatedFields.role !== undefined) sanitized.role = this.sanitizeText(updatedFields.role);
+      if (updatedFields.quote !== undefined) sanitized.quote = this.sanitizeText(updatedFields.quote);
+      if (updatedFields.avatar !== undefined && updatedFields.avatar !== null && updatedFields.avatar !== '') {
+        sanitized.avatar = updatedFields.avatar;
+      }
+
+      this.data.testimonials[index] = { ...this.data.testimonials[index], ...sanitized };
+      await this.save();
+      await this.logAudit('UBAH', 'Kesan & Apresiasi', `Memperbarui kesan dari "${this.data.testimonials[index].name}"`);
+      return true;
+    }
+    return false;
+  },
+
+  async deleteTestimonial(id) {
+    if (!Array.isArray(this.data.testimonials)) return false;
+    const target = this.data.testimonials.find(t => String(t.id) === String(id));
+    if (!target) return false;
+
+    this.data.testimonials = this.data.testimonials.filter(t => String(t.id) !== String(id));
+    await this.save();
+    await this.logAudit('HAPUS', 'Kesan & Apresiasi', `Menghapus kesan dari "${target.name}"`);
+    return true;
+  },
+
+  // ==========================================
+  // Academic Calendar / Agenda CRUD
+  // ==========================================
+  getCalendar() {
+    if (!this.data) return (INITIAL_DATA && INITIAL_DATA.academicCalendar) ? [...INITIAL_DATA.academicCalendar] : [];
+    if (!Array.isArray(this.data.academicCalendar)) {
+      this.data.academicCalendar = (INITIAL_DATA && INITIAL_DATA.academicCalendar) ? JSON.parse(JSON.stringify(INITIAL_DATA.academicCalendar)) : [];
+    }
+    return this.data.academicCalendar;
+  },
+
+  async addCalendarItem(item) {
+    if (!Array.isArray(this.data.academicCalendar)) this.data.academicCalendar = [];
+    const title = this.sanitizeText(item.title || 'Agenda Baru');
+    const date = this.sanitizeText(item.date || '01');
+    const month = this.sanitizeText(item.month || 'JAN').toUpperCase();
+    const desc = this.sanitizeText(item.desc || item.description || '');
+
+    const newItem = {
+      id: 'cal_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+      title: title,
+      date: date,
+      month: month,
+      desc: desc
+    };
+    this.data.academicCalendar.push(newItem);
+    await this.save();
+    await this.logAudit('TAMBAH', 'Kalender Akademik', `Menambahkan agenda "${newItem.title}"`);
+    return newItem;
+  },
+
+  async updateCalendarItem(id, updatedFields) {
+    if (!Array.isArray(this.data.academicCalendar)) this.data.academicCalendar = this.getCalendar();
+    const index = this.data.academicCalendar.findIndex(c => String(c.id) === String(id));
+    if (index !== -1) {
+      const sanitized = {};
+      if (updatedFields.title !== undefined) sanitized.title = this.sanitizeText(updatedFields.title);
+      if (updatedFields.date !== undefined) sanitized.date = this.sanitizeText(updatedFields.date);
+      if (updatedFields.month !== undefined) sanitized.month = this.sanitizeText(updatedFields.month).toUpperCase();
+      if (updatedFields.desc !== undefined) sanitized.desc = this.sanitizeText(updatedFields.desc);
+      if (updatedFields.description !== undefined) sanitized.desc = this.sanitizeText(updatedFields.description);
+
+      this.data.academicCalendar[index] = { ...this.data.academicCalendar[index], ...sanitized };
+      await this.save();
+      await this.logAudit('UBAH', 'Kalender Akademik', `Memperbarui agenda "${this.data.academicCalendar[index].title}"`);
+      return true;
+    }
+    return false;
+  },
+
+  async deleteCalendarItem(id) {
+    if (!Array.isArray(this.data.academicCalendar)) return false;
+    const target = this.data.academicCalendar.find(c => String(c.id) === String(id));
+    if (!target) return false;
+
+    this.data.academicCalendar = this.data.academicCalendar.filter(c => String(c.id) !== String(id));
+    await this.save();
+    await this.logAudit('HAPUS', 'Kalender Akademik', `Menghapus agenda "${target.title}"`);
+    return true;
+  },
+
+  // ==========================================
+  // School Habits & Culture CRUD
+  // ==========================================
+  getHabits() {
+    if (!this.data) return (INITIAL_DATA && INITIAL_DATA.schoolHabits) ? [...INITIAL_DATA.schoolHabits] : [];
+    if (!Array.isArray(this.data.schoolHabits)) {
+      this.data.schoolHabits = (INITIAL_DATA && INITIAL_DATA.schoolHabits) ? JSON.parse(JSON.stringify(INITIAL_DATA.schoolHabits)) : [];
+    }
+    return this.data.schoolHabits;
+  },
+
+  async addHabit(item) {
+    if (!Array.isArray(this.data.schoolHabits)) this.data.schoolHabits = [];
+    const title = this.sanitizeText(item.title || 'Pembiasaan Baru');
+    const desc = this.sanitizeText(item.desc || item.description || '');
+    const category = this.sanitizeText(item.category || 'Karakter');
+
+    const newHabit = {
+      id: 'habit_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+      title: title,
+      desc: desc,
+      category: category
+    };
+    this.data.schoolHabits.push(newHabit);
+    await this.save();
+    await this.logAudit('TAMBAH', 'Pembiasaan Baik', `Menambahkan pembiasaan "${newHabit.title}"`);
+    return newHabit;
+  },
+
+  async updateHabit(id, updatedFields) {
+    if (!Array.isArray(this.data.schoolHabits)) this.data.schoolHabits = this.getHabits();
+    const index = this.data.schoolHabits.findIndex(h => String(h.id) === String(id));
+    if (index !== -1) {
+      const sanitized = {};
+      if (updatedFields.title !== undefined) sanitized.title = this.sanitizeText(updatedFields.title);
+      if (updatedFields.desc !== undefined) sanitized.desc = this.sanitizeText(updatedFields.desc);
+      if (updatedFields.description !== undefined) sanitized.desc = this.sanitizeText(updatedFields.description);
+      if (updatedFields.category !== undefined) sanitized.category = this.sanitizeText(updatedFields.category);
+
+      this.data.schoolHabits[index] = { ...this.data.schoolHabits[index], ...sanitized };
+      await this.save();
+      await this.logAudit('UBAH', 'Pembiasaan Baik', `Memperbarui pembiasaan "${this.data.schoolHabits[index].title}"`);
+      return true;
+    }
+    return false;
+  },
+
+  async deleteHabit(id) {
+    if (!Array.isArray(this.data.schoolHabits)) return false;
+    const target = this.data.schoolHabits.find(h => String(h.id) === String(id));
+    if (!target) return false;
+
+    this.data.schoolHabits = this.data.schoolHabits.filter(h => String(h.id) !== String(id));
+    await this.save();
+    await this.logAudit('HAPUS', 'Pembiasaan Baik', `Menghapus pembiasaan "${target.title}"`);
+    return true;
+  },
+
+  // ==========================================
+  // Comfort & Safety Standards CRUD
+  // ==========================================
+  getComfortStandards() {
+    if (!this.data) return (INITIAL_DATA && INITIAL_DATA.comfortStandards) ? [...INITIAL_DATA.comfortStandards] : [];
+    if (!Array.isArray(this.data.comfortStandards)) {
+      this.data.comfortStandards = (INITIAL_DATA && INITIAL_DATA.comfortStandards) ? JSON.parse(JSON.stringify(INITIAL_DATA.comfortStandards)) : [];
+    }
+    return this.data.comfortStandards;
+  },
+
+  async addComfortStandard(item) {
+    if (!Array.isArray(this.data.comfortStandards)) this.data.comfortStandards = [];
+    const title = this.sanitizeText(item.title || 'Standar Kenyamanan Baru');
+    const desc = this.sanitizeText(item.desc || item.description || '');
+
+    const newComfort = {
+      id: 'comfort_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+      title: title,
+      desc: desc
+    };
+    this.data.comfortStandards.push(newComfort);
+    await this.save();
+    await this.logAudit('TAMBAH', 'Standar Kenyamanan', `Menambahkan standar kenyamanan "${newComfort.title}"`);
+    return newComfort;
+  },
+
+  async updateComfortStandard(id, updatedFields) {
+    if (!Array.isArray(this.data.comfortStandards)) this.data.comfortStandards = this.getComfortStandards();
+    const index = this.data.comfortStandards.findIndex(c => String(c.id) === String(id));
+    if (index !== -1) {
+      const sanitized = {};
+      if (updatedFields.title !== undefined) sanitized.title = this.sanitizeText(updatedFields.title);
+      if (updatedFields.desc !== undefined) sanitized.desc = this.sanitizeText(updatedFields.desc);
+      if (updatedFields.description !== undefined) sanitized.desc = this.sanitizeText(updatedFields.description);
+
+      this.data.comfortStandards[index] = { ...this.data.comfortStandards[index], ...sanitized };
+      await this.save();
+      await this.logAudit('UBAH', 'Standar Kenyamanan', `Memperbarui standar kenyamanan "${this.data.comfortStandards[index].title}"`);
+      return true;
+    }
+    return false;
+  },
+
+  async deleteComfortStandard(id) {
+    if (!Array.isArray(this.data.comfortStandards)) return false;
+    const target = this.data.comfortStandards.find(c => String(c.id) === String(id));
+    if (!target) return false;
+
+    this.data.comfortStandards = this.data.comfortStandards.filter(c => String(c.id) !== String(id));
+    await this.save();
+    await this.logAudit('HAPUS', 'Standar Kenyamanan', `Menghapus standar kenyamanan "${target.title}"`);
+    return true;
+  },
+
+  // ==========================================
+  // Consultation Inquiries / Kotak Pesan Masuk CRUD
+  // ==========================================
+  getInquiries() {
+    if (!this.data) return (INITIAL_DATA && INITIAL_DATA.inquiries) ? [...INITIAL_DATA.inquiries] : [];
+    if (!Array.isArray(this.data.inquiries)) {
+      this.data.inquiries = (INITIAL_DATA && INITIAL_DATA.inquiries) ? JSON.parse(JSON.stringify(INITIAL_DATA.inquiries)) : [];
+    }
+    return [...this.data.inquiries].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+  },
+
+  getUnreadInquiriesCount() {
+    const list = this.getInquiries();
+    return list.filter(i => !i.isRead).length;
+  },
+
+  async addInquiry(item) {
+    if (!Array.isArray(this.data.inquiries)) this.data.inquiries = [];
+    const name = this.sanitizeText(item.name || 'Pengunjung');
+    const email = this.sanitizeText(item.email || '');
+    const phone = this.sanitizeText(item.phone || item.subject || '');
+    const subject = this.sanitizeText(item.topic || item.subject || 'Konsultasi Umum');
+    const message = this.sanitizeText(item.message || '');
+    const now = new Date();
+    const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+    const newInquiry = {
+      id: 'inq_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+      name: name,
+      email: email,
+      phone: phone,
+      subject: subject,
+      message: message,
+      date: formattedDate,
+      isRead: false
+    };
+
+    this.data.inquiries.unshift(newInquiry);
+    await this.save();
+    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+      window.dispatchEvent(new CustomEvent('inquiry-received', { detail: newInquiry }));
+    }
+    return newInquiry;
+  },
+
+  async markInquiryRead(id, isRead = true) {
+    if (!Array.isArray(this.data.inquiries)) return false;
+    const index = this.data.inquiries.findIndex(i => String(i.id) === String(id));
+    if (index !== -1) {
+      this.data.inquiries[index].isRead = isRead;
+      await this.save();
+      return true;
+    }
+    return false;
+  },
+
+  async deleteInquiry(id) {
+    if (!Array.isArray(this.data.inquiries)) return false;
+    const initialLen = this.data.inquiries.length;
+    this.data.inquiries = this.data.inquiries.filter(i => String(i.id) !== String(id));
+    if (this.data.inquiries.length !== initialLen) {
+      await this.save();
+      await this.logAudit('HAPUS', 'Layanan Konsultasi', 'Menghapus pesan konsultasi masuk');
+      return true;
+    }
+    return false;
   }
 };

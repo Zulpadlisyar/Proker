@@ -140,6 +140,107 @@
       { id: 't2', name: 'Ibu Siti Nurhaliza, S.Pd.', role: 'Guru Kelas 1', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=600&fit=crop' },
       { id: 't3', name: 'Bapak Bambang Wijaya, S.Pd.', role: 'Guru PJOK', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=600&fit=crop' },
       { id: 't4', name: 'Ibu Tri Wahyuni, S.Pd.', role: 'Guru Pendidikan Agama', image: 'https://images.unsplash.com/photo-1580894732470-349f50e82e5b?w=600&h=600&fit=crop' }
+    ],
+    testimonials: [
+      {
+        id: 'testi-1',
+        name: 'Ibu Purwanti',
+        role: 'Orang Tua Wali Kelas IV',
+        quote: 'Guru-guru di SDN 2 Ngeposari sangat sabar dan penuh perhatian. Anak saya jadi lebih percaya diri, sopan, dan bersemangat berangkat sekolah setiap pagi.',
+        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'testi-2',
+        name: 'Bapak Sugiyanto',
+        role: 'Orang Tua Wali Kelas VI',
+        quote: 'Fasilitas perpustakaan dan lab komputer sangat membantu anak-anak belajar teknologi secara sehat. Pembiasaan Pramuka-nya juga melatih kemandirian.',
+        avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop'
+      },
+      {
+        id: 'testi-3',
+        name: 'Ibu Maryati',
+        role: 'Orang Tua Wali Kelas II',
+        quote: 'Lingkungan sekolah yang bersih dan hijau membuat anak-anak merasa nyaman. Komunikasi sekolah dengan orang tua wali siswa juga terjalin sangat dekat.',
+        avatar: 'https://images.unsplash.com/photo-1580894732413-87b1c31274cf?w=100&h=100&fit=crop'
+      }
+    ],
+    academicCalendar: [
+      {
+        id: 'cal-1',
+        date: '15',
+        month: 'SEP',
+        title: 'Asesmen Nasional Berbasis Komputer (ANBK)',
+        desc: 'Gladi bersih dan pelaksanaan ANBK kelas 5.'
+      },
+      {
+        id: 'cal-2',
+        date: '03',
+        month: 'OKT',
+        title: 'Perkemahan Sabtu Minggu (Persami) Pramuka',
+        desc: 'Kegiatan kepramukaan kemandirian dan keterampilan di bumi perkemahan.'
+      },
+      {
+        id: 'cal-3',
+        date: '24',
+        month: 'OKT',
+        title: 'Penilaian Tengah Semester (PTS) Ganjil',
+        desc: 'Evaluasi belajar semester ganjil seluruh jenjang kelas 1-6.'
+      }
+    ],
+    schoolHabits: [
+      {
+        id: 'habit-1',
+        title: 'Literasi 15 Menit',
+        desc: 'Pembiasaan membaca buku sebelum pelajaran dimulai untuk mengasah minat baca dan daya tangkap pengetahuan siswa.',
+        category: 'Akademik'
+      },
+      {
+        id: 'habit-2',
+        title: 'Karakter Pancasila',
+        desc: 'Integrasi nilai-nilai gotong royong, kebhinekaan, dan kejujuran dalam setiap aktivitas pembelajaran Kurikulum Merdeka.',
+        category: 'Karakter'
+      },
+      {
+        id: 'habit-3',
+        title: 'Sekolah Ramah Anak',
+        desc: 'Lingkungan bebas perundungan (anti-bullying) dengan guru pendamping yang hangat, sabar, dan komunikatif.',
+        category: 'Lingkungan'
+      },
+      {
+        id: 'habit-4',
+        title: 'Pramuka Wajib',
+        desc: 'Pembinaan kedisiplinan, kemandirian, kecintaan alam, dan kepemimpinan melalui regu Kepramukaan Penggalang.',
+        category: 'Kepemimpinan'
+      }
+    ],
+    comfortStandards: [
+      {
+        id: 'comfort-1',
+        title: 'Sanitasi & Toilet Bersih',
+        desc: 'Toilet siswa laki-laki dan perempuan terpisah yang rutin dibersihkan secara berkala setiap hari.'
+      },
+      {
+        id: 'comfort-2',
+        title: 'Wastafel Cuci Tangan',
+        desc: 'Wastafel cuci tangan lengkap dengan sabun cair tersedia di setiap selasar kelas untuk pembiasaan hidup sehat.'
+      },
+      {
+        id: 'comfort-3',
+        title: 'Kantin Sehat Sekolah',
+        desc: 'Menyediakan sarana konsumsi makanan dan minuman sehat yang higienis serta aman bagi perkembangan anak.'
+      }
+    ],
+    inquiries: [
+      {
+        id: 'inq-1',
+        name: 'Bapak Ahmad Fauzi',
+        email: 'ahmad.fauzi@gmail.com',
+        phone: '081298765432',
+        subject: 'Informasi Pendaftaran Siswa Baru (PPDB)',
+        message: 'Selamat pagi, saya ingin menanyakan jadwal resmi pembukaan PPDB untuk tahun ajaran baru dan persyaratan dokumen yang harus disiapkan. Terima kasih.',
+        date: '2026-08-30 09:15',
+        isRead: false
+      }
     ]
   };
 

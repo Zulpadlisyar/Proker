@@ -7,6 +7,9 @@ let tempTeacherBase64 = null;
 let tempFacilityBase64 = null;
 let tempActivityBase64 = null;
 let tempGalleryBase64 = null;
+let tempTestiBase64 = null;
+let inboxFilter = 'all';
+let inboxSearchQuery = '';
 
 // Form Dirty State & Active Form Tracker (Unsaved Changes)
 let isFormDirty = false;
@@ -249,9 +252,15 @@ async function initAdminPanel() {
   renderFacilitiesTable();
   renderActivitiesTable();
   renderGalleryTable();
+  renderInboxList();
+  renderTestimonialsTable();
+  renderCalendarTable();
+  renderHabitsTable();
+  renderComfortTable();
   loadContactForm();
   initCloudSyncUI();
   initCategoryManagementUI();
+  initInboxUI();
   
   // Navigation Tabs
   const navBtns = document.querySelectorAll('.admin-nav-btn');
@@ -280,6 +289,18 @@ async function initAdminPanel() {
   initSearchAndPagination();
 }
 
+function updateInboxBadge() {
+  const badge = document.getElementById('inbox-unread-badge');
+  if (!badge) return;
+  const unreadCount = window.SchoolDB.getUnreadInquiriesCount ? window.SchoolDB.getUnreadInquiriesCount() : 0;
+  if (unreadCount > 0) {
+    badge.textContent = unreadCount;
+    badge.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
 // Render Dashboard & Audit Feed
 function renderDashboard() {
   const profile = window.SchoolDB.getProfile();
@@ -287,6 +308,7 @@ function renderDashboard() {
   const facilities = window.SchoolDB.getFacilities();
   const activities = window.SchoolDB.getActivities();
   const gallery = window.SchoolDB.getGallery();
+  const inquiries = window.SchoolDB.getInquiries ? window.SchoolDB.getInquiries() : [];
   
   if (document.getElementById('stat-teachers-count')) {
     document.getElementById('stat-teachers-count').textContent = teachers.length;
@@ -300,6 +322,9 @@ function renderDashboard() {
   if (document.getElementById('stat-gallery-count')) {
     document.getElementById('stat-gallery-count').textContent = gallery.length;
   }
+  if (document.getElementById('stat-inquiries-count')) {
+    document.getElementById('stat-inquiries-count').textContent = inquiries.length;
+  }
   if (document.getElementById('stat-views-count')) {
     const totalViews = window.SchoolDB.getTotalActivityViews ? window.SchoolDB.getTotalActivityViews() : 0;
     document.getElementById('stat-views-count').textContent = totalViews;
@@ -312,6 +337,7 @@ function renderDashboard() {
     document.getElementById('dash-school-tagline').textContent = profile.tagline;
   }
 
+  updateInboxBadge();
   renderAuditFeed();
 }
 
@@ -669,10 +695,8 @@ function openTeacherModal(id = null) {
   const title = document.getElementById('admin-modal-title');
   activeModalFormId = 'form-teacher';
   
+  hideAllModalForms();
   document.getElementById('form-teacher').style.display = 'block';
-  document.getElementById('form-facility').style.display = 'none';
-  document.getElementById('form-activity').style.display = 'none';
-  document.getElementById('form-gallery').style.display = 'none';
   
   document.getElementById('form-teacher').reset();
   document.getElementById('preview-teacher-container').style.display = 'none';
@@ -855,10 +879,8 @@ function openFacilityModal(id = null) {
   const title = document.getElementById('admin-modal-title');
   activeModalFormId = 'form-facility';
   
-  document.getElementById('form-teacher').style.display = 'none';
+  hideAllModalForms();
   document.getElementById('form-facility').style.display = 'block';
-  document.getElementById('form-activity').style.display = 'none';
-  document.getElementById('form-gallery').style.display = 'none';
   
   document.getElementById('form-facility').reset();
   document.getElementById('preview-facility-container').style.display = 'none';
@@ -1054,10 +1076,8 @@ function openActivityModal(id = null) {
   const title = document.getElementById('admin-modal-title');
   activeModalFormId = 'form-activity';
   
-  document.getElementById('form-teacher').style.display = 'none';
-  document.getElementById('form-facility').style.display = 'none';
+  hideAllModalForms();
   document.getElementById('form-activity').style.display = 'block';
-  document.getElementById('form-gallery').style.display = 'none';
   
   document.getElementById('form-activity').reset();
   document.getElementById('preview-activity-container').style.display = 'none';
@@ -1248,9 +1268,7 @@ function openGalleryModal(id = null) {
   const title = document.getElementById('admin-modal-title');
   activeModalFormId = 'form-gallery';
   
-  document.getElementById('form-teacher').style.display = 'none';
-  document.getElementById('form-facility').style.display = 'none';
-  document.getElementById('form-activity').style.display = 'none';
+  hideAllModalForms();
   document.getElementById('form-gallery').style.display = 'block';
   
   document.getElementById('form-gallery').reset();
@@ -1369,6 +1387,633 @@ if (formEditContact) {
     } finally {
       setButtonSubmitting(submitBtn, false);
     }
+  });
+}
+
+// ----------------------------------------------------
+// INBOX / LAYANAN KONSULTASI MANAGEMENT
+// ----------------------------------------------------
+function initInboxUI() {
+  const filterBtns = document.querySelectorAll('.filter-inbox-btn');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      inboxFilter = btn.getAttribute('data-filter') || 'all';
+      renderInboxList();
+    });
+  });
+
+  const searchInput = document.getElementById('inbox-search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', debounce((e) => {
+      inboxSearchQuery = e.target.value.toLowerCase().trim();
+      renderInboxList();
+    }, 300));
+  }
+}
+
+function renderInboxList() {
+  const container = document.getElementById('admin-inbox-list');
+  if (!container) return;
+
+  const allInquiries = window.SchoolDB.getInquiries ? window.SchoolDB.getInquiries() : [];
+  updateInboxBadge();
+
+  let filtered = allInquiries;
+  if (inboxFilter === 'unread') {
+    filtered = filtered.filter(i => !i.isRead);
+  } else if (inboxFilter === 'read') {
+    filtered = filtered.filter(i => i.isRead);
+  }
+
+  if (inboxSearchQuery) {
+    filtered = filtered.filter(i => {
+      const q = inboxSearchQuery;
+      return (i.name && i.name.toLowerCase().includes(q)) ||
+             (i.email && i.email.toLowerCase().includes(q)) ||
+             (i.phone && i.phone.toLowerCase().includes(q)) ||
+             (i.subject && i.subject.toLowerCase().includes(q)) ||
+             (i.message && i.message.toLowerCase().includes(q));
+    });
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 40px 20px; background: var(--surface-alt); border-radius: var(--radius-card); border: 1px dashed var(--border);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); margin-bottom: 10px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <p style="margin: 0; color: var(--text-muted); font-size: 14px; font-weight: 500;">Tidak ada pesan konsultasi masuk yang sesuai.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = filtered.map(inq => {
+    const isUnread = !inq.isRead;
+    const phoneClean = (inq.phone || '').replace(/[^0-9]/g, '');
+    const waPhone = phoneClean.startsWith('0') ? '62' + phoneClean.slice(1) : phoneClean;
+    const waUrl = phoneClean
+      ? `https://wa.me/${waPhone}?text=Halo%20${encodeURIComponent(inq.name)},%20terima%20kasih%20telah%20menghubungi%20SDN%202%20Ngeposari.%20Mengenai%20pesan%20konsultasi%20Anda:%20%22${encodeURIComponent(inq.subject || 'Konsultasi')}%22`
+      : null;
+    const mailUrl = inq.email
+      ? `mailto:${inq.email}?subject=${encodeURIComponent('Tanggapan SDN 2 Ngeposari: ' + (inq.subject || 'Layanan Konsultasi'))}`
+      : null;
+
+    return `
+      <div class="inquiry-item-card" style="background: var(--surface); border: 1px solid ${isUnread ? '#BFDBFE' : 'var(--border)'}; border-left: 4px solid ${isUnread ? 'var(--primary)' : '#94A3B8'}; border-radius: var(--radius-sm); padding: 18px 20px; box-shadow: ${isUnread ? '0 4px 14px rgba(30,58,138,0.06)' : 'none'};">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <strong style="font-size: 15px; color: var(--text);">${inq.name}</strong>
+              <span style="font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 9999px; background: ${isUnread ? '#EFF6FF' : '#F1F5F9'}; color: ${isUnread ? '#1D4ED8' : '#64748B'}; border: 1px solid ${isUnread ? '#BFDBFE' : '#E2E8F0'};">
+                ${isUnread ? 'Belum Dibaca' : 'Sudah Dibaca'}
+              </span>
+            </div>
+            <div style="font-size: 12.5px; color: var(--text-muted); display: flex; gap: 14px; flex-wrap: wrap;">
+              ${inq.email ? `<span>✉️ ${inq.email}</span>` : ''}
+              ${inq.phone ? `<span>📞 ${inq.phone}</span>` : ''}
+              ${inq.subject ? `<span>📌 ${inq.subject}</span>` : ''}
+            </div>
+          </div>
+          <span style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">${inq.date || ''}</span>
+        </div>
+
+        <div style="background: var(--surface-alt); padding: 12px 14px; border-radius: var(--radius-sm); font-size: 13.5px; line-height: 1.6; color: var(--text); margin-bottom: 14px; border: 1px solid var(--border); white-space: pre-wrap;">${inq.message}</div>
+
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+          ${waUrl ? `
+            <a href="${waUrl}" target="_blank" rel="noopener" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px; background-color: #16A34A; border-color: #16A34A; color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.705 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+              Balas WhatsApp
+            </a>
+          ` : ''}
+
+          ${mailUrl ? `
+            <a href="${mailUrl}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              Balas Email
+            </a>
+          ` : ''}
+
+          <button type="button" class="btn btn-secondary btn-toggle-read-inq" data-id="${inq.id}" data-read="${inq.isRead ? 'true' : 'false'}" style="padding: 6px 12px; font-size: 12px;">
+            ${inq.isRead ? 'Tandai Belum Dibaca' : 'Tandai Sudah Dibaca'}
+          </button>
+
+          <button type="button" class="btn btn-danger-outline btn-delete-inq" data-id="${inq.id}" style="padding: 6px 12px; font-size: 12px; margin-left: auto;">
+            Hapus
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll('.btn-toggle-read-inq').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      const isCurrentlyRead = e.currentTarget.getAttribute('data-read') === 'true';
+      await window.SchoolDB.markInquiryRead(id, !isCurrentlyRead);
+      renderInboxList();
+      renderDashboard();
+    });
+  });
+
+  container.querySelectorAll('.btn-delete-inq').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      if (confirm('Hapus pesan konsultasi ini? Tindakan tidak dapat dibatalkan.')) {
+        await window.SchoolDB.deleteInquiry(id);
+        showAdminToast('Pesan konsultasi berhasil dihapus.', 'success', 'Pesan Dihapus');
+        renderInboxList();
+        renderDashboard();
+      }
+    });
+  });
+}
+
+// ----------------------------------------------------
+// TESTIMONIALS / KESAN & APRESIASI MANAGEMENT
+// ----------------------------------------------------
+function renderTestimonialsTable() {
+  const listBody = document.getElementById('admin-testimonials-list');
+  if (!listBody) return;
+
+  const testimonials = window.SchoolDB.getTestimonials ? window.SchoolDB.getTestimonials() : [];
+  if (testimonials.length === 0) {
+    listBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 2rem; color:var(--text-muted);">Belum ada data kesan & testimoni.</td></tr>`;
+    return;
+  }
+
+  listBody.innerHTML = testimonials.map(t => `
+    <tr>
+      <td style="width:60px;">
+        <img src="${t.avatar || 'images/logo.webp'}" alt="${t.name}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid var(--border);" onerror="this.src='images/logo.webp'">
+      </td>
+      <td>
+        <strong>${t.name}</strong><br>
+        <span style="font-size:12px; color:var(--text-muted);">${t.role || 'Orang Tua Wali'}</span>
+      </td>
+      <td>
+        <span style="font-size:13px; color:var(--text); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">"${t.quote}"</span>
+      </td>
+      <td style="width:140px; white-space:nowrap;">
+        <button class="btn btn-secondary btn-edit-testi" data-id="${t.id}" style="padding:4px 8px; font-size:12px; margin-right:4px;">Edit</button>
+        <button class="btn btn-danger-outline btn-delete-testi" data-id="${t.id}" style="padding:4px 8px; font-size:12px;">Hapus</button>
+      </td>
+    </tr>
+  `).join('');
+
+  listBody.querySelectorAll('.btn-edit-testi').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      openTestimonialModal(id);
+    });
+  });
+
+  listBody.querySelectorAll('.btn-delete-testi').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      if (confirm('Hapus testimoni ini?')) {
+        await window.SchoolDB.deleteTestimonial(id);
+        showAdminToast('Testimoni berhasil dihapus.', 'success', 'Testimoni Dihapus');
+        renderTestimonialsTable();
+      }
+    });
+  });
+}
+
+function openTestimonialModal(id = null) {
+  const modal = document.getElementById('admin-modal-overlay');
+  const title = document.getElementById('admin-modal-title');
+  activeModalFormId = 'form-testimonial';
+
+  hideAllModalForms();
+  document.getElementById('form-testimonial').style.display = 'block';
+  document.getElementById('form-testimonial').reset();
+  document.getElementById('preview-testi-container').style.display = 'none';
+  document.getElementById('preview-testi-img').src = '';
+  document.getElementById('label-testi-upload').textContent = 'Klik untuk pilih gambar';
+  tempTestiBase64 = null;
+  hideCompressionBadge('compression-badge-testi');
+  clearDirty();
+
+  if (id) {
+    title.textContent = 'Edit Kesan & Testimoni';
+    const item = window.SchoolDB.getTestimonials().find(t => String(t.id) === String(id));
+    if (item) {
+      document.getElementById('testi-id').value = item.id;
+      document.getElementById('testi-name').value = item.name;
+      document.getElementById('testi-role').value = item.role || '';
+      document.getElementById('testi-quote').value = item.quote || '';
+      if (item.avatar) {
+        document.getElementById('preview-testi-img').src = item.avatar;
+        document.getElementById('preview-testi-container').style.display = 'block';
+        document.getElementById('label-testi-upload').textContent = 'Foto saat ini (Klik untuk ganti)';
+        tempTestiBase64 = item.avatar;
+      }
+    }
+  } else {
+    title.textContent = 'Tambah Kesan & Testimoni Baru';
+    document.getElementById('testi-id').value = '';
+  }
+
+  attachDirtyListeners('form-testimonial');
+  modal.classList.add('open');
+}
+
+const formTestimonial = document.getElementById('form-testimonial');
+if (formTestimonial) {
+  formTestimonial.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = formTestimonial.querySelector('button[type="submit"]');
+    const id = document.getElementById('testi-id').value;
+    const name = document.getElementById('testi-name').value;
+    const role = document.getElementById('testi-role').value;
+    const quote = document.getElementById('testi-quote').value;
+
+    setButtonSubmitting(submitBtn, true, 'Menyimpan Testimoni...');
+    try {
+      if (id) {
+        await window.SchoolDB.updateTestimonial(id, { name, role, quote, avatar: tempTestiBase64 });
+        showAdminToast('Testimoni berhasil diperbarui.', 'success', 'Testimoni Diperbarui');
+      } else {
+        await window.SchoolDB.addTestimonial({ name, role, quote, avatar: tempTestiBase64 });
+        showAdminToast('Testimoni baru berhasil ditambahkan!', 'success', 'Testimoni Ditambahkan');
+      }
+      clearDirty();
+      closeModal(true);
+      renderTestimonialsTable();
+    } catch (err) {
+      showAdminToast('Gagal menyimpan testimoni: ' + err.message, 'error');
+    } finally {
+      setButtonSubmitting(submitBtn, false);
+    }
+  });
+}
+
+const addTestimonialBtn = document.getElementById('btn-add-testimonial');
+if (addTestimonialBtn) {
+  addTestimonialBtn.addEventListener('click', () => openTestimonialModal());
+}
+
+const testiFileInput = document.getElementById('testi-file');
+if (testiFileInput) {
+  testiFileInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 300, maxHeight: 300, quality: 0.82 }) : fileToBase64(file, 300));
+        tempTestiBase64 = typeof res === 'object' ? res.dataUrl : res;
+        document.getElementById('preview-testi-img').src = tempTestiBase64;
+        document.getElementById('preview-testi-container').style.display = 'block';
+        document.getElementById('label-testi-upload').textContent = 'Foto siap';
+        if (typeof res === 'object') showCompressionBadge('compression-badge-testi', res);
+        markDirty();
+      } catch (err) {
+        showAdminToast(err.message || 'Gagal memproses foto.', 'error');
+      }
+    }
+  });
+}
+
+// ----------------------------------------------------
+// ACADEMIC CALENDAR & AGENDA MANAGEMENT
+// ----------------------------------------------------
+function renderCalendarTable() {
+  const listBody = document.getElementById('admin-calendar-list');
+  if (!listBody) return;
+
+  const calendarEvents = window.SchoolDB.getCalendar ? window.SchoolDB.getCalendar() : [];
+  if (calendarEvents.length === 0) {
+    listBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 2rem; color:var(--text-muted);">Belum ada agenda kalender akademik.</td></tr>`;
+    return;
+  }
+
+  listBody.innerHTML = calendarEvents.map(c => `
+    <tr>
+      <td style="width:100px;">
+        <span style="display:inline-block; text-align:center; background:var(--primary); color:#fff; padding:4px 8px; border-radius:4px; font-weight:700; font-size:12px; line-height:1.2;">
+          ${c.month || 'BLN'}<br><span style="font-size:16px; font-weight:800;">${c.date || '01'}</span>
+        </span>
+      </td>
+      <td><strong>${c.title}</strong></td>
+      <td><span style="font-size:13px; color:var(--text-muted);">${c.desc || c.description || '-'}</span></td>
+      <td style="width:140px; white-space:nowrap;">
+        <button class="btn btn-secondary btn-edit-calendar" data-id="${c.id}" style="padding:4px 8px; font-size:12px; margin-right:4px;">Edit</button>
+        <button class="btn btn-danger-outline btn-delete-calendar" data-id="${c.id}" style="padding:4px 8px; font-size:12px;">Hapus</button>
+      </td>
+    </tr>
+  `).join('');
+
+  listBody.querySelectorAll('.btn-edit-calendar').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      openCalendarModal(id);
+    });
+  });
+
+  listBody.querySelectorAll('.btn-delete-calendar').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      if (confirm('Hapus agenda ini?')) {
+        await window.SchoolDB.deleteCalendarItem(id);
+        showAdminToast('Agenda berhasil dihapus.', 'success', 'Agenda Dihapus');
+        renderCalendarTable();
+      }
+    });
+  });
+}
+
+function openCalendarModal(id = null) {
+  const modal = document.getElementById('admin-modal-overlay');
+  const title = document.getElementById('admin-modal-title');
+  activeModalFormId = 'form-calendar';
+
+  hideAllModalForms();
+  document.getElementById('form-calendar').style.display = 'block';
+  document.getElementById('form-calendar').reset();
+  clearDirty();
+
+  if (id) {
+    title.textContent = 'Edit Agenda Kalender';
+    const item = window.SchoolDB.getCalendar().find(c => String(c.id) === String(id));
+    if (item) {
+      document.getElementById('calendar-id').value = item.id;
+      document.getElementById('calendar-title').value = item.title;
+      document.getElementById('calendar-date').value = item.date || '';
+      document.getElementById('calendar-month').value = item.month || '';
+      document.getElementById('calendar-desc').value = item.desc || item.description || '';
+    }
+  } else {
+    title.textContent = 'Tambah Agenda Kalender Baru';
+    document.getElementById('calendar-id').value = '';
+  }
+
+  attachDirtyListeners('form-calendar');
+  modal.classList.add('open');
+}
+
+const formCalendar = document.getElementById('form-calendar');
+if (formCalendar) {
+  formCalendar.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = formCalendar.querySelector('button[type="submit"]');
+    const id = document.getElementById('calendar-id').value;
+    const title = document.getElementById('calendar-title').value;
+    const date = document.getElementById('calendar-date').value;
+    const month = document.getElementById('calendar-month').value;
+    const desc = document.getElementById('calendar-desc').value;
+
+    setButtonSubmitting(submitBtn, true, 'Menyimpan Agenda...');
+    try {
+      if (id) {
+        await window.SchoolDB.updateCalendarItem(id, { title, date, month, desc });
+        showAdminToast('Agenda berhasil diperbarui.', 'success', 'Agenda Diperbarui');
+      } else {
+        await window.SchoolDB.addCalendarItem({ title, date, month, desc });
+        showAdminToast('Agenda baru berhasil ditambahkan!', 'success', 'Agenda Ditambahkan');
+      }
+      clearDirty();
+      closeModal(true);
+      renderCalendarTable();
+    } catch (err) {
+      showAdminToast('Gagal menyimpan agenda: ' + err.message, 'error');
+    } finally {
+      setButtonSubmitting(submitBtn, false);
+    }
+  });
+}
+
+const addCalendarBtn = document.getElementById('btn-add-calendar');
+if (addCalendarBtn) {
+  addCalendarBtn.addEventListener('click', () => openCalendarModal());
+}
+
+// ----------------------------------------------------
+// SCHOOL HABITS & CULTURE MANAGEMENT
+// ----------------------------------------------------
+function renderHabitsTable() {
+  const listBody = document.getElementById('admin-habits-list');
+  if (!listBody) return;
+
+  const habits = window.SchoolDB.getHabits ? window.SchoolDB.getHabits() : [];
+  if (habits.length === 0) {
+    listBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 2rem; color:var(--text-muted);">Belum ada data pembiasaan baik.</td></tr>`;
+    return;
+  }
+
+  listBody.innerHTML = habits.map(h => `
+    <tr>
+      <td><strong>${h.title}</strong></td>
+      <td><span style="font-size:12px; padding:3px 8px; border-radius:12px; background:#EFF6FF; color:#1D4ED8; font-weight:600;">${h.category || 'Karakter'}</span></td>
+      <td><span style="font-size:13px; color:var(--text-muted);">${h.desc || h.description || '-'}</span></td>
+      <td style="width:140px; white-space:nowrap;">
+        <button class="btn btn-secondary btn-edit-habit" data-id="${h.id}" style="padding:4px 8px; font-size:12px; margin-right:4px;">Edit</button>
+        <button class="btn btn-danger-outline btn-delete-habit" data-id="${h.id}" style="padding:4px 8px; font-size:12px;">Hapus</button>
+      </td>
+    </tr>
+  `).join('');
+
+  listBody.querySelectorAll('.btn-edit-habit').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      openHabitModal(id);
+    });
+  });
+
+  listBody.querySelectorAll('.btn-delete-habit').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      if (confirm('Hapus pembiasaan ini?')) {
+        await window.SchoolDB.deleteHabit(id);
+        showAdminToast('Pembiasaan berhasil dihapus.', 'success', 'Pembiasaan Dihapus');
+        renderHabitsTable();
+      }
+    });
+  });
+}
+
+function openHabitModal(id = null) {
+  const modal = document.getElementById('admin-modal-overlay');
+  const title = document.getElementById('admin-modal-title');
+  activeModalFormId = 'form-habit';
+
+  hideAllModalForms();
+  document.getElementById('form-habit').style.display = 'block';
+  document.getElementById('form-habit').reset();
+  clearDirty();
+
+  if (id) {
+    title.textContent = 'Edit Pembiasaan Baik & Budaya';
+    const item = window.SchoolDB.getHabits().find(h => String(h.id) === String(id));
+    if (item) {
+      document.getElementById('habit-id').value = item.id;
+      document.getElementById('habit-title').value = item.title;
+      document.getElementById('habit-category').value = item.category || 'Karakter';
+      document.getElementById('habit-desc').value = item.desc || item.description || '';
+    }
+  } else {
+    title.textContent = 'Tambah Pembiasaan Baik Baru';
+    document.getElementById('habit-id').value = '';
+    document.getElementById('habit-category').value = 'Karakter';
+  }
+
+  attachDirtyListeners('form-habit');
+  modal.classList.add('open');
+}
+
+const formHabit = document.getElementById('form-habit');
+if (formHabit) {
+  formHabit.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = formHabit.querySelector('button[type="submit"]');
+    const id = document.getElementById('habit-id').value;
+    const title = document.getElementById('habit-title').value;
+    const category = document.getElementById('habit-category').value;
+    const desc = document.getElementById('habit-desc').value;
+
+    setButtonSubmitting(submitBtn, true, 'Menyimpan Pembiasaan...');
+    try {
+      if (id) {
+        await window.SchoolDB.updateHabit(id, { title, category, desc });
+        showAdminToast('Pembiasaan berhasil diperbarui.', 'success', 'Pembiasaan Diperbarui');
+      } else {
+        await window.SchoolDB.addHabit({ title, category, desc });
+        showAdminToast('Pembiasaan baru berhasil ditambahkan!', 'success', 'Pembiasaan Ditambahkan');
+      }
+      clearDirty();
+      closeModal(true);
+      renderHabitsTable();
+    } catch (err) {
+      showAdminToast('Gagal menyimpan pembiasaan: ' + err.message, 'error');
+    } finally {
+      setButtonSubmitting(submitBtn, false);
+    }
+  });
+}
+
+const addHabitBtn = document.getElementById('btn-add-habit');
+if (addHabitBtn) {
+  addHabitBtn.addEventListener('click', () => openHabitModal());
+}
+
+// ----------------------------------------------------
+// COMFORT & SAFETY STANDARDS MANAGEMENT
+// ----------------------------------------------------
+function renderComfortTable() {
+  const listBody = document.getElementById('admin-comfort-list');
+  if (!listBody) return;
+
+  const standards = window.SchoolDB.getComfortStandards ? window.SchoolDB.getComfortStandards() : [];
+  if (standards.length === 0) {
+    listBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding: 2rem; color:var(--text-muted);">Belum ada data standar kenyamanan.</td></tr>`;
+    return;
+  }
+
+  listBody.innerHTML = standards.map(s => `
+    <tr>
+      <td><strong>${s.title}</strong></td>
+      <td><span style="font-size:13px; color:var(--text-muted);">${s.desc || s.description || '-'}</span></td>
+      <td style="width:140px; white-space:nowrap;">
+        <button class="btn btn-secondary btn-edit-comfort" data-id="${s.id}" style="padding:4px 8px; font-size:12px; margin-right:4px;">Edit</button>
+        <button class="btn btn-danger-outline btn-delete-comfort" data-id="${s.id}" style="padding:4px 8px; font-size:12px;">Hapus</button>
+      </td>
+    </tr>
+  `).join('');
+
+  listBody.querySelectorAll('.btn-edit-comfort').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      openComfortModal(id);
+    });
+  });
+
+  listBody.querySelectorAll('.btn-delete-comfort').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = e.currentTarget.getAttribute('data-id');
+      if (confirm('Hapus standar kenyamanan ini?')) {
+        await window.SchoolDB.deleteComfortStandard(id);
+        showAdminToast('Standar kenyamanan berhasil dihapus.', 'success', 'Standar Dihapus');
+        renderComfortTable();
+      }
+    });
+  });
+}
+
+function openComfortModal(id = null) {
+  const modal = document.getElementById('admin-modal-overlay');
+  const title = document.getElementById('admin-modal-title');
+  activeModalFormId = 'form-comfort';
+
+  hideAllModalForms();
+  document.getElementById('form-comfort').style.display = 'block';
+  document.getElementById('form-comfort').reset();
+  clearDirty();
+
+  if (id) {
+    title.textContent = 'Edit Standar Kenyamanan';
+    const item = window.SchoolDB.getComfortStandards().find(s => String(s.id) === String(id));
+    if (item) {
+      document.getElementById('comfort-id').value = item.id;
+      document.getElementById('comfort-title').value = item.title;
+      document.getElementById('comfort-desc').value = item.desc || item.description || '';
+    }
+  } else {
+    title.textContent = 'Tambah Standar Kenyamanan Baru';
+    document.getElementById('comfort-id').value = '';
+  }
+
+  attachDirtyListeners('form-comfort');
+  modal.classList.add('open');
+}
+
+const formComfort = document.getElementById('form-comfort');
+if (formComfort) {
+  formComfort.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = formComfort.querySelector('button[type="submit"]');
+    const id = document.getElementById('comfort-id').value;
+    const title = document.getElementById('comfort-title').value;
+    const desc = document.getElementById('comfort-desc').value;
+
+    setButtonSubmitting(submitBtn, true, 'Menyimpan Standar...');
+    try {
+      if (id) {
+        await window.SchoolDB.updateComfortStandard(id, { title, desc });
+        showAdminToast('Standar kenyamanan berhasil diperbarui.', 'success', 'Standar Diperbarui');
+      } else {
+        await window.SchoolDB.addComfortStandard({ title, desc });
+        showAdminToast('Standar kenyamanan baru berhasil ditambahkan!', 'success', 'Standar Ditambahkan');
+      }
+      clearDirty();
+      closeModal(true);
+      renderComfortTable();
+    } catch (err) {
+      showAdminToast('Gagal menyimpan standar: ' + err.message, 'error');
+    } finally {
+      setButtonSubmitting(submitBtn, false);
+    }
+  });
+}
+
+const addComfortBtn = document.getElementById('btn-add-comfort');
+if (addComfortBtn) {
+  addComfortBtn.addEventListener('click', () => openComfortModal());
+}
+
+function hideAllModalForms() {
+  const formIds = [
+    'form-teacher',
+    'form-facility',
+    'form-activity',
+    'form-gallery',
+    'form-testimonial',
+    'form-calendar',
+    'form-habit',
+    'form-comfort'
+  ];
+  formIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
   });
 }
 

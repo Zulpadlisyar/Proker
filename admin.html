@@ -98,6 +98,27 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
           Kelola Galeri
         </button>
+        <button class="admin-nav-btn" data-target="pane-inbox">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span>Pesan Masuk</span>
+          <span class="inbox-badge" id="inbox-unread-badge" style="display:none; background:#DC2626; color:#fff; font-size:10px; font-weight:700; padding:2px 7px; border-radius:10px; margin-left:auto;">0</span>
+        </button>
+        <button class="admin-nav-btn" data-target="pane-testimonials">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Kesan & Apresiasi
+        </button>
+        <button class="admin-nav-btn" data-target="pane-calendar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Kalender Akademik
+        </button>
+        <button class="admin-nav-btn" data-target="pane-habits">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 14.7255 3.09032 17.1962 4.85857 19" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="7.5" cy="10.5" r="1.5" fill="currentColor"/><circle cx="11.5" cy="7.5" r="1.5" fill="currentColor"/><circle cx="16.5" cy="9.5" r="1.5" fill="currentColor"/></svg>
+          Pembiasaan & Budaya
+        </button>
+        <button class="admin-nav-btn" data-target="pane-comfort">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Standar Kenyamanan
+        </button>
         <button class="admin-nav-btn" data-target="pane-contact">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
           Ubah Kontak
@@ -142,6 +163,13 @@
               <div>
                 <p class="stat-label">Dokumentasi</p>
                 <p style="font-size:0.8rem; color:var(--text-muted);">Galeri foto</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-num" id="stat-inquiries-count">0</span>
+              <div>
+                <p class="stat-label">Pesan Masuk</p>
+                <p style="font-size:0.8rem; color:var(--text-muted);">Konsultasi publik</p>
               </div>
             </div>
             <div class="stat-card">
@@ -430,6 +458,128 @@
           </div>
         </div>
 
+        <!-- PANEL INBOX / LAYANAN KONSULTASI -->
+        <div class="admin-tab-pane" id="pane-inbox">
+          <div class="admin-card">
+            <div class="admin-card-title">
+              <span>Kotak Pesan Masuk (Layanan Konsultasi Publik)</span>
+              <span style="font-size: 13px; font-weight: normal; color: var(--text-muted);">Pesan dari formulir website kontak</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 12px; flex-wrap: wrap;">
+              <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn btn-secondary filter-inbox-btn active" data-filter="all" style="padding: 6px 12px; font-size: 12.5px;">Semua</button>
+                <button type="button" class="btn btn-secondary filter-inbox-btn" data-filter="unread" style="padding: 6px 12px; font-size: 12.5px;">Belum Dibaca</button>
+                <button type="button" class="btn btn-secondary filter-inbox-btn" data-filter="read" style="padding: 6px 12px; font-size: 12.5px;">Sudah Dibaca</button>
+              </div>
+              <input type="text" id="inbox-search-input" class="form-control" placeholder="Cari nama, email, atau pesan..." style="max-width: 280px; padding: 6px 12px; font-size: 13px;">
+            </div>
+
+            <div id="admin-inbox-list" style="display: flex; flex-direction: column; gap: 14px;">
+              <!-- Dynamic JS render -->
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL KESAN & APRESIASI (TESTIMONI) -->
+        <div class="admin-tab-pane" id="pane-testimonials">
+          <div class="admin-card">
+            <div class="admin-card-title">
+              <span>Kelola Kesan & Apresiasi (Testimoni)</span>
+              <button id="btn-add-testimonial" class="btn btn-primary" style="font-size: 0.85rem; padding: 6px 14px;">+ Tambah Kesan</button>
+            </div>
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Foto</th>
+                    <th>Nama & Peran</th>
+                    <th>Kutipan / Kesan</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-testimonials-list">
+                  <!-- Dynamic JS render -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL KALENDER AKADEMIK -->
+        <div class="admin-tab-pane" id="pane-calendar">
+          <div class="admin-card">
+            <div class="admin-card-title">
+              <span>Kelola Kalender Akademik & Agenda</span>
+              <button id="btn-add-calendar" class="btn btn-primary" style="font-size: 0.85rem; padding: 6px 14px;">+ Tambah Agenda</button>
+            </div>
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Jadwal</th>
+                    <th>Judul Agenda</th>
+                    <th>Keterangan</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-calendar-list">
+                  <!-- Dynamic JS render -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL PEMBIASAAN & BUDAYA SEKOLAH -->
+        <div class="admin-tab-pane" id="pane-habits">
+          <div class="admin-card">
+            <div class="admin-card-title">
+              <span>Kelola Pembiasaan Baik & Budaya Sekolah</span>
+              <button id="btn-add-habit" class="btn btn-primary" style="font-size: 0.85rem; padding: 6px 14px;">+ Tambah Pembiasaan</button>
+            </div>
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Judul Pembiasaan</th>
+                    <th>Kategori</th>
+                    <th>Deskripsi</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-habits-list">
+                  <!-- Dynamic JS render -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL STANDAR KENYAMANAN -->
+        <div class="admin-tab-pane" id="pane-comfort">
+          <div class="admin-card">
+            <div class="admin-card-title">
+              <span>Kelola Standar Kenyamanan & Kebersihan</span>
+              <button id="btn-add-comfort" class="btn btn-primary" style="font-size: 0.85rem; padding: 6px 14px;">+ Tambah Standar</button>
+            </div>
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Judul Standar</th>
+                    <th>Deskripsi Standar</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-comfort-list">
+                  <!-- Dynamic JS render -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
         <!-- 7. PANEL UBAH KONTAK -->
         <div class="admin-tab-pane" id="pane-contact">
           <div class="admin-card">
@@ -666,6 +816,91 @@
           <button type="submit" class="btn btn-primary" style="width:100%; margin-top: var(--space-3);">Simpan Foto</button>
         </form>
 
+        <!-- Form 5: Testimonial Form -->
+        <form id="form-testimonial" style="display:none;">
+          <input type="hidden" id="testi-id">
+          <div class="form-group">
+            <label for="testi-name">Nama Orang Tua / Alumni</label>
+            <input type="text" id="testi-name" class="form-control" placeholder="Contoh: Ibu Purwanti" required>
+          </div>
+          <div class="form-group">
+            <label for="testi-role">Peran / Hubungan</label>
+            <input type="text" id="testi-role" class="form-control" placeholder="Contoh: Orang Tua Wali Kelas IV / Alumni" required>
+          </div>
+          <div class="form-group">
+            <label for="testi-quote">Kesan & Kutipan</label>
+            <textarea id="testi-quote" class="form-control" style="min-height: 90px;" placeholder="Tuliskan testimoni atau kesan di sini..." required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Foto Profil (Opsional)</label>
+            <div class="image-upload-area">
+              <p id="label-testi-upload">Klik untuk pilih gambar</p>
+              <input type="file" id="testi-file" accept="image/*">
+              <div id="preview-testi-container" class="upload-preview">
+                <img id="preview-testi-img" src="" alt="Pratinjau Foto Testimoni">
+              </div>
+            </div>
+            <div id="compression-badge-testi" class="compression-info-badge" style="display:none; margin-top:8px; font-size:12px; padding:6px 10px; border-radius:4px; background:#EFF6FF; border:1px solid #BFDBFE; color:#1D4ED8; font-weight:600;"></div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; margin-top: var(--space-3);">Simpan Kesan & Testimoni</button>
+        </form>
+
+        <!-- Form 6: Calendar Form -->
+        <form id="form-calendar" style="display:none;">
+          <input type="hidden" id="calendar-id">
+          <div class="form-group">
+            <label for="calendar-title">Judul Agenda / Kegiatan</label>
+            <input type="text" id="calendar-title" class="form-control" placeholder="Contoh: Asesmen Nasional Berbasis Komputer (ANBK)" required>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label for="calendar-date">Tanggal (Angka)</label>
+              <input type="text" id="calendar-date" class="form-control" placeholder="Contoh: 15 / 15-18" required>
+            </div>
+            <div class="form-group">
+              <label for="calendar-month">Bulan (Singkatan)</label>
+              <input type="text" id="calendar-month" class="form-control" placeholder="Contoh: SEP / OKT / NOV" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="calendar-desc">Keterangan Singkat</label>
+            <textarea id="calendar-desc" class="form-control" style="min-height: 70px;" placeholder="Penjelasan ringkas agenda..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; margin-top: var(--space-3);">Simpan Agenda Kalender</button>
+        </form>
+
+        <!-- Form 7: Habit Form -->
+        <form id="form-habit" style="display:none;">
+          <input type="hidden" id="habit-id">
+          <div class="form-group">
+            <label for="habit-title">Judul Pembiasaan / Budaya</label>
+            <input type="text" id="habit-title" class="form-control" placeholder="Contoh: Literasi 15 Menit Pagi" required>
+          </div>
+          <div class="form-group">
+            <label for="habit-category">Kategori Pilar</label>
+            <input type="text" id="habit-category" class="form-control" placeholder="Contoh: Akademik / Karakter / Lingkungan" required>
+          </div>
+          <div class="form-group">
+            <label for="habit-desc">Deskripsi Pembiasaan</label>
+            <textarea id="habit-desc" class="form-control" style="min-height: 90px;" placeholder="Penjelasan cara pelaksanaan pembiasaan..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; margin-top: var(--space-3);">Simpan Pembiasaan</button>
+        </form>
+
+        <!-- Form 8: Comfort Standard Form -->
+        <form id="form-comfort" style="display:none;">
+          <input type="hidden" id="comfort-id">
+          <div class="form-group">
+            <label for="comfort-title">Judul Standar Kenyamanan</label>
+            <input type="text" id="comfort-title" class="form-control" placeholder="Contoh: Sanitasi & Toilet Bersih" required>
+          </div>
+          <div class="form-group">
+            <label for="comfort-desc">Deskripsi Standar</label>
+            <textarea id="comfort-desc" class="form-control" style="min-height: 90px;" placeholder="Penjelasan standar kebersihan dan fasilitas..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; margin-top: var(--space-3);">Simpan Standar Kenyamanan</button>
+        </form>
+
       </div>
     </div>
   </div>
@@ -712,10 +947,10 @@
   </div>
 
   <!-- Modular Architecture Bundles -->
-  <script src="js/config/constants.js?v=4.0"></script>
-  <script src="js/utils/formatters.js?v=4.0"></script>
-  <script src="js/utils/guards.js?v=4.0"></script>
-  <script src="js/db.js?v=4.0"></script>
-  <script src="js/admin.js?v=4.0"></script>
+  <script src="js/config/constants.js?v=4.6"></script>
+  <script src="js/utils/formatters.js?v=4.6"></script>
+  <script src="js/utils/guards.js?v=4.6"></script>
+  <script src="js/db.js?v=4.6"></script>
+  <script src="js/admin.js?v=4.6"></script>
 </body>
 </html>

@@ -242,55 +242,72 @@ function clearDirty() {
   isFormDirty = false;
 }
 
-// Initialize Admin Panel
+// Initialize Admin Panel with resilient error isolation
 async function initAdminPanel() {
-  await window.SchoolDB.init();
+  try {
+    await window.SchoolDB.init();
+  } catch (e) {
+    console.error('SchoolDB init error:', e);
+  }
   
-  renderDashboard();
-  loadProfileForm();
-  renderTeachersTable();
-  renderFacilitiesTable();
-  renderActivitiesTable();
-  renderGalleryTable();
-  renderInboxList();
-  renderTestimonialsTable();
-  renderCalendarTable();
-  renderHabitsTable();
-  renderComfortTable();
-  loadContactForm();
-  initCloudSyncUI();
-  initCategoryManagementUI();
-  initInboxUI();
-  
-  // Navigation Tabs with Resilient Event Delegation & Dynamic Pane Refresh
-  const adminSidebar = document.querySelector('.admin-sidebar');
-  if (adminSidebar) {
-    adminSidebar.onclick = (e) => {
-      const btn = e.target.closest('.admin-nav-btn');
-      if (!btn) return;
-      
-      const targetId = btn.getAttribute('data-target');
-      if (!targetId) return;
+  const tasks = [
+    ['Dashboard', renderDashboard],
+    ['Profile Form', loadProfileForm],
+    ['Teachers Table', renderTeachersTable],
+    ['Facilities Table', renderFacilitiesTable],
+    ['Activities Table', renderActivitiesTable],
+    ['Gallery Table', renderGalleryTable],
+    ['Inbox List', renderInboxList],
+    ['Testimonials Table', renderTestimonialsTable],
+    ['Calendar Table', renderCalendarTable],
+    ['Habits Table', renderHabitsTable],
+    ['Comfort Table', renderComfortTable],
+    ['Contact Form', loadContactForm],
+    ['Cloud Sync UI', initCloudSyncUI],
+    ['Category Management UI', initCategoryManagementUI],
+    ['Inbox UI', initInboxUI],
+    ['Search & Pagination', initSearchAndPagination]
+  ];
 
-      if (isFormDirty) {
-        if (!confirm('Ada perubahan form yang belum disimpan. Tetap berpindah menu?')) {
-          return;
-        }
-        clearDirty();
+  tasks.forEach(([name, fn]) => {
+    try {
+      if (typeof fn === 'function') fn();
+    } catch (err) {
+      console.error(`Gagal memuat modul ${name}:`, err);
+    }
+  });
+
+  clearDirty(); // Start clean
+}
+
+// ----------------------------------------------------
+// UNIVERSAL DELEGATED ACTION DISPATCHER FOR ALL BUTTONS
+// ----------------------------------------------------
+document.addEventListener('click', async (e) => {
+  // 1. Admin Sidebar Navigation Tabs
+  const navBtn = e.target.closest('.admin-nav-btn');
+  if (navBtn) {
+    e.preventDefault();
+    const targetId = navBtn.getAttribute('data-target');
+    if (!targetId) return;
+
+    if (isFormDirty) {
+      if (!confirm('Ada perubahan form yang belum disimpan. Tetap berpindah menu?')) {
+        return;
       }
+      clearDirty();
+    }
+    
+    document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.admin-tab-pane').forEach(p => p.classList.remove('active'));
+    
+    navBtn.classList.add('active');
+    const targetPane = document.getElementById(targetId);
+    if (targetPane) {
+      targetPane.classList.add('active');
       
-      const navBtns = document.querySelectorAll('.admin-nav-btn');
-      const panes = document.querySelectorAll('.admin-tab-pane');
-
-      navBtns.forEach(b => b.classList.remove('active'));
-      panes.forEach(p => p.classList.remove('active'));
-      
-      btn.classList.add('active');
-      const targetPane = document.getElementById(targetId);
-      if (targetPane) {
-        targetPane.classList.add('active');
-        
-        // Refresh specific pane content on activation
+      // Safely refresh specific pane content
+      try {
         if (targetId === 'pane-dashboard') renderDashboard();
         else if (targetId === 'pane-inbox') renderInboxList();
         else if (targetId === 'pane-testimonials') renderTestimonialsTable();
@@ -301,19 +318,291 @@ async function initAdminPanel() {
         else if (targetId === 'pane-facilities') renderFacilitiesTable();
         else if (targetId === 'pane-activities') renderActivitiesTable();
         else if (targetId === 'pane-gallery') renderGalleryTable();
-        
-        // Scroll to top of content
-        const adminContent = document.querySelector('.admin-content');
-        if (adminContent) adminContent.scrollTop = 0;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        console.error(`Gagal memuat pane ${targetId}:`, err);
       }
-    };
+      
+      const adminContent = document.querySelector('.admin-content');
+      if (adminContent) adminContent.scrollTop = 0;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    return;
   }
 
-  // Attach search input listeners with debounce
-  initSearchAndPagination();
-  clearDirty(); // Start clean
-}
+  // 2. Modal Open Triggers
+  if (e.target.closest('#admin-add-teacher-btn')) {
+    e.preventDefault();
+    openTeacherModal();
+    return;
+  }
+  if (e.target.closest('#admin-add-facility-btn')) {
+    e.preventDefault();
+    openFacilityModal();
+    return;
+  }
+  if (e.target.closest('#admin-add-activity-btn')) {
+    e.preventDefault();
+    openActivityModal();
+    return;
+  }
+  if (e.target.closest('#admin-add-gallery-btn')) {
+    e.preventDefault();
+    openGalleryModal();
+    return;
+  }
+  if (e.target.closest('#btn-add-testimonial')) {
+    e.preventDefault();
+    openTestimonialModal();
+    return;
+  }
+  if (e.target.closest('#btn-add-calendar')) {
+    e.preventDefault();
+    openCalendarModal();
+    return;
+  }
+  if (e.target.closest('#btn-add-habit')) {
+    e.preventDefault();
+    openHabitModal();
+    return;
+  }
+  if (e.target.closest('#btn-add-comfort')) {
+    e.preventDefault();
+    openComfortModal();
+    return;
+  }
+  if (e.target.closest('#admin-manage-categories-btn') || e.target.closest('#btn-quick-add-category')) {
+    e.preventDefault();
+    const overlay = document.getElementById('category-modal-overlay');
+    if (overlay) {
+      overlay.classList.add('open');
+      const inputNew = document.getElementById('input-new-category');
+      if (inputNew) {
+        inputNew.value = '';
+        setTimeout(() => inputNew.focus(), 100);
+      }
+    }
+    return;
+  }
+
+  // 3. Table Action Buttons: Edit
+  const editTeacherBtn = e.target.closest('.btn-edit-teacher');
+  if (editTeacherBtn) {
+    e.preventDefault();
+    openTeacherModal(editTeacherBtn.getAttribute('data-id'));
+    return;
+  }
+  const editFacilityBtn = e.target.closest('.btn-edit-facility');
+  if (editFacilityBtn) {
+    e.preventDefault();
+    openFacilityModal(editFacilityBtn.getAttribute('data-id'));
+    return;
+  }
+  const editActivityBtn = e.target.closest('.btn-edit-activity');
+  if (editActivityBtn) {
+    e.preventDefault();
+    openActivityModal(editActivityBtn.getAttribute('data-id'));
+    return;
+  }
+  const editGalleryBtn = e.target.closest('.btn-edit-gallery');
+  if (editGalleryBtn) {
+    e.preventDefault();
+    openGalleryModal(editGalleryBtn.getAttribute('data-id'));
+    return;
+  }
+  const editTestiBtn = e.target.closest('.btn-edit-testi');
+  if (editTestiBtn) {
+    e.preventDefault();
+    openTestimonialModal(editTestiBtn.getAttribute('data-id'));
+    return;
+  }
+  const editCalBtn = e.target.closest('.btn-edit-calendar');
+  if (editCalBtn) {
+    e.preventDefault();
+    openCalendarModal(editCalBtn.getAttribute('data-id'));
+    return;
+  }
+  const editHabitBtn = e.target.closest('.btn-edit-habit');
+  if (editHabitBtn) {
+    e.preventDefault();
+    openHabitModal(editHabitBtn.getAttribute('data-id'));
+    return;
+  }
+  const editComfortBtn = e.target.closest('.btn-edit-comfort');
+  if (editComfortBtn) {
+    e.preventDefault();
+    openComfortModal(editComfortBtn.getAttribute('data-id'));
+    return;
+  }
+
+  // 4. Duplicate Activity
+  const dupActivityBtn = e.target.closest('.btn-duplicate-activity');
+  if (dupActivityBtn) {
+    e.preventDefault();
+    const id = dupActivityBtn.getAttribute('data-id');
+    try {
+      await window.SchoolDB.duplicateActivity(id);
+      showAdminToast('Kegiatan berhasil diduplikasi.', 'success', 'Duplikasi Berhasil');
+      renderActivitiesTable();
+      renderDashboard();
+    } catch (err) {
+      showAdminToast('Gagal menduplikat kegiatan: ' + err.message, 'error');
+    }
+    return;
+  }
+
+  // 5. Table Action Buttons: Delete
+  const delTeacherBtn = e.target.closest('.btn-delete-teacher');
+  if (delTeacherBtn) {
+    e.preventDefault();
+    const id = delTeacherBtn.getAttribute('data-id');
+    if (confirm('Hapus data guru ini? Tindakan tidak dapat dibatalkan.')) {
+      try {
+        await window.SchoolDB.deleteTeacher(id);
+        showAdminToast('Data guru berhasil dihapus.', 'success', 'Guru Dihapus');
+        renderTeachersTable();
+        renderDashboard();
+      } catch (err) {
+        showAdminToast('Gagal menghapus guru: ' + err.message, 'error');
+      }
+    }
+    return;
+  }
+  const delFacilityBtn = e.target.closest('.btn-delete-facility');
+  if (delFacilityBtn) {
+    e.preventDefault();
+    const id = delFacilityBtn.getAttribute('data-id');
+    if (confirm('Hapus data fasilitas ini? Tindakan tidak dapat dibatalkan.')) {
+      try {
+        await window.SchoolDB.deleteFacility(id);
+        showAdminToast('Data fasilitas berhasil dihapus.', 'success', 'Fasilitas Dihapus');
+        renderFacilitiesTable();
+        renderDashboard();
+      } catch (err) {
+        showAdminToast('Gagal menghapus fasilitas: ' + err.message, 'error');
+      }
+    }
+    return;
+  }
+  const delActivityBtn = e.target.closest('.btn-delete-activity');
+  if (delActivityBtn) {
+    e.preventDefault();
+    const id = delActivityBtn.getAttribute('data-id');
+    if (confirm('Hapus data kegiatan ini? Tindakan tidak dapat dibatalkan.')) {
+      try {
+        await window.SchoolDB.deleteActivity(id);
+        showAdminToast('Data kegiatan berhasil dihapus.', 'success', 'Kegiatan Dihapus');
+        renderActivitiesTable();
+        renderDashboard();
+      } catch (err) {
+        showAdminToast('Gagal menghapus kegiatan: ' + err.message, 'error');
+      }
+    }
+    return;
+  }
+  const delGalleryBtn = e.target.closest('.btn-delete-gallery');
+  if (delGalleryBtn) {
+    e.preventDefault();
+    const id = delGalleryBtn.getAttribute('data-id');
+    if (confirm('Hapus foto dari galeri? Tindakan tidak dapat dibatalkan.')) {
+      try {
+        await window.SchoolDB.deleteGallery(id);
+        showAdminToast('Foto galeri berhasil dihapus.', 'success', 'Foto Dihapus');
+        renderGalleryTable();
+        renderDashboard();
+      } catch (err) {
+        showAdminToast('Gagal menghapus foto galeri: ' + err.message, 'error');
+      }
+    }
+    return;
+  }
+  const delTestiBtn = e.target.closest('.btn-delete-testi');
+  if (delTestiBtn) {
+    e.preventDefault();
+    const id = delTestiBtn.getAttribute('data-id');
+    if (confirm('Hapus testimoni ini?')) {
+      try {
+        await window.SchoolDB.deleteTestimonial(id);
+        showAdminToast('Testimoni berhasil dihapus.', 'success', 'Testimoni Dihapus');
+        renderTestimonialsTable();
+      } catch (err) {
+        showAdminToast('Gagal menghapus testimoni: ' + err.message, 'error');
+      }
+    }
+    return;
+  }
+  const delCalBtn = e.target.closest('.btn-delete-calendar');
+  if (delCalBtn) {
+    e.preventDefault();
+    const id = delCalBtn.getAttribute('data-id');
+    if (confirm('Hapus agenda kalender ini?')) {
+      try {
+        await window.SchoolDB.deleteCalendar(id);
+        showAdminToast('Agenda kalender berhasil dihapus.', 'success', 'Agenda Dihapus');
+        renderCalendarTable();
+      } catch (err) {
+        showAdminToast('Gagal menghapus agenda: ' + err.message, 'error');
+      }
+    }
+    return;
+  }
+  const delHabitBtn = e.target.closest('.btn-delete-habit');
+  if (delHabitBtn) {
+    e.preventDefault();
+    const id = delHabitBtn.getAttribute('data-id');
+    if (confirm('Hapus pembiasaan ini?')) {
+      try {
+        await window.SchoolDB.deleteHabit(id);
+        showAdminToast('Pembiasaan berhasil dihapus.', 'success', 'Pembiasaan Dihapus');
+        renderHabitsTable();
+      } catch (err) {
+        showAdminToast('Gagal menghapus pembiasaan: ' + err.message, 'error');
+      }
+    }
+    return;
+  }
+  const delComfortBtn = e.target.closest('.btn-delete-comfort');
+  if (delComfortBtn) {
+    e.preventDefault();
+    const id = delComfortBtn.getAttribute('data-id');
+    if (confirm('Hapus standar kenyamanan ini?')) {
+      try {
+        await window.SchoolDB.deleteComfortStandard(id);
+        showAdminToast('Standar kenyamanan berhasil dihapus.', 'success', 'Standar Dihapus');
+        renderComfortTable();
+      } catch (err) {
+        showAdminToast('Gagal menghapus standar: ' + err.message, 'error');
+      }
+    }
+    return;
+  }
+
+  // 6. Modal Close Buttons
+  if (e.target.closest('#admin-modal-close-btn')) {
+    e.preventDefault();
+    requestCloseModal();
+    return;
+  }
+  if (e.target.closest('#category-modal-close')) {
+    e.preventDefault();
+    const overlay = document.getElementById('category-modal-overlay');
+    if (overlay) overlay.classList.remove('open');
+    return;
+  }
+
+  // 7. Logout Button
+  if (e.target.closest('#admin-logout-btn')) {
+    e.preventDefault();
+    if (isFormDirty) {
+      if (!confirm('Ada perubahan yang belum disimpan. Yakin ingin keluar?')) {
+        return;
+      }
+    }
+    clearSession();
+    showAdminToast('Anda telah keluar dari sesi administrator.', 'success', 'Sampai Jumpa');
+    setTimeout(() => window.location.reload(), 600);
+    return;
+  }
+});
 
 function updateInboxBadge() {
   const badge = document.getElementById('inbox-unread-badge');
@@ -417,21 +706,29 @@ if (resetDbBtn) {
 // Profile Management
 function loadProfileForm() {
   const profile = window.SchoolDB.getProfile();
+  if (!profile) return;
   
-  document.getElementById('profile-name').value = profile.name || '';
-  if (document.getElementById('profile-npsn')) document.getElementById('profile-npsn').value = profile.npsn || '20401876';
-  if (document.getElementById('profile-nss')) document.getElementById('profile-nss').value = profile.nss || '101040310002';
-  if (document.getElementById('profile-akreditasi')) document.getElementById('profile-akreditasi').value = profile.akreditasi || 'A';
-  if (document.getElementById('profile-students')) document.getElementById('profile-students').value = profile.totalStudents || 143;
-  if (document.getElementById('profile-classes')) document.getElementById('profile-classes').value = profile.totalClasses || 6;
-  document.getElementById('profile-tagline').value = profile.tagline || '';
-  document.getElementById('profile-description').value = profile.description || '';
-  document.getElementById('profile-history').value = profile.history || '';
-  document.getElementById('profile-vision').value = profile.vision || '-';
-  document.getElementById('profile-missions').value = (profile.missions || []).join('\n');
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val || '';
+  };
   
-  document.getElementById('preview-logo-img').src = profile.logo || '';
-  document.getElementById('preview-hero-img').src = profile.hero || '';
+  setVal('profile-name', profile.name);
+  setVal('profile-npsn', profile.npsn || '20401876');
+  setVal('profile-nss', profile.nss || '101040310002');
+  setVal('profile-akreditasi', profile.akreditasi || 'A');
+  setVal('profile-students', profile.totalStudents || 143);
+  setVal('profile-classes', profile.totalClasses || 6);
+  setVal('profile-tagline', profile.tagline);
+  setVal('profile-description', profile.description);
+  setVal('profile-history', profile.history);
+  setVal('profile-vision', profile.vision || '-');
+  setVal('profile-missions', (profile.missions || []).join('\n'));
+  
+  const prevLogo = document.getElementById('preview-logo-img');
+  const prevHero = document.getElementById('preview-hero-img');
+  if (prevLogo) prevLogo.src = profile.logo || '';
+  if (prevHero) prevHero.src = profile.hero || '';
   
   tempLogoBase64 = profile.logo;
   tempHeroBase64 = profile.hero;
@@ -481,37 +778,47 @@ function hideCompressionBadge(badgeId) {
 }
 
 // File Readers with Validation & Auto-Compression
-document.getElementById('upload-logo-file').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    try {
-      const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 400, maxHeight: 400, quality: 0.85 }) : fileToBase64(file, 400));
-      tempLogoBase64 = typeof res === 'object' ? res.dataUrl : res;
-      document.getElementById('preview-logo-img').src = tempLogoBase64;
-      document.getElementById('preview-logo-container').style.display = 'block';
-      if (typeof res === 'object') showCompressionBadge('compression-badge-logo', res);
-      markDirty();
-    } catch (err) {
-      showAdminToast(err.message || 'Gagal memproses berkas logo.', 'error', 'Format Tidak Didukung');
+const uploadLogoFileEl = document.getElementById('upload-logo-file');
+if (uploadLogoFileEl) {
+  uploadLogoFileEl.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 400, maxHeight: 400, quality: 0.85 }) : fileToBase64(file, 400));
+        tempLogoBase64 = typeof res === 'object' ? res.dataUrl : res;
+        const previewImg = document.getElementById('preview-logo-img');
+        const previewContainer = document.getElementById('preview-logo-container');
+        if (previewImg) previewImg.src = tempLogoBase64;
+        if (previewContainer) previewContainer.style.display = 'block';
+        if (typeof res === 'object') showCompressionBadge('compression-badge-logo', res);
+        markDirty();
+      } catch (err) {
+        showAdminToast(err.message || 'Gagal memproses berkas logo.', 'error', 'Format Tidak Didukung');
+      }
     }
-  }
-});
+  });
+}
 
-document.getElementById('upload-hero-file').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    try {
-      const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 1400, maxHeight: 900, quality: 0.85 }) : fileToBase64(file, 1400));
-      tempHeroBase64 = typeof res === 'object' ? res.dataUrl : res;
-      document.getElementById('preview-hero-img').src = tempHeroBase64;
-      document.getElementById('preview-hero-container').style.display = 'block';
-      if (typeof res === 'object') showCompressionBadge('compression-badge-hero', res);
-      markDirty();
-    } catch (err) {
-      showAdminToast(err.message || 'Gagal memproses berkas banner.', 'error', 'Format Tidak Didukung');
+const uploadHeroFileEl = document.getElementById('upload-hero-file');
+if (uploadHeroFileEl) {
+  uploadHeroFileEl.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 1400, maxHeight: 900, quality: 0.85 }) : fileToBase64(file, 1400));
+        tempHeroBase64 = typeof res === 'object' ? res.dataUrl : res;
+        const previewImg = document.getElementById('preview-hero-img');
+        const previewContainer = document.getElementById('preview-hero-container');
+        if (previewImg) previewImg.src = tempHeroBase64;
+        if (previewContainer) previewContainer.style.display = 'block';
+        if (typeof res === 'object') showCompressionBadge('compression-badge-hero', res);
+        markDirty();
+      } catch (err) {
+        showAdminToast(err.message || 'Gagal memproses berkas banner.', 'error', 'Format Tidak Didukung');
+      }
     }
-  }
-});
+  });
+}
 
 // Submit Profile Form with Submit Lock
 const formEditProfile = document.getElementById('form-edit-profile');
@@ -714,22 +1021,28 @@ function renderTeachersTable() {
   });
 }
 
-document.getElementById('teacher-file').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    try {
-      const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 600, maxHeight: 600, quality: 0.82 }) : fileToBase64(file, 600));
-      tempTeacherBase64 = typeof res === 'object' ? res.dataUrl : res;
-      document.getElementById('preview-teacher-img').src = tempTeacherBase64;
-      document.getElementById('preview-teacher-container').style.display = 'block';
-      document.getElementById('label-teacher-upload').textContent = 'Gambar siap';
-      if (typeof res === 'object') showCompressionBadge('compression-badge-teacher', res);
-      markDirty();
-    } catch (err) {
-      showAdminToast(err.message || 'Gagal memproses berkas.', 'error', 'Format Tidak Didukung');
+const teacherFileEl = document.getElementById('teacher-file');
+if (teacherFileEl) {
+  teacherFileEl.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 600, maxHeight: 600, quality: 0.82 }) : fileToBase64(file, 600));
+        tempTeacherBase64 = typeof res === 'object' ? res.dataUrl : res;
+        const previewImg = document.getElementById('preview-teacher-img');
+        const previewContainer = document.getElementById('preview-teacher-container');
+        const labelUpload = document.getElementById('label-teacher-upload');
+        if (previewImg) previewImg.src = tempTeacherBase64;
+        if (previewContainer) previewContainer.style.display = 'block';
+        if (labelUpload) labelUpload.textContent = 'Gambar siap';
+        if (typeof res === 'object') showCompressionBadge('compression-badge-teacher', res);
+        markDirty();
+      } catch (err) {
+        showAdminToast(err.message || 'Gagal memproses berkas.', 'error', 'Format Tidak Didukung');
+      }
     }
-  }
-});
+  });
+}
 
 function openTeacherModal(id = null) {
   const modal = document.getElementById('admin-modal-overlay');
@@ -737,37 +1050,43 @@ function openTeacherModal(id = null) {
   activeModalFormId = 'form-teacher';
   
   hideAllModalForms();
-  document.getElementById('form-teacher').style.display = 'block';
+  const formEl = document.getElementById('form-teacher');
+  if (formEl) {
+    formEl.style.display = 'block';
+    formEl.reset();
+  }
   
-  document.getElementById('form-teacher').reset();
-  document.getElementById('preview-teacher-container').style.display = 'none';
-  document.getElementById('preview-teacher-img').src = '';
-  document.getElementById('label-teacher-upload').textContent = 'Klik untuk pilih gambar';
+  const prevContainer = document.getElementById('preview-teacher-container');
+  const prevImg = document.getElementById('preview-teacher-img');
+  const labelUpload = document.getElementById('label-teacher-upload');
+  if (prevContainer) prevContainer.style.display = 'none';
+  if (prevImg) prevImg.src = '';
+  if (labelUpload) labelUpload.textContent = 'Klik untuk pilih gambar';
   tempTeacherBase64 = null;
   hideCompressionBadge('compression-badge-teacher');
   clearDirty();
   
   if (id) {
-    title.textContent = 'Edit Data Guru';
+    if (title) title.textContent = 'Edit Data Guru';
     const teacher = window.SchoolDB.getTeachers().find(t => String(t.id) === String(id));
     if (teacher) {
-      document.getElementById('teacher-id').value = teacher.id;
-      document.getElementById('teacher-name').value = teacher.name;
-      document.getElementById('teacher-role').value = teacher.role;
+      if (document.getElementById('teacher-id')) document.getElementById('teacher-id').value = teacher.id;
+      if (document.getElementById('teacher-name')) document.getElementById('teacher-name').value = teacher.name;
+      if (document.getElementById('teacher-role')) document.getElementById('teacher-role').value = teacher.role;
       if (teacher.image) {
-        document.getElementById('preview-teacher-img').src = teacher.image;
-        document.getElementById('preview-teacher-container').style.display = 'block';
-        document.getElementById('label-teacher-upload').textContent = 'Gambar saat ini (Klik untuk ganti)';
+        if (prevImg) prevImg.src = teacher.image;
+        if (prevContainer) prevContainer.style.display = 'block';
+        if (labelUpload) labelUpload.textContent = 'Gambar saat ini (Klik untuk ganti)';
         tempTeacherBase64 = teacher.image;
       }
     }
   } else {
-    title.textContent = 'Tambah Guru Baru';
-    document.getElementById('teacher-id').value = '';
+    if (title) title.textContent = 'Tambah Guru Baru';
+    if (document.getElementById('teacher-id')) document.getElementById('teacher-id').value = '';
   }
   
   attachDirtyListeners('form-teacher');
-  modal.classList.add('open');
+  if (modal) modal.classList.add('open');
 }
 
 const formTeacher = document.getElementById('form-teacher');
@@ -785,23 +1104,18 @@ if (formTeacher) {
     const isDuplicate = window.SchoolDB.getTeachers().some(t => String(t.id) !== String(id) && normalizeName(t.name) === normName);
     if (isDuplicate) {
       showAdminToast('Guru dengan nama tersebut sudah terdaftar. Silakan gunakan nama yang berbeda.', 'error', 'Nama Guru Duplikat');
-      const nameInput = document.getElementById('teacher-name');
-      if (nameInput) {
-        nameInput.focus();
-        nameInput.select();
-      }
       return;
     }
     
-    setButtonSubmitting(submitBtn, true, 'Menyimpan Data Guru...');
+    setButtonSubmitting(submitBtn, true, 'Menyimpan Guru...');
     
     try {
       if (id) {
         await window.SchoolDB.updateTeacher(id, { name, role, image: tempTeacherBase64 });
-        showAdminToast(`Data guru/staf "${name}" berhasil diperbarui.`, 'success', 'Guru Diperbarui');
+        showAdminToast(`Data guru "${name}" berhasil diperbarui.`, 'success', 'Guru Diperbarui');
       } else {
         await window.SchoolDB.addTeacher({ name, role, image: tempTeacherBase64 });
-        showAdminToast(`Guru/staf baru "${name}" berhasil ditambahkan!`, 'success', 'Guru Ditambahkan');
+        showAdminToast(`Guru baru "${name}" berhasil ditambahkan!`, 'success', 'Guru Ditambahkan');
       }
       
       clearDirty();
@@ -898,22 +1212,28 @@ function renderFacilitiesTable() {
   });
 }
 
-document.getElementById('facility-file').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    try {
-      const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 800, maxHeight: 600, quality: 0.82 }) : fileToBase64(file, 800));
-      tempFacilityBase64 = typeof res === 'object' ? res.dataUrl : res;
-      document.getElementById('preview-facility-img').src = tempFacilityBase64;
-      document.getElementById('preview-facility-container').style.display = 'block';
-      document.getElementById('label-facility-upload').textContent = 'Gambar siap';
-      if (typeof res === 'object') showCompressionBadge('compression-badge-facility', res);
-      markDirty();
-    } catch (err) {
-      showAdminToast(err.message || 'Gagal memproses berkas.', 'error', 'Format Tidak Didukung');
+const facilityFileEl = document.getElementById('facility-file');
+if (facilityFileEl) {
+  facilityFileEl.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 800, maxHeight: 600, quality: 0.82 }) : fileToBase64(file, 800));
+        tempFacilityBase64 = typeof res === 'object' ? res.dataUrl : res;
+        const previewImg = document.getElementById('preview-facility-img');
+        const previewContainer = document.getElementById('preview-facility-container');
+        const labelUpload = document.getElementById('label-facility-upload');
+        if (previewImg) previewImg.src = tempFacilityBase64;
+        if (previewContainer) previewContainer.style.display = 'block';
+        if (labelUpload) labelUpload.textContent = 'Gambar siap';
+        if (typeof res === 'object') showCompressionBadge('compression-badge-facility', res);
+        markDirty();
+      } catch (err) {
+        showAdminToast(err.message || 'Gagal memproses berkas.', 'error', 'Format Tidak Didukung');
+      }
     }
-  }
-});
+  });
+}
 
 function openFacilityModal(id = null) {
   const modal = document.getElementById('admin-modal-overlay');
@@ -921,37 +1241,43 @@ function openFacilityModal(id = null) {
   activeModalFormId = 'form-facility';
   
   hideAllModalForms();
-  document.getElementById('form-facility').style.display = 'block';
+  const formEl = document.getElementById('form-facility');
+  if (formEl) {
+    formEl.style.display = 'block';
+    formEl.reset();
+  }
   
-  document.getElementById('form-facility').reset();
-  document.getElementById('preview-facility-container').style.display = 'none';
-  document.getElementById('preview-facility-img').src = '';
-  document.getElementById('label-facility-upload').textContent = 'Klik untuk pilih gambar';
+  const prevContainer = document.getElementById('preview-facility-container');
+  const prevImg = document.getElementById('preview-facility-img');
+  const labelUpload = document.getElementById('label-facility-upload');
+  if (prevContainer) prevContainer.style.display = 'none';
+  if (prevImg) prevImg.src = '';
+  if (labelUpload) labelUpload.textContent = 'Klik untuk pilih gambar';
   tempFacilityBase64 = null;
   hideCompressionBadge('compression-badge-facility');
   clearDirty();
   
   if (id) {
-    title.textContent = 'Edit Fasilitas';
+    if (title) title.textContent = 'Edit Fasilitas';
     const facility = window.SchoolDB.getFacilities().find(f => String(f.id) === String(id));
     if (facility) {
-      document.getElementById('facility-id').value = facility.id;
-      document.getElementById('facility-name').value = facility.name;
-      document.getElementById('facility-desc').value = facility.description;
+      if (document.getElementById('facility-id')) document.getElementById('facility-id').value = facility.id;
+      if (document.getElementById('facility-name')) document.getElementById('facility-name').value = facility.name;
+      if (document.getElementById('facility-desc')) document.getElementById('facility-desc').value = facility.description;
       if (facility.image) {
-        document.getElementById('preview-facility-img').src = facility.image;
-        document.getElementById('preview-facility-container').style.display = 'block';
-        document.getElementById('label-facility-upload').textContent = 'Gambar saat ini (Klik untuk ganti)';
+        if (prevImg) prevImg.src = facility.image;
+        if (prevContainer) prevContainer.style.display = 'block';
+        if (labelUpload) labelUpload.textContent = 'Gambar saat ini (Klik untuk ganti)';
         tempFacilityBase64 = facility.image;
       }
     }
   } else {
-    title.textContent = 'Tambah Fasilitas Baru';
-    document.getElementById('facility-id').value = '';
+    if (title) title.textContent = 'Tambah Fasilitas Baru';
+    if (document.getElementById('facility-id')) document.getElementById('facility-id').value = '';
   }
   
   attachDirtyListeners('form-facility');
-  modal.classList.add('open');
+  if (modal) modal.classList.add('open');
 }
 
 const formFacility = document.getElementById('form-facility');
@@ -1095,22 +1421,28 @@ function renderActivitiesTable() {
   });
 }
 
-document.getElementById('activity-file').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    try {
-      const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 1000, maxHeight: 700, quality: 0.82 }) : fileToBase64(file, 1000));
-      tempActivityBase64 = typeof res === 'object' ? res.dataUrl : res;
-      document.getElementById('preview-activity-img').src = tempActivityBase64;
-      document.getElementById('preview-activity-container').style.display = 'block';
-      document.getElementById('label-activity-upload').textContent = 'Gambar siap';
-      if (typeof res === 'object') showCompressionBadge('compression-badge-activity', res);
-      markDirty();
-    } catch (err) {
-      showAdminToast(err.message || 'Gagal memproses berkas.', 'error', 'Format Tidak Didukung');
+const activityFileEl = document.getElementById('activity-file');
+if (activityFileEl) {
+  activityFileEl.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 1000, maxHeight: 700, quality: 0.82 }) : fileToBase64(file, 1000));
+        tempActivityBase64 = typeof res === 'object' ? res.dataUrl : res;
+        const previewImg = document.getElementById('preview-activity-img');
+        const previewContainer = document.getElementById('preview-activity-container');
+        const labelUpload = document.getElementById('label-activity-upload');
+        if (previewImg) previewImg.src = tempActivityBase64;
+        if (previewContainer) previewContainer.style.display = 'block';
+        if (labelUpload) labelUpload.textContent = 'Gambar siap';
+        if (typeof res === 'object') showCompressionBadge('compression-badge-activity', res);
+        markDirty();
+      } catch (err) {
+        showAdminToast(err.message || 'Gagal memproses berkas.', 'error', 'Format Tidak Didukung');
+      }
     }
-  }
-});
+  });
+}
 
 function openActivityModal(id = null) {
   const modal = document.getElementById('admin-modal-overlay');
@@ -1118,44 +1450,50 @@ function openActivityModal(id = null) {
   activeModalFormId = 'form-activity';
   
   hideAllModalForms();
-  document.getElementById('form-activity').style.display = 'block';
+  const formAct = document.getElementById('form-activity');
+  if (formAct) formAct.style.display = 'block';
   
-  document.getElementById('form-activity').reset();
-  document.getElementById('preview-activity-container').style.display = 'none';
-  document.getElementById('preview-activity-img').src = '';
-  document.getElementById('label-activity-upload').textContent = 'Klik untuk pilih gambar';
+  if (formAct) formAct.reset();
+  const prevContainer = document.getElementById('preview-activity-container');
+  const prevImg = document.getElementById('preview-activity-img');
+  const labelUpload = document.getElementById('label-activity-upload');
+  if (prevContainer) prevContainer.style.display = 'none';
+  if (prevImg) prevImg.src = '';
+  if (labelUpload) labelUpload.textContent = 'Klik untuk pilih gambar';
   tempActivityBase64 = null;
   hideCompressionBadge('compression-badge-activity');
   clearDirty();
   
-  document.getElementById('activity-date').value = new Date().toISOString().split('T')[0];
+  const actDate = document.getElementById('activity-date');
+  if (actDate) actDate.value = new Date().toISOString().split('T')[0];
+  
   populateActivityCategoriesDropdown();
   
   if (id) {
-    title.textContent = 'Edit Kegiatan';
+    if (title) title.textContent = 'Edit Kegiatan';
     const activity = window.SchoolDB.getActivities().find(a => String(a.id) === String(id));
     if (activity) {
-      document.getElementById('activity-id').value = activity.id;
-      document.getElementById('activity-title').value = activity.title;
-      document.getElementById('activity-date').value = activity.date;
-      populateActivityCategoriesDropdown(activity.category || 'Umum');
-      document.getElementById('activity-excerpt').value = activity.excerpt;
-      document.getElementById('activity-content').value = activity.content;
+      if (document.getElementById('activity-id')) document.getElementById('activity-id').value = activity.id;
+      if (document.getElementById('activity-title')) document.getElementById('activity-title').value = activity.title;
+      if (document.getElementById('activity-category')) document.getElementById('activity-category').value = activity.category;
+      if (document.getElementById('activity-date')) document.getElementById('activity-date').value = activity.date;
+      if (document.getElementById('activity-summary')) document.getElementById('activity-summary').value = activity.summary || '';
+      if (document.getElementById('activity-content')) document.getElementById('activity-content').value = activity.content;
       if (activity.image) {
-        document.getElementById('preview-activity-img').src = activity.image;
-        document.getElementById('preview-activity-container').style.display = 'block';
-        document.getElementById('label-activity-upload').textContent = 'Gambar saat ini (Klik untuk ganti)';
+        if (prevImg) prevImg.src = activity.image;
+        if (prevContainer) prevContainer.style.display = 'block';
+        if (labelUpload) labelUpload.textContent = 'Gambar saat ini (Klik untuk ganti)';
         tempActivityBase64 = activity.image;
       }
     }
   } else {
-    title.textContent = 'Tambah Kegiatan Baru';
-    document.getElementById('activity-id').value = '';
-    populateActivityCategoriesDropdown();
+    if (title) title.textContent = 'Tambah Kegiatan Baru';
+    if (document.getElementById('activity-id')) document.getElementById('activity-id').value = '';
+    if (document.getElementById('activity-summary')) document.getElementById('activity-summary').value = '';
   }
   
   attachDirtyListeners('form-activity');
-  modal.classList.add('open');
+  if (modal) modal.classList.add('open');
 }
 
 const formActivity = document.getElementById('form-activity');
@@ -1166,33 +1504,41 @@ if (formActivity) {
     
     const id = document.getElementById('activity-id').value;
     const title = document.getElementById('activity-title').value;
-    const category = document.getElementById('activity-category') ? document.getElementById('activity-category').value : 'Umum';
+    const category = document.getElementById('activity-category').value;
     const date = document.getElementById('activity-date').value;
-    const excerpt = document.getElementById('activity-excerpt').value;
+    const summary = document.getElementById('activity-summary').value;
     const content = document.getElementById('activity-content').value;
 
-    // Client-side duplicate check
     const normTitle = normalizeName(title);
     const isDuplicate = window.SchoolDB.getActivities().some(a => String(a.id) !== String(id) && normalizeName(a.title) === normTitle);
+
     if (isDuplicate) {
-      showAdminToast('Kegiatan dengan judul tersebut sudah tersedia. Silakan gunakan judul yang berbeda.', 'error', 'Judul Kegiatan Duplikat');
-      const titleInput = document.getElementById('activity-title');
-      if (titleInput) {
-        titleInput.focus();
-        titleInput.select();
-      }
+      showAdminToast(`Kegiatan dengan judul "${title}" sudah ada di database.`, 'error', 'Judul Duplikat');
       return;
     }
-    
+
     setButtonSubmitting(submitBtn, true, 'Menyimpan Kegiatan...');
-    
     try {
       if (id) {
-        await window.SchoolDB.updateActivity(id, { title, category, date, excerpt, content, image: tempActivityBase64 });
-        showAdminToast(`Berita kegiatan "${title}" berhasil diperbarui.`, 'success', 'Kegiatan Diperbarui');
+        await window.SchoolDB.updateActivity(id, {
+          title,
+          category,
+          date,
+          summary,
+          content,
+          image: tempActivityBase64
+        });
+        showAdminToast('Data kegiatan berhasil diperbarui.', 'success', 'Kegiatan Diperbarui');
       } else {
-        await window.SchoolDB.addActivity({ title, category, date, excerpt, content, image: tempActivityBase64 });
-        showAdminToast(`Kegiatan baru "${title}" berhasil ditambahkan!`, 'success', 'Kegiatan Ditambahkan');
+        await window.SchoolDB.addActivity({
+          title,
+          category,
+          date,
+          summary,
+          content,
+          image: tempActivityBase64
+        });
+        showAdminToast('Kegiatan baru berhasil ditambahkan.', 'success', 'Kegiatan Ditambahkan');
       }
       
       clearDirty();
@@ -1200,7 +1546,7 @@ if (formActivity) {
       renderActivitiesTable();
       renderDashboard();
     } catch (err) {
-      showAdminToast(err.message || 'Terjadi kesalahan saat menyimpan berita kegiatan.', 'error');
+      showAdminToast(err.message || 'Terjadi kesalahan saat menyimpan kegiatan.', 'error');
     } finally {
       setButtonSubmitting(submitBtn, false);
     }
@@ -1221,11 +1567,12 @@ function renderGalleryTable() {
   if (!listBody) return;
   
   const filtered = allGallery.filter(g => {
-    return g.caption.toLowerCase().includes(gallerySearchQuery);
+    return g.title.toLowerCase().includes(gallerySearchQuery) ||
+           g.category.toLowerCase().includes(gallerySearchQuery);
   });
   
   if (filtered.length === 0) {
-    listBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: var(--text-muted); padding: 20px;">${gallerySearchQuery ? 'Tidak ada foto galeri yang cocok.' : 'Belum ada dokumentasi yang ditampilkan.'}</td></tr>`;
+    listBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted); padding: 20px;">${gallerySearchQuery ? 'Tidak ada foto yang cocok.' : 'Belum ada foto di galeri.'}</td></tr>`;
     renderPaginationControls('pagination-gallery', 0, 1, () => {});
     return;
   }
@@ -1235,15 +1582,16 @@ function renderGalleryTable() {
   
   listBody.innerHTML = paginated.map(g => `
     <tr>
-      <td><img src="${g.image}" class="admin-thumb" alt="${g.caption}"></td>
-      <td><strong>${g.caption}</strong></td>
+      <td><img src="${g.image}" class="admin-thumb" alt="${g.title}"></td>
+      <td><strong>${g.title}</strong></td>
+      <td><span style="background:var(--surface-alt); padding:2px 8px; border-radius:4px; font-size:12px; border:1px solid var(--border); font-weight:600;">${g.category}</span></td>
       <td>
         <div class="table-actions">
-          <button class="btn-action-edit btn-edit-gallery" data-id="${g.id}" title="Edit Keterangan Foto">
+          <button class="btn-action-edit btn-edit-gallery" data-id="${g.id}" title="Edit Foto">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
             <span>Edit</span>
           </button>
-          <button class="btn-action-delete btn-delete-gallery" data-id="${g.id}" title="Hapus Foto Galeri">
+          <button class="btn-action-delete btn-delete-gallery" data-id="${g.id}" title="Hapus Foto">
             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2M10 11v6M14 11v6"/></svg>
             <span>Hapus</span>
           </button>
@@ -1267,11 +1615,11 @@ function renderGalleryTable() {
   listBody.querySelectorAll('.btn-delete-gallery').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       const id = e.currentTarget.getAttribute('data-id');
-      if (confirm('Hapus foto galeri ini? Tindakan tidak dapat dibatalkan.')) {
+      if (confirm('Hapus foto ini dari galeri?')) {
         e.currentTarget.disabled = true;
         try {
-          await window.SchoolDB.deleteGalleryItem(id);
-          showAdminToast('Foto berhasil dihapus dari galeri.', 'success', 'Galeri Dihapus');
+          await window.SchoolDB.deleteGallery(id);
+          showAdminToast('Foto galeri berhasil dihapus.', 'success', 'Foto Dihapus');
           const remaining = (window.SchoolDB.getGallery() || []).length;
           if (galleryPage > 1 && (galleryPage - 1) * ITEMS_PER_PAGE >= remaining) {
             galleryPage = Math.max(1, Math.ceil(remaining / ITEMS_PER_PAGE));
@@ -1287,22 +1635,28 @@ function renderGalleryTable() {
   });
 }
 
-document.getElementById('gallery-file').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    try {
-      const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 900, maxHeight: 700, quality: 0.82 }) : fileToBase64(file, 900));
-      tempGalleryBase64 = typeof res === 'object' ? res.dataUrl : res;
-      document.getElementById('preview-gallery-img').src = tempGalleryBase64;
-      document.getElementById('preview-gallery-container').style.display = 'block';
-      document.getElementById('label-gallery-upload').textContent = 'Gambar siap';
-      if (typeof res === 'object') showCompressionBadge('compression-badge-gallery', res);
-      markDirty();
-    } catch (err) {
-      showAdminToast(err.message || 'Gagal memproses berkas.', 'error', 'Format Tidak Didukung');
+const galleryFileEl = document.getElementById('gallery-file');
+if (galleryFileEl) {
+  galleryFileEl.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 900, maxHeight: 700, quality: 0.82 }) : fileToBase64(file, 900));
+        tempGalleryBase64 = typeof res === 'object' ? res.dataUrl : res;
+        const previewImg = document.getElementById('preview-gallery-img');
+        const previewContainer = document.getElementById('preview-gallery-container');
+        const labelUpload = document.getElementById('label-gallery-upload');
+        if (previewImg) previewImg.src = tempGalleryBase64;
+        if (previewContainer) previewContainer.style.display = 'block';
+        if (labelUpload) labelUpload.textContent = 'Gambar siap';
+        if (typeof res === 'object') showCompressionBadge('compression-badge-gallery', res);
+        markDirty();
+      } catch (err) {
+        showAdminToast(err.message || 'Gagal memproses berkas.', 'error', 'Format Tidak Didukung');
+      }
     }
-  }
-});
+  });
+}
 
 function openGalleryModal(id = null) {
   const modal = document.getElementById('admin-modal-overlay');
@@ -1310,36 +1664,44 @@ function openGalleryModal(id = null) {
   activeModalFormId = 'form-gallery';
   
   hideAllModalForms();
-  document.getElementById('form-gallery').style.display = 'block';
+  const formEl = document.getElementById('form-gallery');
+  if (formEl) {
+    formEl.style.display = 'block';
+    formEl.reset();
+  }
   
-  document.getElementById('form-gallery').reset();
-  document.getElementById('preview-gallery-container').style.display = 'none';
-  document.getElementById('preview-gallery-img').src = '';
-  document.getElementById('label-gallery-upload').textContent = 'Klik untuk pilih gambar';
+  const prevContainer = document.getElementById('preview-gallery-container');
+  const prevImg = document.getElementById('preview-gallery-img');
+  const labelUpload = document.getElementById('label-gallery-upload');
+  if (prevContainer) prevContainer.style.display = 'none';
+  if (prevImg) prevImg.src = '';
+  if (labelUpload) labelUpload.textContent = 'Klik untuk pilih gambar';
   tempGalleryBase64 = null;
   hideCompressionBadge('compression-badge-gallery');
   clearDirty();
   
   if (id) {
-    title.textContent = 'Edit Keterangan Foto';
+    if (title) title.textContent = 'Edit Foto Galeri';
     const item = window.SchoolDB.getGallery().find(g => String(g.id) === String(id));
     if (item) {
-      document.getElementById('gallery-id').value = item.id;
-      document.getElementById('gallery-caption').value = item.caption;
+      if (document.getElementById('gallery-id')) document.getElementById('gallery-id').value = item.id;
+      if (document.getElementById('gallery-title')) document.getElementById('gallery-title').value = item.title;
+      if (document.getElementById('gallery-category')) document.getElementById('gallery-category').value = item.category || 'Dokumentasi';
       if (item.image) {
-        document.getElementById('preview-gallery-img').src = item.image;
-        document.getElementById('preview-gallery-container').style.display = 'block';
-        document.getElementById('label-gallery-upload').textContent = 'Gambar saat ini (Klik untuk ganti)';
+        if (prevImg) prevImg.src = item.image;
+        if (prevContainer) prevContainer.style.display = 'block';
+        if (labelUpload) labelUpload.textContent = 'Gambar saat ini (Klik untuk ganti)';
         tempGalleryBase64 = item.image;
       }
     }
   } else {
-    title.textContent = 'Tambah Foto Galeri Baru';
-    document.getElementById('gallery-id').value = '';
+    if (title) title.textContent = 'Tambah Foto Galeri Baru';
+    if (document.getElementById('gallery-id')) document.getElementById('gallery-id').value = '';
+    if (document.getElementById('gallery-category')) document.getElementById('gallery-category').value = 'Dokumentasi';
   }
   
   attachDirtyListeners('form-gallery');
-  modal.classList.add('open');
+  if (modal) modal.classList.add('open');
 }
 
 const formGallery = document.getElementById('form-gallery');
@@ -1388,14 +1750,20 @@ if (addGalleryBtn) {
 // ----------------------------------------------------
 function loadContactForm() {
   const contact = window.SchoolDB.getContact();
+  if (!contact) return;
   
-  document.getElementById('contact-address').value = contact.address;
-  document.getElementById('contact-phone').value = contact.phone;
-  document.getElementById('contact-email').value = contact.email;
-  document.getElementById('contact-maps').value = contact.maps;
-  document.getElementById('contact-facebook').value = contact.facebook || '';
-  document.getElementById('contact-instagram').value = contact.instagram || '';
-  document.getElementById('contact-youtube').value = contact.youtube || '';
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val || '';
+  };
+  
+  setVal('contact-address', contact.address);
+  setVal('contact-phone', contact.phone);
+  setVal('contact-email', contact.email);
+  setVal('contact-maps', contact.maps);
+  setVal('contact-facebook', contact.facebook);
+  setVal('contact-instagram', contact.instagram);
+  setVal('contact-youtube', contact.youtube);
   
   ['contact-address', 'contact-phone', 'contact-email', 'contact-maps', 'contact-facebook', 'contact-instagram', 'contact-youtube'].forEach(id => {
     const el = document.getElementById(id);
@@ -1628,37 +1996,44 @@ function openTestimonialModal(id = null) {
   activeModalFormId = 'form-testimonial';
 
   hideAllModalForms();
-  document.getElementById('form-testimonial').style.display = 'block';
-  document.getElementById('form-testimonial').reset();
-  document.getElementById('preview-testi-container').style.display = 'none';
-  document.getElementById('preview-testi-img').src = '';
-  document.getElementById('label-testi-upload').textContent = 'Klik untuk pilih gambar';
+  const formEl = document.getElementById('form-testimonial');
+  if (formEl) {
+    formEl.style.display = 'block';
+    formEl.reset();
+  }
+  
+  const prevContainer = document.getElementById('preview-testi-container');
+  const prevImg = document.getElementById('preview-testi-img');
+  const labelUpload = document.getElementById('label-testi-upload');
+  if (prevContainer) prevContainer.style.display = 'none';
+  if (prevImg) prevImg.src = '';
+  if (labelUpload) labelUpload.textContent = 'Klik untuk pilih gambar';
   tempTestiBase64 = null;
   hideCompressionBadge('compression-badge-testi');
   clearDirty();
 
   if (id) {
-    title.textContent = 'Edit Kesan & Testimoni';
+    if (title) title.textContent = 'Edit Kesan & Testimoni';
     const item = window.SchoolDB.getTestimonials().find(t => String(t.id) === String(id));
     if (item) {
-      document.getElementById('testi-id').value = item.id;
-      document.getElementById('testi-name').value = item.name;
-      document.getElementById('testi-role').value = item.role || '';
-      document.getElementById('testi-quote').value = item.quote || '';
+      if (document.getElementById('testi-id')) document.getElementById('testi-id').value = item.id;
+      if (document.getElementById('testi-name')) document.getElementById('testi-name').value = item.name;
+      if (document.getElementById('testi-role')) document.getElementById('testi-role').value = item.role || '';
+      if (document.getElementById('testi-quote')) document.getElementById('testi-quote').value = item.quote || '';
       if (item.avatar) {
-        document.getElementById('preview-testi-img').src = item.avatar;
-        document.getElementById('preview-testi-container').style.display = 'block';
-        document.getElementById('label-testi-upload').textContent = 'Foto saat ini (Klik untuk ganti)';
+        if (prevImg) prevImg.src = item.avatar;
+        if (prevContainer) prevContainer.style.display = 'block';
+        if (labelUpload) labelUpload.textContent = 'Foto saat ini (Klik untuk ganti)';
         tempTestiBase64 = item.avatar;
       }
     }
   } else {
-    title.textContent = 'Tambah Kesan & Testimoni Baru';
-    document.getElementById('testi-id').value = '';
+    if (title) title.textContent = 'Tambah Kesan & Testimoni Baru';
+    if (document.getElementById('testi-id')) document.getElementById('testi-id').value = '';
   }
 
   attachDirtyListeners('form-testimonial');
-  modal.classList.add('open');
+  if (modal) modal.classList.add('open');
 }
 
 const formTestimonial = document.getElementById('form-testimonial');
@@ -1704,9 +2079,12 @@ if (testiFileInput) {
       try {
         const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 300, maxHeight: 300, quality: 0.82 }) : fileToBase64(file, 300));
         tempTestiBase64 = typeof res === 'object' ? res.dataUrl : res;
-        document.getElementById('preview-testi-img').src = tempTestiBase64;
-        document.getElementById('preview-testi-container').style.display = 'block';
-        document.getElementById('label-testi-upload').textContent = 'Foto siap';
+        const prevImg = document.getElementById('preview-testi-img');
+        const prevContainer = document.getElementById('preview-testi-container');
+        const labelUpload = document.getElementById('label-testi-upload');
+        if (prevImg) prevImg.src = tempTestiBase64;
+        if (prevContainer) prevContainer.style.display = 'block';
+        if (labelUpload) labelUpload.textContent = 'Foto siap';
         if (typeof res === 'object') showCompressionBadge('compression-badge-testi', res);
         markDirty();
       } catch (err) {
@@ -1770,27 +2148,30 @@ function openCalendarModal(id = null) {
   activeModalFormId = 'form-calendar';
 
   hideAllModalForms();
-  document.getElementById('form-calendar').style.display = 'block';
-  document.getElementById('form-calendar').reset();
+  const formEl = document.getElementById('form-calendar');
+  if (formEl) {
+    formEl.style.display = 'block';
+    formEl.reset();
+  }
   clearDirty();
 
   if (id) {
-    title.textContent = 'Edit Agenda Kalender';
+    if (title) title.textContent = 'Edit Agenda Kalender';
     const item = window.SchoolDB.getCalendar().find(c => String(c.id) === String(id));
     if (item) {
-      document.getElementById('calendar-id').value = item.id;
-      document.getElementById('calendar-title').value = item.title;
-      document.getElementById('calendar-date').value = item.date || '';
-      document.getElementById('calendar-month').value = item.month || '';
-      document.getElementById('calendar-desc').value = item.desc || item.description || '';
+      if (document.getElementById('calendar-id')) document.getElementById('calendar-id').value = item.id;
+      if (document.getElementById('calendar-title')) document.getElementById('calendar-title').value = item.title;
+      if (document.getElementById('calendar-date')) document.getElementById('calendar-date').value = item.date || '';
+      if (document.getElementById('calendar-month')) document.getElementById('calendar-month').value = item.month || '';
+      if (document.getElementById('calendar-desc')) document.getElementById('calendar-desc').value = item.desc || item.description || '';
     }
   } else {
-    title.textContent = 'Tambah Agenda Kalender Baru';
-    document.getElementById('calendar-id').value = '';
+    if (title) title.textContent = 'Tambah Agenda Kalender Baru';
+    if (document.getElementById('calendar-id')) document.getElementById('calendar-id').value = '';
   }
 
   attachDirtyListeners('form-calendar');
-  modal.classList.add('open');
+  if (modal) modal.classList.add('open');
 }
 
 const formCalendar = document.getElementById('form-calendar');
@@ -1879,27 +2260,30 @@ function openHabitModal(id = null) {
   activeModalFormId = 'form-habit';
 
   hideAllModalForms();
-  document.getElementById('form-habit').style.display = 'block';
-  document.getElementById('form-habit').reset();
+  const formEl = document.getElementById('form-habit');
+  if (formEl) {
+    formEl.style.display = 'block';
+    formEl.reset();
+  }
   clearDirty();
 
   if (id) {
-    title.textContent = 'Edit Pembiasaan Baik & Budaya';
+    if (title) title.textContent = 'Edit Pembiasaan Baik & Budaya';
     const item = window.SchoolDB.getHabits().find(h => String(h.id) === String(id));
     if (item) {
-      document.getElementById('habit-id').value = item.id;
-      document.getElementById('habit-title').value = item.title;
-      document.getElementById('habit-category').value = item.category || 'Karakter';
-      document.getElementById('habit-desc').value = item.desc || item.description || '';
+      if (document.getElementById('habit-id')) document.getElementById('habit-id').value = item.id;
+      if (document.getElementById('habit-title')) document.getElementById('habit-title').value = item.title;
+      if (document.getElementById('habit-category')) document.getElementById('habit-category').value = item.category || 'Karakter';
+      if (document.getElementById('habit-desc')) document.getElementById('habit-desc').value = item.desc || item.description || '';
     }
   } else {
-    title.textContent = 'Tambah Pembiasaan Baik Baru';
-    document.getElementById('habit-id').value = '';
-    document.getElementById('habit-category').value = 'Karakter';
+    if (title) title.textContent = 'Tambah Pembiasaan Baik Baru';
+    if (document.getElementById('habit-id')) document.getElementById('habit-id').value = '';
+    if (document.getElementById('habit-category')) document.getElementById('habit-category').value = 'Karakter';
   }
 
   attachDirtyListeners('form-habit');
-  modal.classList.add('open');
+  if (modal) modal.classList.add('open');
 }
 
 const formHabit = document.getElementById('form-habit');
@@ -1986,25 +2370,28 @@ function openComfortModal(id = null) {
   activeModalFormId = 'form-comfort';
 
   hideAllModalForms();
-  document.getElementById('form-comfort').style.display = 'block';
-  document.getElementById('form-comfort').reset();
+  const formEl = document.getElementById('form-comfort');
+  if (formEl) {
+    formEl.style.display = 'block';
+    formEl.reset();
+  }
   clearDirty();
 
   if (id) {
-    title.textContent = 'Edit Standar Kenyamanan';
+    if (title) title.textContent = 'Edit Standar Kenyamanan';
     const item = window.SchoolDB.getComfortStandards().find(s => String(s.id) === String(id));
     if (item) {
-      document.getElementById('comfort-id').value = item.id;
-      document.getElementById('comfort-title').value = item.title;
-      document.getElementById('comfort-desc').value = item.desc || item.description || '';
+      if (document.getElementById('comfort-id')) document.getElementById('comfort-id').value = item.id;
+      if (document.getElementById('comfort-title')) document.getElementById('comfort-title').value = item.title;
+      if (document.getElementById('comfort-desc')) document.getElementById('comfort-desc').value = item.desc || item.description || '';
     }
   } else {
-    title.textContent = 'Tambah Standar Kenyamanan Baru';
-    document.getElementById('comfort-id').value = '';
+    if (title) title.textContent = 'Tambah Standar Kenyamanan Baru';
+    if (document.getElementById('comfort-id')) document.getElementById('comfort-id').value = '';
   }
 
   attachDirtyListeners('form-comfort');
-  modal.classList.add('open');
+  if (modal) modal.classList.add('open');
 }
 
 const formComfort = document.getElementById('form-comfort');

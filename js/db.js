@@ -648,10 +648,12 @@ window.SchoolDB = {
       this.isInitialized = true;
       console.log('Database initialized successfully with security rules.');
 
-      // Initialize Cloud Sync in background
-      CloudSyncManager.initFirebase();
-      if (CloudSyncManager.isConfigured()) {
-        this.syncFromCloud().catch(e => console.warn('[SchoolDB] Background cloud sync deferred:', e));
+      // Initialize Cloud Sync in background safely
+      if (typeof window !== 'undefined' && window.CloudSyncManager) {
+        window.CloudSyncManager.initFirebase();
+        if (window.CloudSyncManager.isConfigured()) {
+          this.syncFromCloud().catch(e => console.warn('[SchoolDB] Background cloud sync deferred:', e));
+        }
       }
 
       return this;
@@ -679,8 +681,8 @@ window.SchoolDB = {
       }
 
       // Automatically sync changes to Cloud Firestore if connected
-      if (CloudSyncManager.isConfigured()) {
-        CloudSyncManager.syncToCloud(this.data).catch(err => console.warn('[SchoolDB] Async cloud push failed:', err));
+      if (typeof window !== 'undefined' && window.CloudSyncManager && window.CloudSyncManager.isConfigured()) {
+        window.CloudSyncManager.syncToCloud(this.data).catch(err => console.warn('[SchoolDB] Async cloud push failed:', err));
       }
     } catch (err) {
       console.error('Error saving data to database:', err);
@@ -688,7 +690,8 @@ window.SchoolDB = {
   },
 
   async syncFromCloud() {
-    const cloudData = await CloudSyncManager.syncFromCloud();
+    if (typeof window === 'undefined' || !window.CloudSyncManager) return;
+    const cloudData = await window.CloudSyncManager.syncFromCloud();
     if (cloudData) {
       if (cloudData.profile) this.data.profile = { ...this.data.profile, ...cloudData.profile };
       if (Array.isArray(cloudData.teachers)) this.data.teachers = cloudData.teachers;

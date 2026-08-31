@@ -11,16 +11,16 @@
     if (!container) return;
 
     const schoolProfile = profile || (root.SchoolDB ? root.SchoolDB.getProfile() : {
-      name: 'SDN 2 Ngeposari',
+      name: 'SDN Ngeposari 2',
       description: 'Sekolah Dasar Negeri di Semanu, Gunungkidul. Tempat belajar, bertumbuh, dan membentuk nalar luhur peserta didik.',
       tagline: 'Unggul, Berkarakter, dan Berbudaya Lingkungan',
       logo: 'images/logo.webp'
     });
 
     const schoolContact = contact || (root.SchoolDB ? root.SchoolDB.getContact() : {
-      address: 'Ngeposari, Semanu, Gunungkidul, DIY 55891',
-      phone: '(0274) 123456 / 0812-3456-7890',
-      email: 'info@sdn2ngeposari.sch.id'
+      address: 'Mojo RT 01 / RW 13, Ngeposari, Semanu, Gunungkidul, DIY 55893',
+      phone: '0812-3456-7890',
+      email: 'info@sdnngeposari2.sch.id'
     });
 
     const currentYear = new Date().getFullYear();

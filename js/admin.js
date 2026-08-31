@@ -418,12 +418,17 @@ if (resetDbBtn) {
 function loadProfileForm() {
   const profile = window.SchoolDB.getProfile();
   
-  document.getElementById('profile-name').value = profile.name;
-  document.getElementById('profile-tagline').value = profile.tagline;
-  document.getElementById('profile-description').value = profile.description;
-  document.getElementById('profile-history').value = profile.history;
-  document.getElementById('profile-vision').value = profile.vision;
-  document.getElementById('profile-missions').value = profile.missions.join('\n');
+  document.getElementById('profile-name').value = profile.name || '';
+  if (document.getElementById('profile-npsn')) document.getElementById('profile-npsn').value = profile.npsn || '20401876';
+  if (document.getElementById('profile-nss')) document.getElementById('profile-nss').value = profile.nss || '101040310002';
+  if (document.getElementById('profile-akreditasi')) document.getElementById('profile-akreditasi').value = profile.akreditasi || 'A';
+  if (document.getElementById('profile-students')) document.getElementById('profile-students').value = profile.totalStudents || 143;
+  if (document.getElementById('profile-classes')) document.getElementById('profile-classes').value = profile.totalClasses || 6;
+  document.getElementById('profile-tagline').value = profile.tagline || '';
+  document.getElementById('profile-description').value = profile.description || '';
+  document.getElementById('profile-history').value = profile.history || '';
+  document.getElementById('profile-vision').value = profile.vision || '-';
+  document.getElementById('profile-missions').value = (profile.missions || []).join('\n');
   
   document.getElementById('preview-logo-img').src = profile.logo || '';
   document.getElementById('preview-hero-img').src = profile.hero || '';
@@ -432,7 +437,7 @@ function loadProfileForm() {
   tempHeroBase64 = profile.hero;
   
   // Attach dirty tracking
-  ['profile-name', 'profile-tagline', 'profile-description', 'profile-history', 'profile-vision', 'profile-missions'].forEach(id => {
+  ['profile-name', 'profile-npsn', 'profile-nss', 'profile-akreditasi', 'profile-students', 'profile-classes', 'profile-tagline', 'profile-description', 'profile-history', 'profile-vision', 'profile-missions'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('input', markDirty);
   });
@@ -496,7 +501,7 @@ document.getElementById('upload-hero-file').addEventListener('change', async (e)
   const file = e.target.files[0];
   if (file) {
     try {
-      const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 1600, maxHeight: 1000, quality: 0.82 }) : fileToBase64(file, 1600));
+      const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 1400, maxHeight: 900, quality: 0.85 }) : fileToBase64(file, 1400));
       tempHeroBase64 = typeof res === 'object' ? res.dataUrl : res;
       document.getElementById('preview-hero-img').src = tempHeroBase64;
       document.getElementById('preview-hero-container').style.display = 'block';
@@ -518,6 +523,11 @@ if (formEditProfile) {
     
     try {
       const name = document.getElementById('profile-name').value;
+      const npsn = document.getElementById('profile-npsn') ? document.getElementById('profile-npsn').value.trim() : '20401876';
+      const nss = document.getElementById('profile-nss') ? document.getElementById('profile-nss').value.trim() : '101040310002';
+      const akreditasi = document.getElementById('profile-akreditasi') ? document.getElementById('profile-akreditasi').value.trim() : 'A';
+      const totalStudents = document.getElementById('profile-students') ? parseInt(document.getElementById('profile-students').value, 10) || 143 : 143;
+      const totalClasses = document.getElementById('profile-classes') ? parseInt(document.getElementById('profile-classes').value, 10) || 6 : 6;
       const tagline = document.getElementById('profile-tagline').value;
       const description = document.getElementById('profile-description').value;
       const history = document.getElementById('profile-history').value;
@@ -529,6 +539,11 @@ if (formEditProfile) {
       
       await window.SchoolDB.updateProfile({
         name,
+        npsn,
+        nss,
+        akreditasi,
+        totalStudents,
+        totalClasses,
         tagline,
         description,
         history,
@@ -539,7 +554,7 @@ if (formEditProfile) {
       });
       
       clearDirty();
-      showAdminToast('Profil dan visi misi sekolah berhasil disimpan.', 'success', 'Profil Disimpan');
+      showAdminToast('Profil dan identitas resmi sekolah berhasil disimpan.', 'success', 'Profil Disimpan');
       renderDashboard();
     } catch (err) {
       showAdminToast('Terjadi kesalahan saat menyimpan profil sekolah.', 'error');

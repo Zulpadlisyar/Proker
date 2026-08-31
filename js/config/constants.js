@@ -31,17 +31,25 @@
 
   const INITIAL_DATA = {
     profile: {
-      name: 'SDN 2 Ngeposari',
+      name: 'SDN Ngeposari 2',
       tagline: 'Unggul, Berkarakter, dan Berbudaya Lingkungan',
-      description: 'SDN 2 Ngeposari berkomitmen untuk memberikan pendidikan berkualitas tinggi bagi anak-anak, memadukan keunggulan akademik dengan pembentukan karakter yang luhur dan kepedulian terhadap lingkungan sekitar.',
-      history: 'SDN 2 Ngeposari didirikan untuk melayani kebutuhan pendidikan masyarakat Ngeposari dan sekitarnya. Sejak awal berdiri, sekolah ini terus mengukir prestasi baik di bidang akademik maupun non-akademik, menjadi salah satu sekolah dasar pilihan di wilayahnya.',
-      vision: 'Terwujudnya peserta didik yang bertaqwa, berprestasi, berkarakter pancasila, dan peduli lingkungan.',
+      npsn: '20401876',
+      nss: '101040310002',
+      akreditasi: 'A',
+      totalStudents: 143,
+      totalTeachers: 8,
+      totalPrincipal: 1,
+      totalStaff: 2,
+      totalClasses: 6,
+      description: 'SDN Ngeposari 2 adalah sekolah dasar negeri terakreditasi A di Mojo RT 01 / RW 13, Ngeposari, Semanu, Gunungkidul yang berkomitmen mencetak generasi cerdas, berkarakter, dan berbudaya lingkungan.',
+      history: 'SDN Ngeposari 2 (NPSN: 20401876, NSS: 101040310002) didirikan untuk melayani kebutuhan pendidikan dasar masyarakat di Dusun Mojo, Kalurahan Ngeposari, Kapanewon Semanu, Kabupaten Gunungkidul. Berada di lingkungan yang asri dan kondusif, sekolah ini berstatus negeri dengan akreditasi A, membina 143 siswa dengan didukung oleh 1 Kepala Sekolah, 8 Guru, dan 2 Tenaga Kependidikan dalam 6 ruang kelas pembelajaran aktif.',
+      vision: '-',
       missions: [
-        'Melaksanakan pembelajaran yang aktif, kreatif, efektif, dan menyenangkan.',
-        'Menumbuhkan penghayatan dan pengamalan terhadap ajaran agama yang dianut.',
-        'Membentuk kepribadian yang berbudi pekerti luhur sesuai dengan nilai-nilai Pancasila.',
-        'Mewujudkan lingkungan sekolah yang bersih, sehat, rindang, dan asri.',
-        'Mengembangkan minat, bakat, dan kreativitas siswa melalui kegiatan ekstrakurikuler.'
+        'Melaksanakan pembelajaran yang aktif, kreatif, efektif, dan menyenangkan berpusat pada potensi siswa.',
+        'Menumbuhkan penghayatan dan pengamalan nilai-nilai keagamaan dan budi pekerti luhur.',
+        'Membentuk kepribadian siswa yang berkarakter Pancasila, tangguh, jujur, dan bergotong royong.',
+        'Mewujudkan lingkungan sekolah yang bersih, sehat, rindang, asri, dan ramah anak.',
+        'Mengembangkan minat, bakat, literasi digital, dan kreativitas siswa melalui program intrakurikuler dan ekstrakurikuler.'
       ],
       values: [
         { title: 'Bertaqwa', desc: 'Mengedepankan nilai-nilai religius dan ketuhanan.' },
@@ -104,7 +112,7 @@
         category: 'Prestasi',
         views: 185,
         excerpt: 'Wadah bagi siswa untuk menyalurkan bakat seni rupa, menulis indah, dan menuangkan imajinasi mereka.',
-        content: 'Dalam rangka memperingati bulan bahasa, SDN 2 Ngeposari menyelenggarakan lomba menulis kreatif dan mewarnai tingkat kelas. Kegiatan ini bertujuan merangsang motorik halus serta imajinasi kreatif anak sejak usia dini.',
+        content: 'Dalam rangka memperingati bulan bahasa, SDN Ngeposari 2 menyelenggarakan lomba menulis kreatif dan mewarnai tingkat kelas. Kegiatan ini bertujuan merangsang motorik halus serta imajinasi kreatif anak sejak usia dini.',
         image: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=960&h=540&fit=crop'
       },
       {
@@ -114,7 +122,7 @@
         category: 'Sosial & Lingkungan',
         views: 312,
         excerpt: 'Aksi peduli lingkungan bersama guru dan siswa menjaga kebersihan serta menanam pohon di sekolah.',
-        content: 'Sebagai sekolah yang berbudaya lingkungan, SDN 2 Ngeposari mengadakan kerja bakti bulanan. Siswa diajarkan memilah sampah organik dan non-organik, serta melakukan penanaman bibit tanaman hias dan apotek hidup di area taman sekolah.',
+        content: 'Sebagai sekolah yang berbudaya lingkungan, SDN Ngeposari 2 mengadakan kerja bakti bulanan. Siswa diajarkan memilah sampah organik dan non-organik, serta melakukan penanaman bibit tanaman hias dan apotek hidup di area taman sekolah.',
         image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=960&h=540&fit=crop'
       }
     ],
@@ -127,26 +135,33 @@
       { id: 'g6', caption: 'Kerja bakti taman dan tanaman apotek hidup', image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&h=600&fit=crop' }
     ],
     contact: {
-      address: 'Jl. Karangmojo - Semanu, Ngeposari, Semanu, Kabupaten Gunungkidul, Daerah Istimewa Yogyakarta 55891',
+      address: 'Mojo RT 01 / RW 13, Ngeposari, Semanu, Kabupaten Gunungkidul, Daerah Istimewa Yogyakarta 55893',
       phone: '081234567890',
-      email: 'info@sdn2ngeposari.sch.id',
+      email: 'info@sdnngeposari2.sch.id',
       maps: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3950.563823439498!2d110.6473063!3d-7.9734185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a372132eb2c0b%3A0xc48cd4d0ee0ca2df!2sSD%20Negeri%202%20Ngeposari!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid',
-      facebook: 'SDN 2 Ngeposari',
-      instagram: 'sdn2ngeposari',
-      youtube: 'SDN 2 Ngeposari Official'
+      facebook: 'SDN Ngeposari 2',
+      instagram: 'sdnngeposari2',
+      youtube: 'SDN Ngeposari 2 Official'
     },
     teachers: [
       { id: 't1', name: 'Bapak Maryanto, M.Pd.', role: 'Kepala Sekolah', image: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=600&h=600&fit=crop' },
       { id: 't2', name: 'Ibu Siti Nurhaliza, S.Pd.', role: 'Guru Kelas 1', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=600&fit=crop' },
-      { id: 't3', name: 'Bapak Bambang Wijaya, S.Pd.', role: 'Guru PJOK', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=600&fit=crop' },
-      { id: 't4', name: 'Ibu Tri Wahyuni, S.Pd.', role: 'Guru Pendidikan Agama', image: 'https://images.unsplash.com/photo-1580894732470-349f50e82e5b?w=600&h=600&fit=crop' }
+      { id: 't3', name: 'Ibu Rahmawati, S.Pd.', role: 'Guru Kelas 2', image: 'https://images.unsplash.com/photo-1580894732413-87b1c31274cf?w=600&h=600&fit=crop' },
+      { id: 't4', name: 'Bapak Supriyadi, S.Pd.', role: 'Guru Kelas 3', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=600&fit=crop' },
+      { id: 't5', name: 'Ibu Endang Lestari, S.Pd.', role: 'Guru Kelas 4', image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&h=600&fit=crop' },
+      { id: 't6', name: 'Bapak Wahyudi, S.Pd.', role: 'Guru Kelas 5', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=600&fit=crop' },
+      { id: 't7', name: 'Ibu Sri Mulyani, S.Pd.', role: 'Guru Kelas 6', image: 'https://images.unsplash.com/photo-1580894732470-349f50e82e5b?w=600&h=600&fit=crop' },
+      { id: 't8', name: 'Bapak Bambang Wijaya, S.Pd.', role: 'Guru PJOK', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=600&fit=crop' },
+      { id: 't9', name: 'Ibu Tri Wahyuni, S.Pd.I.', role: 'Guru Pendidikan Agama Islam', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=600&fit=crop' },
+      { id: 't10', name: 'Bapak Danang Prasetyo', role: 'Tenaga Administrasi Sekolah (TU)', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&h=600&fit=crop' },
+      { id: 't11', name: 'Bapak Sutrisno', role: 'Tenaga Kependidikan / Penjaga Sekolah', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&h=600&fit=crop' }
     ],
     testimonials: [
       {
         id: 'testi-1',
         name: 'Ibu Purwanti',
         role: 'Orang Tua Wali Kelas IV',
-        quote: 'Guru-guru di SDN 2 Ngeposari sangat sabar dan penuh perhatian. Anak saya jadi lebih percaya diri, sopan, dan bersemangat berangkat sekolah setiap pagi.',
+        quote: 'Guru-guru di SDN Ngeposari 2 sangat sabar dan penuh perhatian. Anak saya jadi lebih percaya diri, sopan, dan bersemangat berangkat sekolah setiap pagi.',
         avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop'
       },
       {

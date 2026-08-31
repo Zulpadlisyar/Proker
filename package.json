@@ -1,7 +1,7 @@
 {
   "name": "sdn2ngeposari",
   "version": "1.0.0",
-  "description": "Website Informasi Sekolah SDN 2 Ngeposari",
+  "description": "Website Informasi Sekolah SDN Ngeposari 2",
   "scripts": {
     "deploy": "wrangler deploy",
     "preview": "wrangler dev"

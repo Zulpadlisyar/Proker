@@ -10,7 +10,7 @@
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    const schoolProfile = profile || (root.SchoolDB ? root.SchoolDB.getProfile() : { name: 'SDN 2 Ngeposari', tagline: 'Semanu, Gunungkidul', logo: 'images/logo.webp' });
+    const schoolProfile = profile || (root.SchoolDB ? root.SchoolDB.getProfile() : { name: 'SDN Ngeposari 2', tagline: 'Semanu, Gunungkidul', logo: 'images/logo.webp' });
     const currentPath = window.location.pathname.toLowerCase().replace(/\/+$/, '') || '/';
     const lastSegment = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'index.html';
 

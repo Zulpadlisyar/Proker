@@ -199,16 +199,40 @@
   // 6. Tentang (tentang.html)
   function renderAboutPage() {
     const profile = window.SchoolDB.getProfile();
+    const contact = window.SchoolDB.getContact();
 
     const historyText = document.getElementById('history-text');
-    if (historyText) {
+    if (historyText && profile.history) {
       historyText.innerHTML = `<p style="font-size: 1.05rem; line-height: 1.75; margin-bottom: 1.5rem; color: var(--text-muted);">${profile.history}</p>`;
     }
 
     const visionText = document.getElementById('vision-text');
     if (visionText) {
-      visionText.textContent = profile.vision;
+      visionText.textContent = profile.vision || '-';
     }
+
+    // Dynamic Official School Identity Bindings
+    const identitasNama = document.getElementById('identitas-nama');
+    if (identitasNama && profile.name) identitasNama.textContent = profile.name;
+    const identitasNpsn = document.getElementById('identitas-npsn');
+    if (identitasNpsn && profile.npsn) identitasNpsn.textContent = profile.npsn;
+    const identitasNss = document.getElementById('identitas-nss');
+    if (identitasNss && profile.nss) identitasNss.textContent = profile.nss;
+    const identitasAkreditasi = document.getElementById('identitas-akreditasi');
+    if (identitasAkreditasi && profile.akreditasi) identitasAkreditasi.textContent = `${profile.akreditasi} (Unggul)`;
+    const identitasSiswa = document.getElementById('identitas-siswa');
+    if (identitasSiswa && profile.totalStudents) identitasSiswa.textContent = `${profile.totalStudents} Siswa`;
+    const identitasGuru = document.getElementById('identitas-guru');
+    if (identitasGuru) {
+      const gCount = profile.totalTeachers || 8;
+      const ksCount = profile.totalPrincipal || 1;
+      const tCount = profile.totalStaff || 2;
+      identitasGuru.textContent = `${gCount + ksCount + tCount} Orang (${gCount} Guru, ${ksCount} KS, ${tCount} Tendik)`;
+    }
+    const identitasKelas = document.getElementById('identitas-kelas');
+    if (identitasKelas && profile.totalClasses) identitasKelas.textContent = `${profile.totalClasses} Ruang Kelas`;
+    const identitasAlamat = document.getElementById('identitas-alamat');
+    if (identitasAlamat && contact && contact.address) identitasAlamat.textContent = contact.address;
 
     const missionList = document.getElementById('mission-list');
     if (missionList && Array.isArray(profile.missions)) {

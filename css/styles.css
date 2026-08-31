@@ -858,6 +858,168 @@ body.hero-page header#main-header.scrolled .menu-toggle {
   color: var(--text-muted);
 }
 
+/* ==========================================================================
+   ADAPTIVE CAROUSEL STYLES (Habits, Calendar, Testimonials, Values)
+   ========================================================================== */
+.carousel-adaptive-wrapper {
+  position: relative;
+  width: 100%;
+  margin-top: var(--space-4);
+}
+
+.carousel-viewport-container {
+  position: relative;
+  width: 100%;
+}
+
+.carousel-track {
+  display: flex;
+  gap: var(--space-4);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 4px 16px 4px;
+  scrollbar-width: none;
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-slide-item {
+  scroll-snap-align: start;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+}
+
+/* Specific item widths for carousel tracks */
+.carousel-track-pillars-grid .carousel-slide-item,
+.carousel-track-values-grid .carousel-slide-item {
+  width: calc(25% - 12px);
+  min-width: 250px;
+}
+
+.carousel-track-academic-calendar-grid .carousel-slide-item {
+  width: calc(25% - 12px);
+  min-width: 270px;
+}
+
+.carousel-track-testimonials-grid .carousel-slide-item {
+  width: calc(33.333% - 11px);
+  min-width: 300px;
+}
+
+.carousel-slide-item > .pillar-card,
+.carousel-slide-item > .value-card,
+.carousel-slide-item > .testimonial-card,
+.carousel-slide-item > .calendar-card-item {
+  height: 100%;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Floating Navigation Buttons */
+.carousel-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 15;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carousel-prev {
+  left: -22px;
+}
+
+.carousel-next {
+  right: -22px;
+}
+
+.carousel-nav-btn:hover:not(:disabled) {
+  background: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
+  transform: translateY(-50%) scale(1.08);
+  box-shadow: 0 6px 18px rgba(11, 25, 44, 0.25);
+}
+
+.carousel-nav-btn:active:not(:disabled) {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.carousel-nav-btn:disabled {
+  opacity: 0.22;
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none;
+}
+
+/* Pagination Dots */
+.carousel-dots-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: var(--border-hover);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carousel-dot:hover {
+  background-color: var(--text-muted);
+}
+
+.carousel-dot.active {
+  width: 26px;
+  background-color: var(--primary);
+}
+
+@media (max-width: 1024px) {
+  .carousel-prev { left: -10px; }
+  .carousel-next { right: -10px; }
+  .carousel-track-pillars-grid .carousel-slide-item,
+  .carousel-track-values-grid .carousel-slide-item,
+  .carousel-track-academic-calendar-grid .carousel-slide-item {
+    width: calc(50% - 10px);
+  }
+  .carousel-track-testimonials-grid .carousel-slide-item {
+    width: calc(50% - 10px);
+  }
+}
+
+@media (max-width: 640px) {
+  .carousel-prev { left: 4px; background: rgba(255, 255, 255, 0.95); }
+  .carousel-next { right: 4px; background: rgba(255, 255, 255, 0.95); }
+  .carousel-track-pillars-grid .carousel-slide-item,
+  .carousel-track-values-grid .carousel-slide-item,
+  .carousel-track-academic-calendar-grid .carousel-slide-item,
+  .carousel-track-testimonials-grid .carousel-slide-item {
+    width: 100%;
+    min-width: 100%;
+  }
+}
+
 /* School Services */
 .services-cards-grid {
   display: grid;

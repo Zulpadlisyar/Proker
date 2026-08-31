@@ -75,8 +75,8 @@
 
   // 4. Common Layout (Navbar, Footer, Contact CTAs)
   async function renderCommonUI() {
-    let profile = { name: 'SDN 2 Ngeposari', logo: 'images/logo.webp', tagline: 'Semanu, Gunungkidul' };
-    let contact = { address: 'Ngeposari, Semanu, Gunungkidul', phone: '(0274) 123456', email: 'info@sdn2ngeposari.sch.id' };
+    let profile = { name: 'SDN Ngeposari 2', logo: 'images/logo.png', tagline: 'Semanu, Gunungkidul' };
+    let contact = { address: 'Mojo RT 01 / RW 13, Ngeposari, Semanu, Gunungkidul, DIY 55893', phone: '0812-3456-7890', email: 'info@sdnngeposari2.sch.id' };
 
     try {
       if (window.SchoolDB) {
@@ -138,12 +138,30 @@
       }
     }
 
-    // Dynamic School Habits / Pembiasaan Baik
-    const pillarsGrid = document.getElementById('pillars-grid');
-    if (pillarsGrid) {
-      const habits = window.SchoolDB.getHabits();
-      if (habits && habits.length > 0) {
-        pillarsGrid.innerHTML = habits.map(h => `
+    // Dynamic School Habits / Pembiasaan Baik (Adaptive Carousel: Threshold > 4)
+    const pillarsContainer = document.getElementById('pillars-grid');
+    if (pillarsContainer) {
+      const habits = window.SchoolDB.getHabits() || [];
+      if (window.SchoolCarousel) {
+        window.SchoolCarousel.renderAdaptive({
+          containerId: pillarsContainer,
+          items: habits,
+          threshold: 4,
+          gridClass: 'pillars-grid',
+          itemClass: 'pillar-slide',
+          ariaLabel: 'Pembiasaan Baik dan Budaya Sekolah',
+          renderItem: (h) => `
+            <div class="pillar-card">
+              <div class="pillar-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 14.7255 3.09032 17.1962 4.85857 19" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="7.5" cy="10.5" r="1.5" fill="currentColor"/><circle cx="11.5" cy="7.5" r="1.5" fill="currentColor"/><circle cx="16.5" cy="9.5" r="1.5" fill="currentColor"/></svg>
+              </div>
+              <h4>${h.title}</h4>
+              <p>${h.desc || h.description || ''}</p>
+            </div>
+          `
+        });
+      } else if (habits.length > 0) {
+        pillarsContainer.innerHTML = habits.map(h => `
           <div class="pillar-card">
             <div class="pillar-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 14.7255 3.09032 17.1962 4.85857 19" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="7.5" cy="10.5" r="1.5" fill="currentColor"/><circle cx="11.5" cy="7.5" r="1.5" fill="currentColor"/><circle cx="16.5" cy="9.5" r="1.5" fill="currentColor"/></svg>
@@ -155,14 +173,35 @@
       }
     }
 
-    // Dynamic Academic Calendar Grid
-    const calendarGrid = document.getElementById('academic-calendar-grid');
-    if (calendarGrid) {
-      const calendarEvents = window.SchoolDB.getCalendar();
-      if (calendarEvents && calendarEvents.length > 0) {
-        calendarGrid.innerHTML = calendarEvents.map(ev => `
+    // Dynamic Academic Calendar (Adaptive Carousel: Threshold > 4)
+    const calendarContainer = document.getElementById('academic-calendar-grid');
+    if (calendarContainer) {
+      const calendarEvents = window.SchoolDB.getCalendar() || [];
+      if (window.SchoolCarousel) {
+        window.SchoolCarousel.renderAdaptive({
+          containerId: calendarContainer,
+          items: calendarEvents,
+          threshold: 4,
+          gridClass: 'academic-calendar-grid',
+          itemClass: 'calendar-slide',
+          ariaLabel: 'Agenda dan Kalender Akademik',
+          renderItem: (ev) => `
+            <div class="calendar-card-item" style="display: flex; gap: 16px; align-items: center; padding: 16px; background-color: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius-sm); height: 100%; box-sizing: border-box;">
+              <div style="background-color: var(--primary); color: #fff; text-align: center; border-radius: var(--radius-sm); padding: 8px 12px; min-width: 50px; flex-shrink: 0;">
+                <div style="font-size: 11px; text-transform: uppercase; font-weight: 700;">${ev.month || 'BLN'}</div>
+                <div style="font-size: 18px; font-weight: 800; line-height: 1;">${ev.date || '01'}</div>
+              </div>
+              <div>
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 2px; color: var(--text);">${ev.title}</h4>
+                <p style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">${ev.desc || ev.description || ''}</p>
+              </div>
+            </div>
+          `
+        });
+      } else if (calendarEvents.length > 0) {
+        calendarContainer.innerHTML = calendarEvents.map(ev => `
           <div style="display: flex; gap: 16px; align-items: center; padding: 16px; background-color: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius-sm);">
-            <div style="background-color: var(--primary); color: #fff; text-align: center; border-radius: var(--radius-sm); padding: 8px 12px; min-width: 50px;">
+            <div style="background-color: var(--primary); color: #fff; text-align: center; border-radius: var(--radius-sm); padding: 8px 12px; min-width: 50px; flex-shrink: 0;">
               <div style="font-size: 11px; text-transform: uppercase; font-weight: 700;">${ev.month || 'BLN'}</div>
               <div style="font-size: 18px; font-weight: 800; line-height: 1;">${ev.date || '01'}</div>
             </div>
@@ -175,16 +214,37 @@
       }
     }
 
-    // Dynamic Testimonials / Kesan & Apresiasi
-    const testimonialsGrid = document.getElementById('testimonials-grid');
-    if (testimonialsGrid) {
-      const testimonials = window.SchoolDB.getTestimonials();
-      if (testimonials && testimonials.length > 0) {
-        testimonialsGrid.innerHTML = testimonials.map(t => `
+    // Dynamic Testimonials / Kesan & Apresiasi (Adaptive Carousel: Threshold > 3)
+    const testimonialsContainer = document.getElementById('testimonials-grid');
+    if (testimonialsContainer) {
+      const testimonials = window.SchoolDB.getTestimonials() || [];
+      if (window.SchoolCarousel) {
+        window.SchoolCarousel.renderAdaptive({
+          containerId: testimonialsContainer,
+          items: testimonials,
+          threshold: 3,
+          gridClass: 'testimonials-grid',
+          itemClass: 'testimonial-slide',
+          ariaLabel: 'Kesan dan Apresiasi Wali Murid',
+          renderItem: (t) => `
+            <div class="testimonial-card">
+              <p class="testimonial-quote">"${t.quote}"</p>
+              <div class="testimonial-author">
+                <img src="${t.avatar || 'images/logo.png'}" alt="${t.name}" class="testimonial-avatar" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='images/logo.png';">
+                <div>
+                  <div class="testimonial-name">${t.name}</div>
+                  <div class="testimonial-role">${t.role || 'Orang Tua Wali'}</div>
+                </div>
+              </div>
+            </div>
+          `
+        });
+      } else if (testimonials.length > 0) {
+        testimonialsContainer.innerHTML = testimonials.map(t => `
           <div class="testimonial-card">
             <p class="testimonial-quote">"${t.quote}"</p>
             <div class="testimonial-author">
-              <img src="${t.avatar || 'images/logo.webp'}" alt="${t.name}" class="testimonial-avatar" loading="lazy" decoding="async" onerror="this.src='images/logo.webp'">
+              <img src="${t.avatar || 'images/logo.png'}" alt="${t.name}" class="testimonial-avatar" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='images/logo.png';">
               <div>
                 <div class="testimonial-name">${t.name}</div>
                 <div class="testimonial-role">${t.role || 'Orang Tua Wali'}</div>
@@ -246,19 +306,27 @@
 
     const valuesGrid = document.getElementById('values-grid');
     if (valuesGrid) {
-      const habits = window.SchoolDB.getHabits();
-      if (habits && habits.length > 0) {
+      const habits = (window.SchoolDB.getHabits && window.SchoolDB.getHabits()) || profile.values || [];
+      if (window.SchoolCarousel) {
+        window.SchoolCarousel.renderAdaptive({
+          containerId: valuesGrid,
+          items: habits,
+          threshold: 4,
+          gridClass: 'values-grid',
+          itemClass: 'value-slide',
+          ariaLabel: 'Nilai dan Budaya Sekolah',
+          renderItem: (h) => `
+            <div class="value-card">
+              <h4>${h.title}</h4>
+              <p>${h.desc || h.description || ''}</p>
+            </div>
+          `
+        });
+      } else if (habits.length > 0) {
         valuesGrid.innerHTML = habits.map(h => `
           <div class="value-card">
             <h4>${h.title}</h4>
             <p>${h.desc || h.description || ''}</p>
-          </div>
-        `).join('');
-      } else if (Array.isArray(profile.values)) {
-        valuesGrid.innerHTML = profile.values.map(v => `
-          <div class="value-card">
-            <h4>${v.title}</h4>
-            <p>${v.desc}</p>
           </div>
         `).join('');
       }

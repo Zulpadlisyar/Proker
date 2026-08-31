@@ -14,7 +14,7 @@
       name: 'SDN Ngeposari 2',
       description: 'Sekolah Dasar Negeri di Semanu, Gunungkidul. Tempat belajar, bertumbuh, dan membentuk nalar luhur peserta didik.',
       tagline: 'Unggul, Berkarakter, dan Berbudaya Lingkungan',
-      logo: 'images/logo.webp'
+      logo: 'images/logo.png'
     });
 
     const schoolContact = contact || (root.SchoolDB ? root.SchoolDB.getContact() : {
@@ -24,12 +24,13 @@
     });
 
     const currentYear = new Date().getFullYear();
+    const logoSrc = schoolProfile.logo || 'images/logo.png';
 
     container.innerHTML = `
       <div class="footer-container">
         <div class="footer-brand">
           <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-            <img src="${schoolProfile.logo || 'images/logo.webp'}" alt="Logo ${schoolProfile.name}" style="width: 44px; height: 44px; object-fit: contain;">
+            <img src="${logoSrc}" alt="Logo ${schoolProfile.name}" style="width: 44px; height: 44px; object-fit: contain;" width="44" height="44" onerror="this.onerror=null;this.src='images/logo.png';">
             <h3 style="margin: 0; font-size: 1.35rem; color: #FFFFFF !important;">${schoolProfile.name}</h3>
           </div>
           <p style="color: #FFFFFF !important;">${schoolProfile.description}</p>

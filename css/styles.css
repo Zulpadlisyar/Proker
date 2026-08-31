@@ -2019,6 +2019,7 @@ footer, footer#main-footer {
     padding: 16px 20px;
     gap: 6px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    z-index: 99999;
   }
   .nav-menu li {
     width: 100%;
@@ -2665,12 +2666,22 @@ textarea.form-control {
     border-bottom: 1px solid var(--border);
     padding: 12px 16px;
     gap: 8px;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    position: sticky;
+    top: 61px;
+    background: #FFFFFF;
+    z-index: 50;
   }
   .admin-nav-btn {
     white-space: nowrap;
     width: auto;
     padding: 8px 14px;
     font-size: 13px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
   }
   .admin-content {
     padding: 20px 16px;

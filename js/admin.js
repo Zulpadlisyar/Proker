@@ -262,12 +262,16 @@ async function initAdminPanel() {
   initCategoryManagementUI();
   initInboxUI();
   
-  // Navigation Tabs
-  const navBtns = document.querySelectorAll('.admin-nav-btn');
-  const panes = document.querySelectorAll('.admin-tab-pane');
-  
-  navBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
+  // Navigation Tabs with Resilient Event Delegation & Dynamic Pane Refresh
+  const adminSidebar = document.querySelector('.admin-sidebar');
+  if (adminSidebar) {
+    adminSidebar.onclick = (e) => {
+      const btn = e.target.closest('.admin-nav-btn');
+      if (!btn) return;
+      
+      const targetId = btn.getAttribute('data-target');
+      if (!targetId) return;
+
       if (isFormDirty) {
         if (!confirm('Ada perubahan form yang belum disimpan. Tetap berpindah menu?')) {
           return;
@@ -275,18 +279,40 @@ async function initAdminPanel() {
         clearDirty();
       }
       
-      const targetId = btn.getAttribute('data-target');
+      const navBtns = document.querySelectorAll('.admin-nav-btn');
+      const panes = document.querySelectorAll('.admin-tab-pane');
+
       navBtns.forEach(b => b.classList.remove('active'));
       panes.forEach(p => p.classList.remove('active'));
       
       btn.classList.add('active');
       const targetPane = document.getElementById(targetId);
-      if (targetPane) targetPane.classList.add('active');
-    });
-  });
+      if (targetPane) {
+        targetPane.classList.add('active');
+        
+        // Refresh specific pane content on activation
+        if (targetId === 'pane-dashboard') renderDashboard();
+        else if (targetId === 'pane-inbox') renderInboxList();
+        else if (targetId === 'pane-testimonials') renderTestimonialsTable();
+        else if (targetId === 'pane-calendar') renderCalendarTable();
+        else if (targetId === 'pane-habits') renderHabitsTable();
+        else if (targetId === 'pane-comfort') renderComfortTable();
+        else if (targetId === 'pane-teachers') renderTeachersTable();
+        else if (targetId === 'pane-facilities') renderFacilitiesTable();
+        else if (targetId === 'pane-activities') renderActivitiesTable();
+        else if (targetId === 'pane-gallery') renderGalleryTable();
+        
+        // Scroll to top of content
+        const adminContent = document.querySelector('.admin-content');
+        if (adminContent) adminContent.scrollTop = 0;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+  }
 
   // Attach search input listeners with debounce
   initSearchAndPagination();
+  clearDirty(); // Start clean
 }
 
 function updateInboxBadge() {

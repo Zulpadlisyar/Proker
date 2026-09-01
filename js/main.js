@@ -115,14 +115,14 @@
     const activities = window.SchoolDB.getActivities();
     const contact = window.SchoolDB.getContact();
 
-    // Dynamic Headline
-    const ghibliHeadline = document.querySelector('.ghibli-hero-headline');
-    if (ghibliHeadline && profile.name) {
-      ghibliHeadline.innerHTML = `${profile.name}<br><em>Tempat Belajar</em> &amp; Tumbuh Penuh Inspirasi`;
+    // Dynamic Hero Typography
+    const heroHeadline = document.querySelector('.school-hero-headline') || document.querySelector('.ghibli-hero-headline');
+    if (heroHeadline) {
+      heroHeadline.textContent = 'Tempat Belajar & Tumbuh Penuh Inspirasi';
     }
-    const ghibliSubtitle = document.querySelector('.ghibli-hero-subtitle');
-    if (ghibliSubtitle && profile.description) {
-      ghibliSubtitle.textContent = profile.description;
+    const heroSubtitle = document.querySelector('.school-hero-subtitle') || document.querySelector('.ghibli-hero-subtitle');
+    if (heroSubtitle && profile.description) {
+      heroSubtitle.textContent = profile.description;
     }
 
     // Editorial News Grid

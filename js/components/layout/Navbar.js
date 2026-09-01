@@ -32,7 +32,7 @@
           </div>
         </a>
         
-        <div style="display: flex; align-items: center; gap: var(--space-3);">
+        <div style="display: flex; align-items: center; gap: var(--space-4);">
           <nav>
             <ul class="nav-menu" id="nav-menu">
               <li><a href="index.html" class="nav-link ${isBeranda ? 'active' : ''}">Beranda</a></li>
@@ -42,6 +42,8 @@
               <li><a href="kontak.html" class="nav-link ${isKontak ? 'active' : ''}">Kontak</a></li>
             </ul>
           </nav>
+
+          <a href="kontak.html" class="header-cta-btn header-cta-desktop" style="display: inline-flex;">Hubungi Kami</a>
 
           <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Menu">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

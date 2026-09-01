@@ -86,387 +86,239 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
+  <!-- Plus Jakarta Sans Typography ONLY (Section 07) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@1,400&display=swap">
-  <link rel="stylesheet" href="css/styles.css?v=4.9">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="css/styles.css?v=5.0">
   
-  <!-- Preload Critical LCP Hero Image -->
-  <link rel="preload" as="image" href="images/ghibli_hero_bg.webp" imagesrcset="images/ghibli_hero_bg-480.webp 480w, images/ghibli_hero_bg-800.webp 800w, images/ghibli_hero_bg-1200.webp 1200w, images/ghibli_hero_bg.webp 1376w" imagesizes="100vw" fetchpriority="high">
+  <!-- Preload Critical LCP Authentic School Photo -->
+  <link rel="preload" as="image" href="images/school_hero_bg.webp" fetchpriority="high">
 
 </head>
-<body class="hero-page">
+<body>
 
-  <!-- 1. NAVBAR (Mounted dynamically via SchoolNavbar) -->
+  <!-- 1. NAVBAR (Mounted dynamically via SchoolNavbar - Section 13) -->
   <header id="main-header"></header>
 
-  <script>
-    (function() {
-      function syncHeader() {
-        var h = document.getElementById('main-header');
-        if (!h) return;
-        var y = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || window.scrollY || 0;
-        if (y > 40) {
-          if (!h.classList.contains('scrolled')) h.classList.add('scrolled');
-        } else {
-          if (h.classList.contains('scrolled')) h.classList.remove('scrolled');
-        }
-      }
-      window.addEventListener('scroll', syncHeader, { passive: true });
-      window.addEventListener('resize', syncHeader, { passive: true });
-      window.addEventListener('touchmove', syncHeader, { passive: true });
-      document.addEventListener('scroll', syncHeader, { passive: true });
-      syncHeader();
-    })();
-  </script>
+  <!-- 2. AUTHENTIC TWO-COLUMN EDITORIAL HERO SECTION (Section 15 & 16) -->
+  <section class="school-hero-section" id="hero-section">
+    <div class="school-hero-container">
+      <div class="school-hero-text">
+        <span class="school-hero-label">SD NEGERI 2 NGEPOSARI</span>
+        <h1 class="school-hero-headline">
+          Tempat Belajar &amp; Tumbuh Penuh Inspirasi
+        </h1>
+        <p class="school-hero-subtitle">
+          Menghadirkan lingkungan belajar yang asri, hangat, dan ramah anak di Kapanewon Semanu, Gunungkidul. Membimbing nalar budi, kemandirian, dan karakter baik generasi masa depan.
+        </p>
+        <div class="school-hero-buttons">
+          <a href="tentang.html" class="btn btn-primary">Kenali Sekolah →</a>
+          <a href="kegiatan.html" class="btn btn-secondary">Lihat Kegiatan</a>
+        </div>
+      </div>
 
-  <!-- 2. FULL-SCREEN GHIBLI LIVING ENVIRONMENT HERO SECTION -->
-  <section class="hero-fullscreen-section ghibli-hero-section" id="hero-section">
-    <!-- Studio Ghibli Scenic Green Rolling Hills Artwork Background -->
-    <div class="hero-bg-wrapper">
-      <picture>
-        <source type="image/avif" srcset="images/ghibli_hero_bg-480.avif 480w, images/ghibli_hero_bg-800.avif 800w, images/ghibli_hero_bg.avif 1376w" sizes="100vw">
-        <source type="image/webp" srcset="images/ghibli_hero_bg-480.webp 480w, images/ghibli_hero_bg-800.webp 800w, images/ghibli_hero_bg-1200.webp 1200w, images/ghibli_hero_bg.webp 1376w" sizes="100vw">
-        <img src="images/ghibli_hero_bg.webp" alt="Pemandangan Asri Perbukitan Hijau SDN 2 Ngeposari" class="hero-bg-img" width="1376" height="768" fetchpriority="high" decoding="async">
-      </picture>
-      <div class="hero-ghibli-overlay"></div>
+      <div class="school-hero-visual">
+        <div class="school-hero-image-wrapper">
+          <img src="images/school_hero_bg.webp" alt="Gedung dan Halaman Asri SD Negeri 2 Ngeposari Semanu" class="school-hero-image" width="1376" height="768" fetchpriority="high" decoding="async">
+          <div class="school-hero-breeze-badge">
+            <svg class="school-hero-leaf-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-primary);"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+            <span>Lingkungan Belajar Asri &amp; Ramah Anak</span>
+          </div>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <!-- Micro-Interaction 1: Soft Floating Light Elements / Organic Petals -->
-    <div class="organic-floating-shape">
-      <svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M40 30 C70 10, 130 20, 140 70 C150 120, 90 150, 50 130 C10 110, 10 50, 40 30 Z" fill="rgba(255, 255, 255, 0.16)"/>
-      </svg>
-    </div>
-
-    <!-- Centered Editorial Main Typography & Actions (100% Matching Layout) -->
-    <div class="ghibli-hero-content">
-      <h1 class="ghibli-hero-headline">
-        SD Negeri 2 Ngeposari<br><em>Tempat Belajar</em> &amp; Tumbuh Penuh Inspirasi
-      </h1>
-
-      <p class="ghibli-hero-subtitle">
-        Menghadirkan lingkungan belajar yang asri, hangat, dan ramah anak di SDN 2 Ngeposari, Semanu, Gunungkidul. Membimbing nalar budi, kemandirian, dan karakter Pancasila generasi masa depan.
+  <!-- 3. SCHOOL STATEMENT (Section 21) -->
+  <section class="school-statement-section" id="statement-section">
+    <div class="school-statement-container">
+      <span class="section-label">IDENTITAS PENDIDIKAN</span>
+      <h2 class="school-statement-headline">
+        Tempat belajar, bertumbuh, dan menemukan banyak hal baru.
+      </h2>
+      <p class="school-statement-sub">
+        Mengenal lebih dekat lingkungan, kegiatan, dan orang-orang yang membentuk keseharian serta masa depan cerah anak-anak di SD Negeri 2 Ngeposari.
       </p>
+    </div>
+  </section>
 
-      <div class="ghibli-hero-buttons">
-        <a href="kontak.html" class="btn btn-ghibli-solid">Hubungi Kami</a>
-        <a href="tentang.html" class="btn btn-ghibli-glass">Jelajahi Profil</a>
+  <!-- 4. ABOUT PREVIEW (Section 22 - 1 Strong Photograph + Clear Narrative) -->
+  <section class="about-preview-section" id="about-preview-sec">
+    <div class="about-preview-container">
+      <div class="about-preview-visual">
+        <div class="about-preview-img-wrapper">
+          <img src="images/school/hero.webp" alt="Aktivitas dan Lingkungan Belajar Siswa SD Negeri 2 Ngeposari" class="about-preview-img" width="800" height="600" loading="lazy" decoding="async">
+        </div>
+      </div>
+
+      <div class="about-preview-text">
+        <span class="section-label">TENTANG SEKOLAH KAMI</span>
+        <h2>Lebih dekat dengan sekolah kami.</h2>
+        <p class="about-preview-lead">
+          SD Negeri 2 Ngeposari adalah institusi pendidikan dasar negeri berakreditasi A yang berakar kuat di Dusun Mojo, Kalurahan Ngeposari, Kapanewon Semanu, Gunungkidul.
+        </p>
+        <p class="about-preview-desc">
+          Kami percaya setiap anak berhak belajar dalam lingkungan yang aman, teduh, dan penuh rasa menghargai. Melalui perpaduan Kurikulum Merdeka, pembiasaan literasi harian, dan kepramukaan aktif, kami mendampingi siswa mengenali potensi dirinya secara mandiri dan berakhlak mulia.
+        </p>
+        <a href="tentang.html" class="btn btn-secondary">Kenali Sekolah Selengkapnya →</a>
       </div>
     </div>
   </section>
 
-  <!-- 3. ADMISSION / HIGHLIGHT BANNER -->
-  <section class="section" style="padding-top: var(--space-7); padding-bottom: 0;">
-    <div class="banner-highlight-section" id="banner-highlight-sec">
-      <div class="banner-highlight-content">
-        <span class="section-label" style="color: var(--primary);">TENTANG SEKOLAH KAMI</span>
-        <h2>Kenali sekolah kami lebih dekat.</h2>
-        <p>Cerita tentang lingkungan belajar, fasilitas pendukung, kegiatan siswa, dan komunitas sekolah yang hangat.</p>
-        <a href="tentang.html" class="btn btn-primary" style="background-color: var(--primary); color: #FFFFFF; border-color: var(--primary);">Selengkapnya →</a>
-      </div>
-
-      <div class="geometric-pattern-box">
-        <svg width="100%" height="60" viewBox="0 0 1200 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 60 C 60 15, 120 15, 180 60 C 240 15, 300 15, 360 60 C 420 15, 480 15, 540 60 C 600 15, 660 15, 720 60 C 780 15, 840 15, 900 60 C 960 15, 1020 15, 1080 60 C 1140 15, 1200 15, 1260 60 Z" fill="#D7E0F3" opacity="0.9"/>
-          <path d="M90 60 C 150 25, 210 25, 270 60 C 330 25, 390 25, 450 60 C 510 25, 570 25, 630 60 C 690 25, 750 25, 810 60 C 870 25, 930 25, 990 60 C 1050 25, 1110 25, 1170 60 Z" fill="#253B73" opacity="0.8"/>
-        </svg>
-      </div>
-    </div>
-  </section>
-
-  <!-- 4. ESSENTIAL INFORMATION -->
-  <section class="section" id="info-section">
-    <span class="section-label">INFORMASI PENTING</span>
-    <h2 class="section-headline">Temukan informasi yang kamu butuhkan.</h2>
-    <p class="section-supporting">Akses cepat mengenai profil sekolah, fasilitas prasarana, agenda kegiatan siswa, dan kontak resmi kami.</p>
-
-    <div class="info-cards-grid" id="info-cards-grid">
-      <div class="info-card-item">
-        <div>
-          <div class="info-card-num">01</div>
-          <h3>Profil Sekolah</h3>
-          <p>Mengenal sejarah, visi, misi, dan nilai-nilai utama sekolah kami.</p>
-        </div>
-        <a href="tentang.html" class="btn-text-link">Lihat selengkapnya →</a>
-      </div>
-
-      <div class="info-card-item">
-        <div>
-          <div class="info-card-num">02</div>
-          <h3>Fasilitas</h3>
-          <p>Lihat ruang belajar, laboratorium, dan fasilitas yang tersedia.</p>
-        </div>
-        <a href="fasilitas.html" class="btn-text-link">Lihat fasilitas →</a>
-      </div>
-
-      <div class="info-card-item">
-        <div>
-          <div class="info-card-num">03</div>
-          <h3>Kegiatan</h3>
-          <p>Temukan agenda kegiatan, pramuka, dan aktivitas terbaru.</p>
-        </div>
-        <a href="kegiatan.html" class="btn-text-link">Lihat kegiatan →</a>
-      </div>
-
-      <div class="info-card-item">
-        <div>
-          <div class="info-card-num">04</div>
-          <h3>Kontak</h3>
-          <p>Alamat fisik, nomor telepon, email, dan lokasi sekolah.</p>
-        </div>
-        <a href="kontak.html" class="btn-text-link">Hubungi kami →</a>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- 5. KEUNGGULAN & PEMBIASAAN SEKOLAH -->
-  <section class="section" id="pillars-section">
-    <span class="section-label">PEMBIASAAN BAIK</span>
-    <h2 class="section-headline">Keunggulan & Budaya Belajar</h2>
-    <p class="section-supporting">Nilai dasar yang kami tanamkan harian untuk menciptakan generasi yang cerdas, sopan, dan berkarakter.</p>
-
-    <div class="pillars-grid" id="pillars-grid">
-      <div class="pillar-card">
-        <div class="pillar-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        </div>
-        <h4>Literasi 15 Menit</h4>
-        <p>Pembiasaan membaca buku sebelum pelajaran dimulai untuk mengasah minat baca dan daya tangkap pengetahuan siswa.</p>
-      </div>
-
-      <div class="pillar-card">
-        <div class="pillar-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-        </div>
-        <h4>Karakter Pancasila</h4>
-        <p>Integrasi nilai-nilai gotong royong, kebhinekaan, dan kejujuran dalam setiap aktivitas pembelajaran Kurikulum Merdeka.</p>
-      </div>
-
-      <div class="pillar-card">
-        <div class="pillar-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-        </div>
-        <h4>Sekolah Ramah Anak</h4>
-        <p>Lingkungan bebas perundungan (anti-bullying) dengan guru pendamping yang hangat, sabar, dan komunikatif.</p>
-      </div>
-
-      <div class="pillar-card">
-        <div class="pillar-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        </div>
-        <h4>Pramuka Wajib</h4>
-        <p>Pembinaan kedisiplinan, kemandirian, kecintaan alam, dan kepemimpinan melalui regu Kepramukaan Penggalang.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 6. SCHOOL SERVICES -->
-  <section class="section" id="services-section">
+  <!-- 5. FACILITIES SECTION (Section 23, 24 - Editorial Rhythm) -->
+  <section class="section" id="facilities-section" style="padding-top: var(--space-8); padding-bottom: var(--space-8);">
     <div class="section-header-flex">
       <div>
-        <span class="section-label">LAYANAN SEKOLAH</span>
-        <h2 class="section-headline" style="margin-bottom:0;">Layanan dan kehidupan sekolah.</h2>
+        <span class="section-label">FASILITAS BELAJAR</span>
+        <h2 class="section-headline">Ruang untuk belajar dan bertumbuh.</h2>
+        <p class="section-supporting" style="margin-bottom: 0;">Fasilitas sarana dan prasarana yang mendukung pembelajaran interaktif, eksplorasi minat, dan kenyamanan seluruh siswa.</p>
       </div>
-      <a href="tentang.html" class="btn btn-secondary">Lihat semua →</a>
+      <a href="fasilitas.html" class="btn btn-secondary">Lihat Semua Fasilitas →</a>
     </div>
 
-    <div class="services-cards-grid" id="services-cards-grid">
-      <div class="service-card-item">
-        <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?w=800&h=600&fit=crop" alt="Kegiatan Akademik" class="service-card-img" loading="lazy" decoding="async">
-        <div class="service-card-overlay">
-          <span>PROGRAM AKADEMIK</span>
-          <h3>Pembelajaran Berbasis Kurikulum Merdeka</h3>
-          <p>Mendorong minat baca, nalar kritis, dan pembiasaan karakter.</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-5); margin-top: var(--space-5);">
+      <div class="news-card-item" style="border-radius: var(--radius-md); overflow: hidden; background: #fff; border: 1px solid var(--color-border);">
+        <div style="aspect-ratio: 16/10; overflow: hidden; background: var(--color-primary-tint);">
+          <img src="images/school/fasilitas1.webp" alt="Ruang Kelas SDN 2 Ngeposari" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" decoding="async">
+        </div>
+        <div style="padding: 22px;">
+          <span style="font-size: 11.5px; font-weight: 700; color: var(--color-primary); letter-spacing: 0.05em; text-transform: uppercase;">RUANG KELAS UTAMA</span>
+          <h3 style="font-size: 18px; font-weight: 700; color: var(--color-text); margin: 6px 0 10px;">Ruang Kelas Asri &amp; Bersih</h3>
+          <p style="font-size: 14px; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 14px;">Dilengkapi ventilasi udara alami yang segar, pencahayaan optimal, dan sarana belajar yang nyaman untuk seluruh jenjang kelas 1-6.</p>
+          <a href="fasilitas.html" class="btn-text-link">Detail fasilitas →</a>
         </div>
       </div>
 
-      <div class="service-card-item">
-        <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=960&h=540&fit=crop" alt="Kegiatan Siswa" class="service-card-img" loading="lazy" decoding="async">
-        <div class="service-card-overlay">
-          <span>KEGIATAN SISWA</span>
-          <h3>Pengembangan Bakat & Pramuka</h3>
-          <p>Berbagai kegiatan untuk berkembang dan bersosialisasi di luar kelas.</p>
+      <div class="news-card-item" style="border-radius: var(--radius-md); overflow: hidden; background: #fff; border: 1px solid var(--color-border);">
+        <div style="aspect-ratio: 16/10; overflow: hidden; background: var(--color-primary-tint);">
+          <img src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&h=500&fit=crop" alt="Perpustakaan Ramah Anak SDN 2 Ngeposari" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" decoding="async">
+        </div>
+        <div style="padding: 22px;">
+          <span style="font-size: 11.5px; font-weight: 700; color: var(--color-primary); letter-spacing: 0.05em; text-transform: uppercase;">LITERASI SISWA</span>
+          <h3 style="font-size: 18px; font-weight: 700; color: var(--color-text); margin: 6px 0 10px;">Perpustakaan Ramah Anak</h3>
+          <p style="font-size: 14px; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 14px;">Koleksi buku cerita, ensiklopedia pengetahuan umum, dan sudut baca santai yang dirancang untuk membiasakan literasi sejak dini.</p>
+          <a href="fasilitas.html" class="btn-text-link">Detail fasilitas →</a>
         </div>
       </div>
 
-      <div class="service-card-item">
-        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=750&fit=crop" alt="Informasi & Konseling" class="service-card-img" loading="lazy" decoding="async">
-        <div class="service-card-overlay">
-          <span>BIMBINGAN SISWA</span>
-          <h3>Pendampingan & Komunitas Dekat</h3>
-          <p>Sinergi yang erat antara tenaga pendidik dan orang tua wali siswa.</p>
+      <div class="news-card-item" style="border-radius: var(--radius-md); overflow: hidden; background: #fff; border: 1px solid var(--color-border);">
+        <div style="aspect-ratio: 16/10; overflow: hidden; background: var(--color-primary-tint);">
+          <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=500&fit=crop" alt="Laboratorium Komputer & ANBK" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" decoding="async">
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 7. AGENDA & KALENDER AKADEMIK -->
-  <section class="section" style="padding-top: 0;">
-    <div style="background-color: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-card); padding: var(--space-6);">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-5); flex-wrap: wrap; gap: 12px;">
-        <div>
-          <span class="section-label" style="margin-bottom: 4px;">PENGUMUMAN SEKOLAH</span>
-          <h3 style="font-size: 18px; font-weight: 700; color: var(--primary);">Agenda & Kalender Akademik Mendatang</h3>
-        </div>
-        <a href="kegiatan.html" class="btn btn-secondary" style="padding: 6px 14px; font-size: 13px;">Lihat kalender lengkap</a>
-      </div>
-
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;" id="academic-calendar-grid">
-        <div style="display: flex; gap: 16px; align-items: center; padding: 16px; background-color: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius-sm);">
-          <div style="background-color: var(--primary); color: #fff; text-align: center; border-radius: var(--radius-sm); padding: 8px 12px; min-width: 50px;">
-            <div style="font-size: 11px; text-transform: uppercase; font-weight: 700;">SEP</div>
-            <div style="font-size: 18px; font-weight: 800; line-height: 1;">15</div>
-          </div>
-          <div>
-            <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 2px; color: var(--text);">Asesmen Nasional Berbasis Komputer (ANBK)</h4>
-            <p style="font-size: 12px; color: var(--text-muted);">Gladi bersih dan pelaksanaan ANBK kelas 5.</p>
-          </div>
-        </div>
-
-        <div style="display: flex; gap: 16px; align-items: center; padding: 16px; background-color: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius-sm);">
-          <div style="background-color: var(--primary-light); color: #fff; text-align: center; border-radius: var(--radius-sm); padding: 8px 12px; min-width: 50px;">
-            <div style="font-size: 11px; text-transform: uppercase; font-weight: 700;">OKT</div>
-            <div style="font-size: 18px; font-weight: 800; line-height: 1;">03</div>
-          </div>
-          <div>
-            <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 2px; color: var(--text);">Perkemahan Sabtu Minggu (Persami) Pramuka</h4>
-            <p style="font-size: 12px; color: var(--text-muted);">Kegiatan kepramukaan kemandirian dan keterampilan di bumi perkemahan.</p>
-          </div>
-        </div>
-
-        <div style="display: flex; gap: 16px; align-items: center; padding: 16px; background-color: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius-sm);">
-          <div style="background-color: var(--primary-dark); color: #fff; text-align: center; border-radius: var(--radius-sm); padding: 8px 12px; min-width: 50px;">
-            <div style="font-size: 11px; text-transform: uppercase; font-weight: 700;">OKT</div>
-            <div style="font-size: 18px; font-weight: 800; line-height: 1;">24</div>
-          </div>
-          <div>
-            <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 2px; color: var(--text);">Penilaian Tengah Semester (PTS) Ganjil</h4>
-            <p style="font-size: 12px; color: var(--text-muted);">Evaluasi belajar semester ganjil seluruh jenjang kelas 1-6.</p>
-          </div>
+        <div style="padding: 22px;">
+          <span style="font-size: 11.5px; font-weight: 700; color: var(--color-primary); letter-spacing: 0.05em; text-transform: uppercase;">TEKNOLOGI &amp; ASESMEN</span>
+          <h3 style="font-size: 18px; font-weight: 700; color: var(--color-text); margin: 6px 0 10px;">Laboratorium Komputer</h3>
+          <p style="font-size: 14px; color: var(--color-text-muted); line-height: 1.6; margin-bottom: 14px;">Perangkat komputer terhubung internet untuk simulasi ANBK, latihan literasi digital terarah, dan pengenalan dasar informatika.</p>
+          <a href="fasilitas.html" class="btn-text-link">Detail fasilitas →</a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 8. NEWS & ACTIVITIES (EDITORIAL SECTION) -->
-  <section class="section" id="activities-section" style="padding-top: var(--space-4);">
+  <!-- 6. ACTIVITIES / NEWS (Section 25, 26) -->
+  <section class="section" id="activities-section" style="padding-top: var(--space-8); padding-bottom: var(--space-8); background-color: var(--color-surface); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);">
     <div class="section-header-flex">
       <div>
         <span class="section-label">AKTIVITAS &amp; BERITA</span>
-        <h2 class="section-headline" style="margin-bottom:0;">Kabar terbaru dari sekolah.</h2>
+        <h2 class="section-headline">Sekolah tidak berhenti di dalam kelas.</h2>
+        <p class="section-supporting" style="margin-bottom: 0;">Dokumentasi kegiatan aktual, kepramukaan, pembiasaan baik, dan kabar sekolah terbaru.</p>
       </div>
-      <a href="kegiatan.html" class="btn btn-secondary">Semua Berita →</a>
+      <a href="kegiatan.html" class="btn btn-secondary">Semua Kegiatan →</a>
     </div>
 
-    <div class="news-editorial-grid" id="news-editorial-grid">
+    <div class="news-editorial-grid" id="news-editorial-grid" style="margin-top: var(--space-5);">
       <article class="news-card-item">
         <div class="news-img-wrap">
-          <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=960&h=540&fit=crop" alt="Dokumentasi Latihan Rutin Pramuka Penggalang Siswa SD Negeri 2 Ngeposari" width="960" height="540" loading="lazy" decoding="async">
+          <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=960&h=540&fit=crop" alt="Latihan Rutin Pramuka Penggalang" width="960" height="540" loading="lazy" decoding="async">
           <span class="news-badge-tag">Pramuka</span>
         </div>
-        <div class="news-body-content">
-          <div class="news-meta-row">17 Agustus 2026 &bull; Oleh Pembina Pramuka</div>
-          <h3 class="news-title">Latihan Rutin Pramuka Penggalang &amp; Pembentukan Karakter</h3>
-          <p class="news-snippet-text">Membentuk kemandirian, kedisiplinan, dan kekompakan regu melalui latihan baris berbaris dan tali-temali.</p>
-          <a href="detail-kegiatan.html?id=a1" class="news-read-more">Baca selengkapnya &rarr;</a>
+        <div class="news-body-content" style="padding: 20px;">
+          <div class="news-meta-row" style="font-size: 12px; color: var(--color-text-dim); margin-bottom: 6px;">17 Agustus 2026 &bull; Tim Pramuka</div>
+          <h3 class="news-title" style="font-size: 17px; font-weight: 700; color: var(--color-text); margin-bottom: 8px;">Latihan Rutin Pramuka Penggalang &amp; Pembentukan Karakter</h3>
+          <p class="news-snippet-text" style="font-size: 14px; color: var(--color-text-muted); line-height: 1.55; margin-bottom: 14px;">Membentuk kemandirian, kedisiplinan, dan kekompakan regu melalui latihan baris berbaris dan tali-temali di alam terbuka.</p>
+          <a href="kegiatan.html" class="news-read-more" style="color: var(--color-primary); font-weight: 600; font-size: 13.5px;">Baca cerita →</a>
         </div>
       </article>
 
       <article class="news-card-item">
         <div class="news-img-wrap">
-          <img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=960&h=540&fit=crop" alt="Dokumentasi Pentas Seni dan Lomba Kreasi Siswa SD Negeri 2 Ngeposari" width="960" height="540" loading="lazy" decoding="async">
+          <img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=960&h=540&fit=crop" alt="Pentas Seni dan Kreasi Siswa" width="960" height="540" loading="lazy" decoding="async">
           <span class="news-badge-tag">Kreativitas</span>
         </div>
-        <div class="news-body-content">
-          <div class="news-meta-row">10 Agustus 2026 &bull; Oleh Tim Kesiswaan</div>
-          <h3 class="news-title">Pentas Seni &amp; Lomba Kreasi Mewarnai Siswa</h3>
-          <p class="news-snippet-text">Ajang unjuk bakat dan kreativitas seni lukis siswa-siswi SDN 2 Ngeposari dalam menyambut bulan bahasa.</p>
-          <a href="detail-kegiatan.html?id=a2" class="news-read-more">Baca selengkapnya &rarr;</a>
+        <div class="news-body-content" style="padding: 20px;">
+          <div class="news-meta-row" style="font-size: 12px; color: var(--color-text-dim); margin-bottom: 6px;">10 Agustus 2026 &bull; Tim Kesiswaan</div>
+          <h3 class="news-title" style="font-size: 17px; font-weight: 700; color: var(--color-text); margin-bottom: 8px;">Pentas Seni &amp; Lomba Kreasi Mewarnai Siswa</h3>
+          <p class="news-snippet-text" style="font-size: 14px; color: var(--color-text-muted); line-height: 1.55; margin-bottom: 14px;">Ajang unjuk bakat dan kreativitas seni lukis siswa-siswi SDN 2 Ngeposari dalam menyambut bulan bahasa.</p>
+          <a href="kegiatan.html" class="news-read-more" style="color: var(--color-primary); font-weight: 600; font-size: 13.5px;">Baca cerita →</a>
         </div>
       </article>
 
       <article class="news-card-item">
         <div class="news-img-wrap">
-          <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=960&h=540&fit=crop" alt="Dokumentasi Kerja Bakti Gerakan Sekolah Hijau Siswa SD Negeri 2 Ngeposari" width="960" height="540" loading="lazy" decoding="async">
+          <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=960&h=540&fit=crop" alt="Kerja Bakti Sekolah Hijau" width="960" height="540" loading="lazy" decoding="async">
           <span class="news-badge-tag">Lingkungan</span>
         </div>
-        <div class="news-body-content">
-          <div class="news-meta-row">05 Agustus 2026 &bull; Oleh Tim Adiwiyata</div>
-          <h3 class="news-title">Kerja Bakti &amp; Gerakan Sekolah Hijau Berbudaya</h3>
-          <p class="news-snippet-text">Aksi peduli lingkungan bersama guru dan siswa menjaga kebersihan serta menanam apotek hidup di sekolah.</p>
-          <a href="detail-kegiatan.html?id=a3" class="news-read-more">Baca selengkapnya &rarr;</a>
+        <div class="news-body-content" style="padding: 20px;">
+          <div class="news-meta-row" style="font-size: 12px; color: var(--color-text-dim); margin-bottom: 6px;">05 Agustus 2026 &bull; Tim Adiwiyata</div>
+          <h3 class="news-title" style="font-size: 17px; font-weight: 700; color: var(--color-text); margin-bottom: 8px;">Kerja Bakti &amp; Gerakan Sekolah Hijau Berbudaya</h3>
+          <p class="news-snippet-text" style="font-size: 14px; color: var(--color-text-muted); line-height: 1.55; margin-bottom: 14px;">Aksi peduli lingkungan bersama guru dan siswa menjaga kebersihan serta menanam apotek hidup di pekarangan sekolah.</p>
+          <a href="kegiatan.html" class="news-read-more" style="color: var(--color-primary); font-weight: 600; font-size: 13.5px;">Baca cerita →</a>
         </div>
       </article>
     </div>
   </section>
 
-  <!-- 9. TESTIMONIALS -->
-  <section class="section" id="testimonials-sec">
-    <span class="section-label">KESAN & APRESIASI</span>
-    <h2 class="section-headline">Apa Kata Orang Tua Wali Siswa?</h2>
-    <p class="section-supporting">Kepercayaan dan kebanggaan keluarga wali siswa tumbuh bersama lingkungan sekolah kami.</p>
-
-    <div class="testimonials-grid" id="testimonials-grid">
-      <div class="testimonial-card">
-        <p class="testimonial-quote">"Guru-guru di SDN 2 Ngeposari sangat sabar dan penuh perhatian. Anak saya jadi lebih percaya diri, sopan, dan bersemangat berangkat sekolah setiap pagi."</p>
-        <div class="testimonial-author">
-          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop" alt="Ibu Purwanti" class="testimonial-avatar" loading="lazy" decoding="async">
-          <div>
-            <div class="testimonial-name">Ibu Purwanti</div>
-            <div class="testimonial-role">Orang Tua Wali Kelas IV</div>
-          </div>
-        </div>
+  <!-- 7. GALLERY SECTION (Section 27 - Photographic Life) -->
+  <section class="section" id="gallery-section" style="padding-top: var(--space-8); padding-bottom: var(--space-8);">
+    <div class="section-header-flex">
+      <div>
+        <span class="section-label">DOKUMENTASI SEKOLAH</span>
+        <h2 class="section-headline">Galeri Momen Sekolah</h2>
+        <p class="section-supporting" style="margin-bottom: 0;">Potret keseharian, pembelajaran interaktif, dan kebersamaan di SD Negeri 2 Ngeposari.</p>
       </div>
+      <a href="kegiatan.html#gallery-sec" class="btn btn-secondary">Lihat Dokumentasi Lengkap →</a>
+    </div>
 
-      <div class="testimonial-card">
-        <p class="testimonial-quote">"Fasilitas perpustakaan dan lab komputer sangat membantu anak-anak belajar teknologi secara sehat. Pembiasaan Pramuka-nya juga melatih kemandirian."</p>
-        <div class="testimonial-author">
-          <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop" alt="Bapak Sugiyanto" class="testimonial-avatar" loading="lazy" decoding="async">
-          <div>
-            <div class="testimonial-name">Bapak Sugiyanto</div>
-            <div class="testimonial-role">Orang Tua Wali Kelas VI</div>
-          </div>
-        </div>
+    <div style="display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: var(--space-4); margin-top: var(--space-5);">
+      <div style="border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--color-border); box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+        <img src="images/school/kegiatan1.webp" alt="Kegiatan Murid SDN 2 Ngeposari" style="width: 100%; height: 100%; object-fit: cover; aspect-ratio: 4/3;" loading="lazy" decoding="async">
       </div>
-
-      <div class="testimonial-card">
-        <p class="testimonial-quote">"Lingkungan sekolah yang bersih dan hijau membuat anak-anak merasa nyaman. Komunikasi sekolah dengan orang tua wali siswa juga terjalin sangat dekat."</p>
-        <div class="testimonial-author">
-          <img src="https://images.unsplash.com/photo-1580894732413-87b1c31274cf?w=100&h=100&fit=crop" alt="Ibu Maryati" class="testimonial-avatar" loading="lazy" decoding="async">
-          <div>
-            <div class="testimonial-name">Ibu Maryati</div>
-            <div class="testimonial-role">Orang Tua Wali Kelas II</div>
-          </div>
-        </div>
+      <div style="border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--color-border); box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+        <img src="images/school/hero.webp" alt="Suasana Belajar SDN 2 Ngeposari" style="width: 100%; height: 100%; object-fit: cover; aspect-ratio: 4/3;" loading="lazy" decoding="async">
+      </div>
+      <div style="border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--color-border); box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+        <img src="images/school/fasilitas1.webp" alt="Fasilitas dan Lingkungan Belajar SDN 2 Ngeposari" style="width: 100%; height: 100%; object-fit: cover; aspect-ratio: 4/3;" loading="lazy" decoding="async">
       </div>
     </div>
   </section>
 
-  <!-- 10. CONTACT CTA BOX -->
-  <section class="section" style="padding-top: 0; padding-bottom: var(--space-7);">
-    <div class="contact-cta-box" id="contact-cta-box">
-      <div class="contact-cta-grid">
+  <!-- 8. CONTACT CTA SECTION (Section 28) -->
+  <section class="section" style="padding-top: var(--space-4); padding-bottom: var(--space-9);">
+    <div class="contact-cta-box" id="contact-cta-box" style="background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-7); box-shadow: 0 4px 20px rgba(20, 30, 20, 0.04);">
+      <div class="contact-cta-grid" style="display: grid; grid-template-columns: 1.15fr 1fr; gap: var(--space-7); align-items: center;">
         <div class="contact-cta-left">
-          <span class="section-label" style="color: var(--primary);">KONSULTASI & INFORMASI</span>
-          <h2>Ingin berkunjung atau sekadar bertanya?</h2>
-          <p>Kami dengan senang hati membantu Anda menemukan informasi yang dibutuhkan mengenai SDN 2 Ngeposari.</p>
-          <a href="kontak.html" class="btn btn-primary">Hubungi Kami →</a>
+          <span class="section-label">KUNJUNGAN &amp; KONTAK</span>
+          <h2 style="font-size: 34px; font-weight: 700; color: var(--color-text); margin-bottom: var(--space-3); line-height: 1.2;">Mari berkunjung.</h2>
+          <p style="font-size: 15.5px; color: var(--color-text-muted); line-height: 1.6; margin-bottom: var(--space-5);">Temukan alamat lengkap, kontak resmi, dan petunjuk arah lokasi SD Negeri 2 Ngeposari. Pintu kami selalu terbuka hangat untuk silaturahmi, konsultasi pendaftaran, dan kemitraan pendidikan.</p>
+          <div style="display: flex; gap: var(--space-3); flex-wrap: wrap;">
+            <a href="https://maps.app.goo.gl/y3Gzega74NqFi9N58" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Lihat Lokasi di Google Maps →</a>
+            <a href="kontak.html" class="btn btn-secondary">Kirim Pesan</a>
+          </div>
         </div>
-        <div class="contact-details-list">
-          <div class="contact-detail-row">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span><strong>Alamat:</strong> Mojo RT 01/RW13, Ngeposari, Semanu, Gunungkidul, DI Yogyakarta, 55893</span>
+
+        <div class="contact-details-list" style="display: flex; flex-direction: column; gap: var(--space-3); padding-left: var(--space-3);">
+          <div class="contact-detail-row" style="display: flex; gap: 12px; align-items: flex-start;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-primary); flex-shrink: 0; margin-top: 3px;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span style="font-size: 14.5px; color: var(--color-text); line-height: 1.5;"><strong>Alamat:</strong> Mojo RT 01/RW13, Ngeposari, Semanu, Gunungkidul, DI Yogyakarta, 55893</span>
           </div>
-          <div class="contact-detail-row">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            <span><strong>Telepon:</strong> <a href="tel:081234567890" style="color: inherit; text-decoration: none;">0812-3456-7890</a></span>
+          <div class="contact-detail-row" style="display: flex; gap: 12px; align-items: flex-start;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-primary); flex-shrink: 0; margin-top: 3px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span style="font-size: 14.5px; color: var(--color-text); line-height: 1.5;"><strong>Telepon / WA:</strong> <a href="tel:081234567890" style="color: inherit; text-decoration: none;">0812-3456-7890</a></span>
           </div>
-          <div class="contact-detail-row">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-            <span><strong>Email:</strong> <a href="mailto:sdngeposari2semanu@gmail.com" style="color: inherit; text-decoration: underline;">sdngeposari2semanu@gmail.com</a></span>
+          <div class="contact-detail-row" style="display: flex; gap: 12px; align-items: flex-start;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-primary); flex-shrink: 0; margin-top: 3px;"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            <span style="font-size: 14.5px; color: var(--color-text); line-height: 1.5;"><strong>Email:</strong> <a href="mailto:sdngeposari2semanu@gmail.com" style="color: var(--color-primary); text-decoration: underline;">sdngeposari2semanu@gmail.com</a></span>
           </div>
         </div>
       </div>
@@ -482,19 +334,19 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <!-- Modular Architecture Bundles -->
-  <script src="js/config/constants.js?v=4.0"></script>
-  <script src="js/utils/formatters.js?v=4.0"></script>
-  <script src="js/utils/guards.js?v=4.0"></script>
-  <script src="js/components/common/EmptyState.js?v=4.0"></script>
-  <script src="js/components/common/Skeleton.js?v=4.0"></script>
-  <script src="js/components/layout/Navbar.js?v=4.0"></script>
-  <script src="js/components/layout/Footer.js?v=4.0"></script>
-  <script src="js/components/public/ActivityCard.js?v=4.0"></script>
-  <script src="js/components/public/FacilityCard.js?v=4.0"></script>
-  <script src="js/components/public/TeacherCard.js?v=4.0"></script>
-  <script src="js/components/public/GalleryCard.js?v=4.0"></script>
-  <script src="js/components/ui/Carousel.js?v=4.9"></script>
-  <script src="js/db.js?v=4.9"></script>
-  <script src="js/main.js?v=4.9"></script>
+  <script src="js/config/constants.js?v=5.0"></script>
+  <script src="js/utils/formatters.js?v=5.0"></script>
+  <script src="js/utils/guards.js?v=5.0"></script>
+  <script src="js/components/common/EmptyState.js?v=5.0"></script>
+  <script src="js/components/common/Skeleton.js?v=5.0"></script>
+  <script src="js/components/layout/Navbar.js?v=5.0"></script>
+  <script src="js/components/layout/Footer.js?v=5.0"></script>
+  <script src="js/components/public/ActivityCard.js?v=5.0"></script>
+  <script src="js/components/public/FacilityCard.js?v=5.0"></script>
+  <script src="js/components/public/TeacherCard.js?v=5.0"></script>
+  <script src="js/components/public/GalleryCard.js?v=5.0"></script>
+  <script src="js/components/ui/Carousel.js?v=5.0"></script>
+  <script src="js/db.js?v=5.0"></script>
+  <script src="js/main.js?v=5.0"></script>
 </body>
 </html>

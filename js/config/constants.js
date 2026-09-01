@@ -131,12 +131,12 @@
       }
     ],
     gallery: [
-      { id: 'g1', caption: 'Belajar bersama di ruang kelas', image: 'https://images.unsplash.com/photo-1588072432836-e10032774350?w=800&h=600&fit=crop' },
-      { id: 'g2', caption: 'Upacara memperingati HUT RI ke-81', image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&h=600&fit=crop' },
-      { id: 'g3', caption: 'Kegiatan membaca bersama di perpustakaan', image: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&h=600&fit=crop' },
-      { id: 'g4', caption: 'Praktik komputer dan literasi digital siswa', image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=600&fit=crop' },
-      { id: 'g5', caption: 'Aktivitas olahraga di lapangan sekolah', image: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?w=800&h=600&fit=crop' },
-      { id: 'g6', caption: 'Kerja bakti taman dan tanaman apotek hidup', image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&h=600&fit=crop' }
+      { id: 'g1', caption: 'Suasana pembelajaran aktif & interaktif di kelas', image: 'images/school/kegiatan1.webp' },
+      { id: 'g2', caption: 'Gedung utama dan halaman asri SDN 2 Ngeposari', image: 'images/school/hero.webp' },
+      { id: 'g3', caption: 'Fasilitas ruang kelas ramah anak & bersih', image: 'images/school/fasilitas1.webp' },
+      { id: 'g4', caption: 'Upacara bendera & apel pembinaan karakter', image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&h=600&fit=crop' },
+      { id: 'g5', caption: 'Kegiatan membaca bersama di perpustakaan', image: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&h=600&fit=crop' },
+      { id: 'g6', caption: 'Aksi peduli lingkungan & gerakan sekolah hijau', image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&h=600&fit=crop' }
     ],
     contact: {
       address: 'Mojo RT 01/RW13, Ngeposari, Semanu, Gunungkidul, DI Yogyakarta, 55893',

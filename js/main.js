@@ -310,6 +310,26 @@
         `).join('');
       }
     }
+
+    // Dynamic Home Documentation Gallery Grid (6 items with zoom dialog)
+    const homeGalleryContainer = document.getElementById('home-gallery-grid');
+    if (homeGalleryContainer) {
+      const gallery = (window.SchoolDB ? window.SchoolDB.getGallery() : []) || [];
+      if (gallery.length > 0 && window.SchoolGalleryCard) {
+        const displayGallery = gallery.slice(0, 6);
+        homeGalleryContainer.innerHTML = displayGallery.map(g => window.SchoolGalleryCard.createGalleryCard(g)).join('');
+      }
+      homeGalleryContainer.querySelectorAll('.gallery-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const img = card.getAttribute('data-image');
+          const caption = card.getAttribute('data-caption');
+          openDialog(caption, `
+            <img src="${img}" alt="${caption}" style="width:100%; border-radius: var(--radius-sm); margin-bottom: 0;">
+            <p style="margin-top:1rem; font-weight:600; text-align:center; color:var(--text);">${caption}</p>
+          `);
+        });
+      });
+    }
   }
 
   // 6. Tentang (tentang.html)

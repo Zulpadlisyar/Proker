@@ -311,15 +311,29 @@
       }
     }
 
-    // Dynamic Home Documentation Gallery Grid (6 items with zoom dialog)
+    // Dynamic Home Documentation Gallery Grid (Preserves Bento Structure)
     const homeGalleryContainer = document.getElementById('home-gallery-grid');
     if (homeGalleryContainer) {
+      const cards = homeGalleryContainer.querySelectorAll('.gallery-card');
       const gallery = (window.SchoolDB ? window.SchoolDB.getGallery() : []) || [];
-      if (gallery.length > 0 && window.SchoolGalleryCard) {
-        const displayGallery = gallery.slice(0, 6);
-        homeGalleryContainer.innerHTML = displayGallery.map(g => window.SchoolGalleryCard.createGalleryCard(g)).join('');
+      if (gallery.length > 0 && cards.length > 0) {
+        cards.forEach((card, idx) => {
+          if (gallery[idx]) {
+            const item = gallery[idx];
+            if (item.image) {
+              card.setAttribute('data-image', item.image);
+              const img = card.querySelector('.gallery-img');
+              if (img) img.src = item.image;
+            }
+            if (item.caption) {
+              card.setAttribute('data-caption', item.caption);
+              const title = card.querySelector('.gallery-card-title');
+              if (title) title.textContent = item.caption;
+            }
+          }
+        });
       }
-      homeGalleryContainer.querySelectorAll('.gallery-card').forEach(card => {
+      cards.forEach(card => {
         card.addEventListener('click', () => {
           const img = card.getAttribute('data-image');
           const caption = card.getAttribute('data-caption');

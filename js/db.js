@@ -198,87 +198,22 @@ function generateHeroSVG() {
     </g>
   </svg>`;
   return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
-}
-// Initial Data Seed - Delegates to SchoolConstants if loaded, with local fallback
+}// Initial Data Seed - Delegates directly to centralized SchoolConstants
 const INITIAL_DATA = (typeof window !== 'undefined' && window.SchoolConstants && window.SchoolConstants.INITIAL_DATA)
   ? window.SchoolConstants.INITIAL_DATA
   : {
-      profile: {
-        name: 'SDN Ngeposari 2',
-        tagline: 'Unggul, Berkarakter, dan Berbudaya Lingkungan',
-        npsn: '20401876',
-        nss: '101040310002',
-        akreditasi: 'A',
-        totalStudents: 143,
-        totalTeachers: 8,
-        totalPrincipal: 1,
-        totalStaff: 2,
-        totalClasses: 6,
-        description: 'SDN Ngeposari 2 adalah sekolah dasar negeri terakreditasi A di Mojo RT 01 / RW 13, Ngeposari, Semanu, Gunungkidul yang berkomitmen mencetak generasi cerdas, berkarakter, dan berbudaya lingkungan.',
-        history: 'SDN Ngeposari 2 (NPSN: 20401876, NSS: 101040310002) didirikan untuk melayani kebutuhan pendidikan dasar masyarakat di Dusun Mojo, Kalurahan Ngeposari, Kapanewon Semanu, Kabupaten Gunungkidul. Berada di lingkungan yang asri dan kondusif, sekolah ini berstatus negeri dengan akreditasi A, membina 143 siswa dengan didukung oleh 1 Kepala Sekolah, 8 Guru, dan 2 Tenaga Kependidikan dalam 6 ruang kelas pembelajaran aktif.',
-        vision: '-',
-        missions: [
-          'Melaksanakan pembelajaran yang aktif, kreatif, efektif, dan menyenangkan berpusat pada potensi siswa.',
-          'Menumbuhkan penghayatan dan pengamalan nilai-nilai keagamaan dan budi pekerti luhur.',
-          'Membentuk kepribadian siswa yang berkarakter Pancasila, tangguh, jujur, dan bergotong royong.',
-          'Mewujudkan lingkungan sekolah yang bersih, sehat, rindang, asri, dan ramah anak.',
-          'Mengembangkan minat, bakat, literasi digital, dan kreativitas siswa melalui program intrakurikuler dan ekstrakurikuler.'
-        ],
-        values: [
-          { title: 'Bertaqwa', desc: 'Mengedepankan nilai-nilai religius dan ketuhanan.' },
-          { title: 'Berkarakter', desc: 'Jujur, disiplin, bertanggung jawab, dan toleran.' },
-          { title: 'Berprestasi', desc: 'Semangat belajar tinggi untuk meraih hasil terbaik.' },
-          { title: 'Peduli Lingkungan', desc: 'Menjaga kebersihan dan kelestarian lingkungan sekolah.' }
-        ],
-        logo: 'images/logo.webp',
-        hero: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&h=1000&fit=crop'
-      },
-      facilities: [
-        { id: 'f1', name: 'Perpustakaan Pintar', description: 'Koleksi buku lengkap mulai dari buku pelajaran, cerita anak, hingga ensiklopedia menarik.', image: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&h=500&fit=crop' },
-        { id: 'f2', name: 'Laboratorium Komputer', description: 'Ruang komputer modern dengan koneksi internet untuk menunjang literasi digital siswa.', image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=500&fit=crop' },
-        { id: 'f3', name: 'Lapangan Serbaguna', description: 'Area luas untuk kegiatan olahraga seperti senam, sepak bola, bulu tangkis, dan upacara bendera.', image: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?w=800&h=500&fit=crop' },
-        { id: 'f4', name: 'Unit Kesehatan Sekolah (UKS)', description: 'Ruang kesehatan darurat yang dilengkapi dengan obat-obatan dasar dan perlengkapan P3K.', image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&h=500&fit=crop' }
-      ],
-      activities: [
-        { id: 'a1', title: 'Upacara bendera senin dan latihan pramuka', date: '2026-08-17', excerpt: 'Kegiatan rutin mingguan untuk meningkatkan kedisiplinan dan jiwa nasionalisme siswa.', content: 'Setiap hari Senin pagi, seluruh siswa dan guru melaksanakan Upacara Bendera dengan khidmat.', image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=960&h=540&fit=crop' },
-        { id: 'a2', title: 'Lomba menulis kreatif dan mewarnai', date: '2026-08-10', excerpt: 'Wadah bagi siswa untuk menyalurkan bakat seni rupa, menulis indah, dan menuangkan imajinasi mereka.', content: 'Dalam rangka memperingati bulan bahasa, SDN Ngeposari 2 menyelenggarakan lomba menulis kreatif dan mewarnai tingkat kelas.', image: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=960&h=540&fit=crop' },
-        { id: 'a3', title: 'Kerja bakti gerakan sekolah hijau', date: '2026-08-05', excerpt: 'Aksi peduli lingkungan bersama guru dan siswa menjaga kebersihan serta menanam pohon di sekolah.', content: 'Sebagai sekolah yang berbudaya lingkungan, SDN Ngeposari 2 mengadakan kerja bakti bulanan.', image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=960&h=540&fit=crop' }
-      ],
-      gallery: [
-        { id: 'g1', caption: 'Belajar bersama di ruang kelas', image: 'https://images.unsplash.com/photo-1588072432836-e10032774350?w=800&h=600&fit=crop' },
-        { id: 'g2', caption: 'Upacara memperingati HUT RI ke-81', image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&h=600&fit=crop' },
-        { id: 'g3', caption: 'Kegiatan membaca bersama di perpustakaan', image: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&h=600&fit=crop' },
-        { id: 'g4', caption: 'Praktik komputer dan literasi digital siswa', image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=600&fit=crop' },
-        { id: 'g5', caption: 'Aktivitas olahraga di lapangan sekolah', image: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?w=800&h=600&fit=crop' },
-        { id: 'g6', caption: 'Kerja bakti taman dan tanaman apotek hidup', image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&h=600&fit=crop' }
-      ],
-      contact: {
-        address: 'Mojo RT 01/RW13, Ngeposari, Semanu, Gunungkidul, DI Yogyakarta, 55893',
-        phone: '0812-3456-7890',
-        email: 'sdngeposari2semanu@gmail.com',
-        maps: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3950.563823439498!2d110.6473063!3d-7.9734185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7bb5cc01b87119%3A0x75e6f3182387f509!2sSD%20Negeri%20Ngeposari%20II!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid',
-        mapsUrl: 'https://maps.app.goo.gl/y3Gzega74NqFi9N58',
-        facebook: 'SD Ngeposari II',
-        facebookUrl: 'https://www.facebook.com/search/top?q=SD%20Ngeposari%20II',
-        instagram: '@snada_02',
-        instagramUrl: 'https://www.instagram.com/snada_02',
-        youtube: 'Sdngeposari2',
-        youtubeUrl: 'https://www.youtube.com/@sdngeposari2'
-      },
-      teachers: [
-        { id: 't1', name: 'Bapak Maryanto, M.Pd.', role: 'Kepala Sekolah', image: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=600&h=600&fit=crop' },
-        { id: 't2', name: 'Ibu Siti Nurhaliza, S.Pd.', role: 'Guru Kelas 1', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=600&fit=crop' },
-        { id: 't3', name: 'Ibu Rahmawati, S.Pd.', role: 'Guru Kelas 2', image: 'https://images.unsplash.com/photo-1580894732413-87b1c31274cf?w=600&h=600&fit=crop' },
-        { id: 't4', name: 'Bapak Supriyadi, S.Pd.', role: 'Guru Kelas 3', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=600&fit=crop' },
-        { id: 't5', name: 'Ibu Endang Lestari, S.Pd.', role: 'Guru Kelas 4', image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&h=600&fit=crop' },
-        { id: 't6', name: 'Bapak Wahyudi, S.Pd.', role: 'Guru Kelas 5', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=600&fit=crop' },
-        { id: 't7', name: 'Ibu Sri Mulyani, S.Pd.', role: 'Guru Kelas 6', image: 'https://images.unsplash.com/photo-1580894732470-349f50e82e5b?w=600&h=600&fit=crop' },
-        { id: 't8', name: 'Bapak Bambang Wijaya, S.Pd.', role: 'Guru PJOK', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=600&fit=crop' },
-        { id: 't9', name: 'Ibu Tri Wahyuni, S.Pd.I.', role: 'Guru Pendidikan Agama Islam', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=600&fit=crop' },
-        { id: 't10', name: 'Bapak Danang Prasetyo', role: 'Tenaga Administrasi Sekolah (TU)', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&h=600&fit=crop' },
-        { id: 't11', name: 'Bapak Sutrisno', role: 'Tenaga Kependidikan / Penjaga Sekolah', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&h=600&fit=crop' }
-      ],
-      academicCalendar: (typeof window !== 'undefined' && window.SchoolConstants && window.SchoolConstants.INITIAL_DATA && window.SchoolConstants.INITIAL_DATA.academicCalendar) || []
+      profile: { name: 'SD Negeri 2 Ngeposari', tagline: 'Unggul, Berkarakter, dan Berbudaya Lingkungan', logo: 'images/logo.webp' },
+      facilities: [],
+      activities: [],
+      gallery: [],
+      contact: { address: 'Mojo RT 01/RW13, Ngeposari, Semanu, Gunungkidul, DI Yogyakarta, 55893', email: 'sdngeposari2semanu@gmail.com' },
+      teachers: [],
+      testimonials: [],
+      academicCalendar: [],
+      schoolHabits: [],
+      comfortStandards: [],
+      inquiries: [],
+      categories: ['Akademik', 'Kepramukaan', 'Ekstrakurikuler', 'Prestasi', 'Sosial & Lingkungan', 'Umum']
     };
 
 // IndexedDB Helper class to handle rich uploads
@@ -970,41 +905,48 @@ window.SchoolDB = {
     return newFacility;
   },
 
-  async updateFacility(id, updatedFields) {
-    if (!Array.isArray(this.data.facilities)) this.data.facilities = INITIAL_DATA.facilities;
-    const index = this.data.facilities.findIndex(f => String(f.id) === String(id));
-    if (index !== -1) {
-      const sanitized = {};
-      if (updatedFields.name !== undefined) {
-        sanitized.name = this.sanitizeText(updatedFields.name);
-        const normName = this.normalizeName(sanitized.name);
-        const isDuplicate = this.data.facilities.some(f => String(f.id) !== String(id) && this.normalizeName(f.name) === normName);
-        if (isDuplicate) {
-          throw new Error('Fasilitas dengan nama tersebut sudah tersedia.');
-        }
-      }
-      if (updatedFields.description !== undefined) sanitized.description = this.sanitizeText(updatedFields.description);
-      if (updatedFields.image !== undefined && updatedFields.image !== null && updatedFields.image !== '') {
-        sanitized.image = updatedFields.image;
-      }
+  // --- Generic Collection Helpers (Compact & Reusable) ---
+  async _deleteItem(collectionKey, id, auditModule, labelField = 'name') {
+    if (!Array.isArray(this.data[collectionKey])) return false;
+    const target = this.data[collectionKey].find(item => String(item.id) === String(id));
+    if (!target) return false;
 
-      this.data.facilities[index] = { ...this.data.facilities[index], ...sanitized };
-      await this.save();
-      await this.logAudit('UBAH', 'Fasilitas', `Memperbarui fasilitas "${this.data.facilities[index].name}"`);
-      return true;
+    this.data[collectionKey] = this.data[collectionKey].filter(item => String(item.id) !== String(id));
+    await this.save();
+    const label = target[labelField] || target.title || target.caption || id;
+    await this.logAudit('HAPUS', auditModule, `Menghapus ${auditModule.toLowerCase()} "${label}"`);
+    return true;
+  },
+
+  async _updateItem(collectionKey, id, updatedFields, auditModule, labelField = 'name') {
+    if (!Array.isArray(this.data[collectionKey])) {
+      this.data[collectionKey] = (INITIAL_DATA && INITIAL_DATA[collectionKey]) ? [...INITIAL_DATA[collectionKey]] : [];
     }
-    return false;
+    const index = this.data[collectionKey].findIndex(item => String(item.id) === String(id));
+    if (index === -1) return false;
+
+    this.data[collectionKey][index] = { ...this.data[collectionKey][index], ...updatedFields };
+    await this.save();
+    const label = this.data[collectionKey][index][labelField] || this.data[collectionKey][index].title || this.data[collectionKey][index].caption || id;
+    await this.logAudit('UBAH', auditModule, `Memperbarui ${auditModule.toLowerCase()} "${label}"`);
+    return true;
+  },
+
+  async updateFacility(id, updatedFields) {
+    const sanitized = {};
+    if (updatedFields.name !== undefined) {
+      sanitized.name = this.sanitizeText(updatedFields.name);
+      const normName = this.normalizeName(sanitized.name);
+      const isDuplicate = (this.data.facilities || []).some(f => String(f.id) !== String(id) && this.normalizeName(f.name) === normName);
+      if (isDuplicate) throw new Error('Fasilitas dengan nama tersebut sudah tersedia.');
+    }
+    if (updatedFields.description !== undefined) sanitized.description = this.sanitizeText(updatedFields.description);
+    if (updatedFields.image) sanitized.image = updatedFields.image;
+    return this._updateItem('facilities', id, sanitized, 'Fasilitas', 'name');
   },
 
   async deleteFacility(id) {
-    if (!Array.isArray(this.data.facilities)) return false;
-    const target = this.data.facilities.find(f => String(f.id) === String(id));
-    if (!target) return false;
-
-    this.data.facilities = this.data.facilities.filter(f => String(f.id) !== String(id));
-    await this.save();
-    await this.logAudit('HAPUS', 'Fasilitas', `Menghapus fasilitas "${target.name}"`);
-    return true;
+    return this._deleteItem('facilities', id, 'Fasilitas', 'name');
   },
 
   // Activities CRUD
@@ -1015,9 +957,7 @@ window.SchoolDB = {
 
     const normTitle = this.normalizeName(title);
     const isDuplicate = this.data.activities.some(a => this.normalizeName(a.title) === normTitle);
-    if (isDuplicate) {
-      throw new Error('Kegiatan dengan nama tersebut sudah tersedia.');
-    }
+    if (isDuplicate) throw new Error('Kegiatan dengan nama tersebut sudah tersedia.');
 
     const newActivity = {
       id: 'a_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
@@ -1036,51 +976,45 @@ window.SchoolDB = {
   },
 
   async updateActivity(id, updatedFields) {
-    if (!Array.isArray(this.data.activities)) this.data.activities = INITIAL_DATA.activities;
-    const index = this.data.activities.findIndex(a => String(a.id) === String(id));
-    if (index !== -1) {
-      const sanitized = {};
-      if (updatedFields.title !== undefined) {
-        sanitized.title = this.sanitizeText(updatedFields.title);
-        const normTitle = this.normalizeName(sanitized.title);
-        const isDuplicate = this.data.activities.some(a => String(a.id) !== String(id) && this.normalizeName(a.title) === normTitle);
-        if (isDuplicate) {
-          throw new Error('Kegiatan dengan nama tersebut sudah tersedia.');
-        }
-      }
-      if (updatedFields.date !== undefined) sanitized.date = updatedFields.date;
-      if (updatedFields.category !== undefined) sanitized.category = this.sanitizeText(updatedFields.category);
-      if (updatedFields.views !== undefined && typeof updatedFields.views === 'number') sanitized.views = updatedFields.views;
-      if (updatedFields.excerpt !== undefined) sanitized.excerpt = this.sanitizeText(updatedFields.excerpt);
-      if (updatedFields.content !== undefined) sanitized.content = this.sanitizeHTML(updatedFields.content);
-      if (updatedFields.image !== undefined && updatedFields.image !== null && updatedFields.image !== '') {
-        sanitized.image = updatedFields.image;
-      }
-
-      this.data.activities[index] = { ...this.data.activities[index], ...sanitized };
-      await this.save();
-      await this.logAudit('UBAH', 'Kegiatan', `Memperbarui berita/kegiatan "${this.data.activities[index].title}"`);
-      return true;
+    const sanitized = {};
+    if (updatedFields.title !== undefined) {
+      sanitized.title = this.sanitizeText(updatedFields.title);
+      const normTitle = this.normalizeName(sanitized.title);
+      const isDuplicate = (this.data.activities || []).some(a => String(a.id) !== String(id) && this.normalizeName(a.title) === normTitle);
+      if (isDuplicate) throw new Error('Kegiatan dengan nama tersebut sudah tersedia.');
     }
-    return false;
+    if (updatedFields.date !== undefined) sanitized.date = updatedFields.date;
+    if (updatedFields.category !== undefined) sanitized.category = this.sanitizeText(updatedFields.category);
+    if (updatedFields.views !== undefined && typeof updatedFields.views === 'number') sanitized.views = updatedFields.views;
+    if (updatedFields.excerpt !== undefined) sanitized.excerpt = this.sanitizeText(updatedFields.excerpt);
+    if (updatedFields.content !== undefined) sanitized.content = this.sanitizeHTML(updatedFields.content);
+    if (updatedFields.image) sanitized.image = updatedFields.image;
+    return this._updateItem('activities', id, sanitized, 'Kegiatan', 'title');
+  },
+
+  async duplicateActivity(id) {
+    const orig = (this.data.activities || []).find(a => String(a.id) === String(id));
+    if (!orig) throw new Error('Kegiatan tidak ditemukan.');
+    const copy = {
+      ...orig,
+      id: 'a_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+      title: orig.title + ' (Salinan)',
+      date: new Date().toISOString().split('T')[0]
+    };
+    this.data.activities.unshift(copy);
+    await this.save();
+    await this.logAudit('TAMBAH', 'Kegiatan', `Menduplikasi kegiatan "${copy.title}"`);
+    return copy;
   },
 
   async deleteActivity(id) {
-    if (!Array.isArray(this.data.activities)) return false;
-    const target = this.data.activities.find(a => String(a.id) === String(id));
-    if (!target) return false;
-
-    this.data.activities = this.data.activities.filter(a => String(a.id) !== String(id));
-    await this.save();
-    await this.logAudit('HAPUS', 'Kegiatan', `Menghapus berita/kegiatan "${target.title}"`);
-    return true;
+    return this._deleteItem('activities', id, 'Kegiatan', 'title');
   },
 
   // Gallery CRUD
   async addGalleryItem(item) {
     if (!Array.isArray(this.data.gallery)) this.data.gallery = [];
     const caption = this.sanitizeText(item.caption || 'Foto Galeri');
-
     const newItem = {
       id: 'g_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
       caption: caption,
@@ -1093,32 +1027,14 @@ window.SchoolDB = {
   },
 
   async updateGalleryItem(id, updatedFields) {
-    if (!Array.isArray(this.data.gallery)) this.data.gallery = INITIAL_DATA.gallery;
-    const index = this.data.gallery.findIndex(g => String(g.id) === String(id));
-    if (index !== -1) {
-      const sanitized = {};
-      if (updatedFields.caption !== undefined) sanitized.caption = this.sanitizeText(updatedFields.caption);
-      if (updatedFields.image !== undefined && updatedFields.image !== null && updatedFields.image !== '') {
-        sanitized.image = updatedFields.image;
-      }
-
-      this.data.gallery[index] = { ...this.data.gallery[index], ...sanitized };
-      await this.save();
-      await this.logAudit('UBAH', 'Galeri', `Memperbarui foto galeri "${this.data.gallery[index].caption}"`);
-      return true;
-    }
-    return false;
+    const sanitized = {};
+    if (updatedFields.caption !== undefined) sanitized.caption = this.sanitizeText(updatedFields.caption);
+    if (updatedFields.image) sanitized.image = updatedFields.image;
+    return this._updateItem('gallery', id, sanitized, 'Galeri', 'caption');
   },
 
   async deleteGalleryItem(id) {
-    if (!Array.isArray(this.data.gallery)) return false;
-    const target = this.data.gallery.find(g => String(g.id) === String(id));
-    if (!target) return false;
-
-    this.data.gallery = this.data.gallery.filter(g => String(g.id) !== String(id));
-    await this.save();
-    await this.logAudit('HAPUS', 'Galeri', `Menghapus foto galeri "${target.caption}"`);
-    return true;
+    return this._deleteItem('gallery', id, 'Galeri', 'caption');
   },
 
   // Teachers CRUD
@@ -1129,9 +1045,7 @@ window.SchoolDB = {
 
     const normName = this.normalizeName(name);
     const isDuplicate = this.data.teachers.some(t => this.normalizeName(t.name) === normName);
-    if (isDuplicate) {
-      throw new Error('Guru dengan nama tersebut sudah terdaftar.');
-    }
+    if (isDuplicate) throw new Error('Guru dengan nama tersebut sudah terdaftar.');
 
     const newTeacher = {
       id: 't_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
@@ -1146,45 +1060,23 @@ window.SchoolDB = {
   },
 
   async updateTeacher(id, updatedFields) {
-    if (!Array.isArray(this.data.teachers)) this.data.teachers = INITIAL_DATA.teachers;
-    const index = this.data.teachers.findIndex(t => String(t.id) === String(id));
-    if (index !== -1) {
-      const sanitized = {};
-      if (updatedFields.name !== undefined) {
-        sanitized.name = this.sanitizeText(updatedFields.name);
-        const normName = this.normalizeName(sanitized.name);
-        const isDuplicate = this.data.teachers.some(t => String(t.id) !== String(id) && this.normalizeName(t.name) === normName);
-        if (isDuplicate) {
-          throw new Error('Guru dengan nama tersebut sudah terdaftar.');
-        }
-      }
-      if (updatedFields.role !== undefined) sanitized.role = this.sanitizeText(updatedFields.role);
-      if (updatedFields.image !== undefined && updatedFields.image !== null && updatedFields.image !== '') {
-        sanitized.image = updatedFields.image;
-      }
-
-      this.data.teachers[index] = { ...this.data.teachers[index], ...sanitized };
-      await this.save();
-      await this.logAudit('UBAH', 'Guru', `Memperbarui guru/staf "${this.data.teachers[index].name}"`);
-      return true;
+    const sanitized = {};
+    if (updatedFields.name !== undefined) {
+      sanitized.name = this.sanitizeText(updatedFields.name);
+      const normName = this.normalizeName(sanitized.name);
+      const isDuplicate = (this.data.teachers || []).some(t => String(t.id) !== String(id) && this.normalizeName(t.name) === normName);
+      if (isDuplicate) throw new Error('Guru dengan nama tersebut sudah terdaftar.');
     }
-    return false;
+    if (updatedFields.role !== undefined) sanitized.role = this.sanitizeText(updatedFields.role);
+    if (updatedFields.image) sanitized.image = updatedFields.image;
+    return this._updateItem('teachers', id, sanitized, 'Guru', 'name');
   },
 
   async deleteTeacher(id) {
-    if (!Array.isArray(this.data.teachers)) return false;
-    const target = this.data.teachers.find(t => String(t.id) === String(id));
-    if (!target) return false;
-
-    this.data.teachers = this.data.teachers.filter(t => String(t.id) !== String(id));
-    await this.save();
-    await this.logAudit('HAPUS', 'Guru', `Menghapus guru/staf "${target.name}"`);
-    return true;
+    return this._deleteItem('teachers', id, 'Guru', 'name');
   },
 
-  // ==========================================
-  // Testimonials / Kesan & Apresiasi CRUD
-  // ==========================================
+  // Testimonials CRUD
   getTestimonials() {
     if (!this.data) return (INITIAL_DATA && INITIAL_DATA.testimonials) ? [...INITIAL_DATA.testimonials] : [];
     if (!Array.isArray(this.data.testimonials)) {
@@ -1213,39 +1105,19 @@ window.SchoolDB = {
   },
 
   async updateTestimonial(id, updatedFields) {
-    if (!Array.isArray(this.data.testimonials)) this.data.testimonials = this.getTestimonials();
-    const index = this.data.testimonials.findIndex(t => String(t.id) === String(id));
-    if (index !== -1) {
-      const sanitized = {};
-      if (updatedFields.name !== undefined) sanitized.name = this.sanitizeText(updatedFields.name);
-      if (updatedFields.role !== undefined) sanitized.role = this.sanitizeText(updatedFields.role);
-      if (updatedFields.quote !== undefined) sanitized.quote = this.sanitizeText(updatedFields.quote);
-      if (updatedFields.avatar !== undefined && updatedFields.avatar !== null && updatedFields.avatar !== '') {
-        sanitized.avatar = updatedFields.avatar;
-      }
-
-      this.data.testimonials[index] = { ...this.data.testimonials[index], ...sanitized };
-      await this.save();
-      await this.logAudit('UBAH', 'Kesan & Apresiasi', `Memperbarui kesan dari "${this.data.testimonials[index].name}"`);
-      return true;
-    }
-    return false;
+    const sanitized = {};
+    if (updatedFields.name !== undefined) sanitized.name = this.sanitizeText(updatedFields.name);
+    if (updatedFields.role !== undefined) sanitized.role = this.sanitizeText(updatedFields.role);
+    if (updatedFields.quote !== undefined) sanitized.quote = this.sanitizeText(updatedFields.quote);
+    if (updatedFields.avatar) sanitized.avatar = updatedFields.avatar;
+    return this._updateItem('testimonials', id, sanitized, 'Kesan & Apresiasi', 'name');
   },
 
   async deleteTestimonial(id) {
-    if (!Array.isArray(this.data.testimonials)) return false;
-    const target = this.data.testimonials.find(t => String(t.id) === String(id));
-    if (!target) return false;
-
-    this.data.testimonials = this.data.testimonials.filter(t => String(t.id) !== String(id));
-    await this.save();
-    await this.logAudit('HAPUS', 'Kesan & Apresiasi', `Menghapus kesan dari "${target.name}"`);
-    return true;
+    return this._deleteItem('testimonials', id, 'Kesan & Apresiasi', 'name');
   },
 
-  // ==========================================
-  // Academic Calendar / Agenda CRUD
-  // ==========================================
+  // Academic Calendar CRUD
   getCalendar() {
     if (!this.data) return (INITIAL_DATA && INITIAL_DATA.academicCalendar) ? [...INITIAL_DATA.academicCalendar] : [];
     if (!Array.isArray(this.data.academicCalendar)) {
@@ -1275,38 +1147,24 @@ window.SchoolDB = {
   },
 
   async updateCalendarItem(id, updatedFields) {
-    if (!Array.isArray(this.data.academicCalendar)) this.data.academicCalendar = this.getCalendar();
-    const index = this.data.academicCalendar.findIndex(c => String(c.id) === String(id));
-    if (index !== -1) {
-      const sanitized = {};
-      if (updatedFields.title !== undefined) sanitized.title = this.sanitizeText(updatedFields.title);
-      if (updatedFields.date !== undefined) sanitized.date = this.sanitizeText(updatedFields.date);
-      if (updatedFields.month !== undefined) sanitized.month = this.sanitizeText(updatedFields.month).toUpperCase();
-      if (updatedFields.desc !== undefined) sanitized.desc = this.sanitizeText(updatedFields.desc);
-      if (updatedFields.description !== undefined) sanitized.desc = this.sanitizeText(updatedFields.description);
-
-      this.data.academicCalendar[index] = { ...this.data.academicCalendar[index], ...sanitized };
-      await this.save();
-      await this.logAudit('UBAH', 'Kalender Akademik', `Memperbarui agenda "${this.data.academicCalendar[index].title}"`);
-      return true;
-    }
-    return false;
+    const sanitized = {};
+    if (updatedFields.title !== undefined) sanitized.title = this.sanitizeText(updatedFields.title);
+    if (updatedFields.date !== undefined) sanitized.date = this.sanitizeText(updatedFields.date);
+    if (updatedFields.month !== undefined) sanitized.month = this.sanitizeText(updatedFields.month).toUpperCase();
+    if (updatedFields.desc !== undefined) sanitized.desc = this.sanitizeText(updatedFields.desc);
+    if (updatedFields.description !== undefined) sanitized.desc = this.sanitizeText(updatedFields.description);
+    return this._updateItem('academicCalendar', id, sanitized, 'Kalender Akademik', 'title');
   },
 
   async deleteCalendarItem(id) {
-    if (!Array.isArray(this.data.academicCalendar)) return false;
-    const target = this.data.academicCalendar.find(c => String(c.id) === String(id));
-    if (!target) return false;
-
-    this.data.academicCalendar = this.data.academicCalendar.filter(c => String(c.id) !== String(id));
-    await this.save();
-    await this.logAudit('HAPUS', 'Kalender Akademik', `Menghapus agenda "${target.title}"`);
-    return true;
+    return this._deleteItem('academicCalendar', id, 'Kalender Akademik', 'title');
   },
 
-  // ==========================================
-  // School Habits & Culture CRUD
-  // ==========================================
+  async deleteCalendarEvent(id) {
+    return this.deleteCalendarItem(id);
+  },
+
+  // School Habits CRUD
   getHabits() {
     if (!this.data) return (INITIAL_DATA && INITIAL_DATA.schoolHabits) ? [...INITIAL_DATA.schoolHabits] : [];
     if (!Array.isArray(this.data.schoolHabits)) {
@@ -1334,37 +1192,19 @@ window.SchoolDB = {
   },
 
   async updateHabit(id, updatedFields) {
-    if (!Array.isArray(this.data.schoolHabits)) this.data.schoolHabits = this.getHabits();
-    const index = this.data.schoolHabits.findIndex(h => String(h.id) === String(id));
-    if (index !== -1) {
-      const sanitized = {};
-      if (updatedFields.title !== undefined) sanitized.title = this.sanitizeText(updatedFields.title);
-      if (updatedFields.desc !== undefined) sanitized.desc = this.sanitizeText(updatedFields.desc);
-      if (updatedFields.description !== undefined) sanitized.desc = this.sanitizeText(updatedFields.description);
-      if (updatedFields.category !== undefined) sanitized.category = this.sanitizeText(updatedFields.category);
-
-      this.data.schoolHabits[index] = { ...this.data.schoolHabits[index], ...sanitized };
-      await this.save();
-      await this.logAudit('UBAH', 'Pembiasaan Baik', `Memperbarui pembiasaan "${this.data.schoolHabits[index].title}"`);
-      return true;
-    }
-    return false;
+    const sanitized = {};
+    if (updatedFields.title !== undefined) sanitized.title = this.sanitizeText(updatedFields.title);
+    if (updatedFields.desc !== undefined) sanitized.desc = this.sanitizeText(updatedFields.desc);
+    if (updatedFields.description !== undefined) sanitized.desc = this.sanitizeText(updatedFields.description);
+    if (updatedFields.category !== undefined) sanitized.category = this.sanitizeText(updatedFields.category);
+    return this._updateItem('schoolHabits', id, sanitized, 'Pembiasaan Baik', 'title');
   },
 
   async deleteHabit(id) {
-    if (!Array.isArray(this.data.schoolHabits)) return false;
-    const target = this.data.schoolHabits.find(h => String(h.id) === String(id));
-    if (!target) return false;
-
-    this.data.schoolHabits = this.data.schoolHabits.filter(h => String(h.id) !== String(id));
-    await this.save();
-    await this.logAudit('HAPUS', 'Pembiasaan Baik', `Menghapus pembiasaan "${target.title}"`);
-    return true;
+    return this._deleteItem('schoolHabits', id, 'Pembiasaan Baik', 'title');
   },
 
-  // ==========================================
-  // Comfort & Safety Standards CRUD
-  // ==========================================
+  // Comfort Standards CRUD
   getComfortStandards() {
     if (!this.data) return (INITIAL_DATA && INITIAL_DATA.comfortStandards) ? [...INITIAL_DATA.comfortStandards] : [];
     if (!Array.isArray(this.data.comfortStandards)) {
@@ -1390,36 +1230,18 @@ window.SchoolDB = {
   },
 
   async updateComfortStandard(id, updatedFields) {
-    if (!Array.isArray(this.data.comfortStandards)) this.data.comfortStandards = this.getComfortStandards();
-    const index = this.data.comfortStandards.findIndex(c => String(c.id) === String(id));
-    if (index !== -1) {
-      const sanitized = {};
-      if (updatedFields.title !== undefined) sanitized.title = this.sanitizeText(updatedFields.title);
-      if (updatedFields.desc !== undefined) sanitized.desc = this.sanitizeText(updatedFields.desc);
-      if (updatedFields.description !== undefined) sanitized.desc = this.sanitizeText(updatedFields.description);
-
-      this.data.comfortStandards[index] = { ...this.data.comfortStandards[index], ...sanitized };
-      await this.save();
-      await this.logAudit('UBAH', 'Standar Kenyamanan', `Memperbarui standar kenyamanan "${this.data.comfortStandards[index].title}"`);
-      return true;
-    }
-    return false;
+    const sanitized = {};
+    if (updatedFields.title !== undefined) sanitized.title = this.sanitizeText(updatedFields.title);
+    if (updatedFields.desc !== undefined) sanitized.desc = this.sanitizeText(updatedFields.desc);
+    if (updatedFields.description !== undefined) sanitized.desc = this.sanitizeText(updatedFields.description);
+    return this._updateItem('comfortStandards', id, sanitized, 'Standar Kenyamanan', 'title');
   },
 
   async deleteComfortStandard(id) {
-    if (!Array.isArray(this.data.comfortStandards)) return false;
-    const target = this.data.comfortStandards.find(c => String(c.id) === String(id));
-    if (!target) return false;
-
-    this.data.comfortStandards = this.data.comfortStandards.filter(c => String(c.id) !== String(id));
-    await this.save();
-    await this.logAudit('HAPUS', 'Standar Kenyamanan', `Menghapus standar kenyamanan "${target.title}"`);
-    return true;
+    return this._deleteItem('comfortStandards', id, 'Standar Kenyamanan', 'title');
   },
 
-  // ==========================================
-  // Consultation Inquiries / Kotak Pesan Masuk CRUD
-  // ==========================================
+  // Inquiries CRUD
   getInquiries() {
     if (!this.data) return (INITIAL_DATA && INITIAL_DATA.inquiries) ? [...INITIAL_DATA.inquiries] : [];
     if (!Array.isArray(this.data.inquiries)) {
@@ -1429,8 +1251,7 @@ window.SchoolDB = {
   },
 
   getUnreadInquiriesCount() {
-    const list = this.getInquiries();
-    return list.filter(i => !i.isRead).length;
+    return this.getInquiries().filter(i => !i.isRead).length;
   },
 
   async addInquiry(item) {
@@ -1445,11 +1266,7 @@ window.SchoolDB = {
 
     const newInquiry = {
       id: 'inq_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-      name: name,
-      email: email,
-      phone: phone,
-      subject: subject,
-      message: message,
+      name, email, phone, subject, message,
       date: formattedDate,
       isRead: false
     };
@@ -1474,14 +1291,6 @@ window.SchoolDB = {
   },
 
   async deleteInquiry(id) {
-    if (!Array.isArray(this.data.inquiries)) return false;
-    const initialLen = this.data.inquiries.length;
-    this.data.inquiries = this.data.inquiries.filter(i => String(i.id) !== String(id));
-    if (this.data.inquiries.length !== initialLen) {
-      await this.save();
-      await this.logAudit('HAPUS', 'Layanan Konsultasi', 'Menghapus pesan konsultasi masuk');
-      return true;
-    }
-    return false;
+    return this._deleteItem('inquiries', id, 'Layanan Konsultasi', 'name');
   }
 };

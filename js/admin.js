@@ -16,8 +16,35 @@ let isFormDirty = false;
 let activeModalFormId = null;
 
 function normalizeName(str) {
+  if (window.SchoolFormatters && typeof window.SchoolFormatters.normalizeName === 'function') {
+    return window.SchoolFormatters.normalizeName(str);
+  }
   if (!str || typeof str !== 'string') return '';
   return str.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+function bindImageUploadHandler({ inputId, previewImgId, previewContainerId, labelId, badgeId, maxWidth = 800, maxHeight = 800, onReady }) {
+  const fileEl = document.getElementById(inputId);
+  if (!fileEl) return;
+  fileEl.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth, maxHeight, quality: 0.85 }) : fileToBase64(file, maxWidth));
+      const dataUrl = typeof res === 'object' ? res.dataUrl : res;
+      const previewImg = document.getElementById(previewImgId);
+      const previewContainer = document.getElementById(previewContainerId);
+      const labelUpload = document.getElementById(labelId);
+      if (previewImg) previewImg.src = dataUrl;
+      if (previewContainer) previewContainer.style.display = 'block';
+      if (labelUpload) labelUpload.textContent = 'Gambar siap';
+      if (typeof res === 'object' && badgeId) showCompressionBadge(badgeId, res);
+      markDirty();
+      if (typeof onReady === 'function') onReady(dataUrl);
+    } catch (err) {
+      showAdminToast(err.message || 'Gagal memproses berkas.', 'error', 'Format Tidak Didukung');
+    }
+  });
 }
 
 function attachDirtyListeners(formId) {
@@ -102,6 +129,9 @@ function showAdminToast(message, type = 'success', title = '') {
 
 // Button Submitting State Manager (Anti-Spam / Anti-Duplicate Click)
 function setButtonSubmitting(btn, isSubmitting, text = 'Menyimpan...') {
+  if (window.SchoolGuards && typeof window.SchoolGuards.setButtonSubmitting === 'function') {
+    return window.SchoolGuards.setButtonSubmitting(btn, isSubmitting, text);
+  }
   if (!btn) return;
   if (isSubmitting) {
     btn.disabled = true;
@@ -109,14 +139,15 @@ function setButtonSubmitting(btn, isSubmitting, text = 'Menyimpan...') {
     btn.innerHTML = `<span class="btn-spinner"></span>${text}`;
   } else {
     btn.disabled = false;
-    if (btn.dataset.originalHtml) {
-      btn.innerHTML = btn.dataset.originalHtml;
-    }
+    if (btn.dataset.originalHtml) btn.innerHTML = btn.dataset.originalHtml;
   }
 }
 
 // Utility: Debounce Function
 function debounce(func, delay = 300) {
+  if (window.SchoolGuards && typeof window.SchoolGuards.debounce === 'function') {
+    return window.SchoolGuards.debounce(func, delay);
+  }
   let timer;
   return function(...args) {
     clearTimeout(timer);
@@ -330,46 +361,24 @@ document.addEventListener('click', async (e) => {
   }
 
   // 2. Modal Open Triggers
-  if (e.target.closest('#admin-add-teacher-btn')) {
-    e.preventDefault();
-    openTeacherModal();
-    return;
+  const ADD_MODAL_TRIGGERS = [
+    { sel: '#admin-add-teacher-btn', fn: openTeacherModal },
+    { sel: '#admin-add-facility-btn', fn: openFacilityModal },
+    { sel: '#admin-add-activity-btn', fn: openActivityModal },
+    { sel: '#admin-add-gallery-btn', fn: openGalleryModal },
+    { sel: '#btn-add-testimonial', fn: openTestimonialModal },
+    { sel: '#btn-add-calendar', fn: openCalendarModal },
+    { sel: '#btn-add-habit', fn: openHabitModal },
+    { sel: '#btn-add-comfort', fn: openComfortModal }
+  ];
+  for (const trigger of ADD_MODAL_TRIGGERS) {
+    if (e.target.closest(trigger.sel)) {
+      e.preventDefault();
+      trigger.fn();
+      return;
+    }
   }
-  if (e.target.closest('#admin-add-facility-btn')) {
-    e.preventDefault();
-    openFacilityModal();
-    return;
-  }
-  if (e.target.closest('#admin-add-activity-btn')) {
-    e.preventDefault();
-    openActivityModal();
-    return;
-  }
-  if (e.target.closest('#admin-add-gallery-btn')) {
-    e.preventDefault();
-    openGalleryModal();
-    return;
-  }
-  if (e.target.closest('#btn-add-testimonial')) {
-    e.preventDefault();
-    openTestimonialModal();
-    return;
-  }
-  if (e.target.closest('#btn-add-calendar')) {
-    e.preventDefault();
-    openCalendarModal();
-    return;
-  }
-  if (e.target.closest('#btn-add-habit')) {
-    e.preventDefault();
-    openHabitModal();
-    return;
-  }
-  if (e.target.closest('#btn-add-comfort')) {
-    e.preventDefault();
-    openComfortModal();
-    return;
-  }
+
   if (e.target.closest('#admin-manage-categories-btn') || e.target.closest('#btn-quick-add-category')) {
     e.preventDefault();
     const overlay = document.getElementById('category-modal-overlay');
@@ -385,53 +394,23 @@ document.addEventListener('click', async (e) => {
   }
 
   // 3. Table Action Buttons: Edit
-  const editTeacherBtn = e.target.closest('.btn-edit-teacher');
-  if (editTeacherBtn) {
-    e.preventDefault();
-    openTeacherModal(editTeacherBtn.getAttribute('data-id'));
-    return;
-  }
-  const editFacilityBtn = e.target.closest('.btn-edit-facility');
-  if (editFacilityBtn) {
-    e.preventDefault();
-    openFacilityModal(editFacilityBtn.getAttribute('data-id'));
-    return;
-  }
-  const editActivityBtn = e.target.closest('.btn-edit-activity');
-  if (editActivityBtn) {
-    e.preventDefault();
-    openActivityModal(editActivityBtn.getAttribute('data-id'));
-    return;
-  }
-  const editGalleryBtn = e.target.closest('.btn-edit-gallery');
-  if (editGalleryBtn) {
-    e.preventDefault();
-    openGalleryModal(editGalleryBtn.getAttribute('data-id'));
-    return;
-  }
-  const editTestiBtn = e.target.closest('.btn-edit-testi');
-  if (editTestiBtn) {
-    e.preventDefault();
-    openTestimonialModal(editTestiBtn.getAttribute('data-id'));
-    return;
-  }
-  const editCalBtn = e.target.closest('.btn-edit-calendar');
-  if (editCalBtn) {
-    e.preventDefault();
-    openCalendarModal(editCalBtn.getAttribute('data-id'));
-    return;
-  }
-  const editHabitBtn = e.target.closest('.btn-edit-habit');
-  if (editHabitBtn) {
-    e.preventDefault();
-    openHabitModal(editHabitBtn.getAttribute('data-id'));
-    return;
-  }
-  const editComfortBtn = e.target.closest('.btn-edit-comfort');
-  if (editComfortBtn) {
-    e.preventDefault();
-    openComfortModal(editComfortBtn.getAttribute('data-id'));
-    return;
+  const EDIT_ROW_TRIGGERS = [
+    { cls: '.btn-edit-teacher', fn: openTeacherModal },
+    { cls: '.btn-edit-facility', fn: openFacilityModal },
+    { cls: '.btn-edit-activity', fn: openActivityModal },
+    { cls: '.btn-edit-gallery', fn: openGalleryModal },
+    { cls: '.btn-edit-testi', fn: openTestimonialModal },
+    { cls: '.btn-edit-calendar', fn: openCalendarModal },
+    { cls: '.btn-edit-habit', fn: openHabitModal },
+    { cls: '.btn-edit-comfort', fn: openComfortModal }
+  ];
+  for (const item of EDIT_ROW_TRIGGERS) {
+    const btn = e.target.closest(item.cls);
+    if (btn) {
+      e.preventDefault();
+      item.fn(btn.getAttribute('data-id'));
+      return;
+    }
   }
 
   // 4. Duplicate Activity
@@ -451,129 +430,34 @@ document.addEventListener('click', async (e) => {
   }
 
   // 5. Table Action Buttons: Delete
-  const delTeacherBtn = e.target.closest('.btn-delete-teacher');
-  if (delTeacherBtn) {
-    e.preventDefault();
-    const id = delTeacherBtn.getAttribute('data-id');
-    if (confirm('Hapus data guru ini? Tindakan tidak dapat dibatalkan.')) {
-      try {
-        await window.SchoolDB.deleteTeacher(id);
-        showAdminToast('Data guru berhasil dihapus.', 'success', 'Guru Dihapus');
-        renderTeachersTable();
-        renderDashboard();
-      } catch (err) {
-        showAdminToast('Gagal menghapus guru: ' + err.message, 'error');
+  const DELETE_ROW_TRIGGERS = [
+    { cls: '.btn-delete-teacher', msg: 'Hapus data guru ini? Tindakan tidak dapat dibatalkan.', fn: id => window.SchoolDB.deleteTeacher(id), toast: 'Data guru berhasil dihapus.', title: 'Guru Dihapus', refresh: () => { renderTeachersTable(); renderDashboard(); } },
+    { cls: '.btn-delete-facility', msg: 'Hapus data fasilitas ini? Tindakan tidak dapat dibatalkan.', fn: id => window.SchoolDB.deleteFacility(id), toast: 'Data fasilitas berhasil dihapus.', title: 'Fasilitas Dihapus', refresh: () => { renderFacilitiesTable(); renderDashboard(); } },
+    { cls: '.btn-delete-activity', msg: 'Hapus data kegiatan ini? Tindakan tidak dapat dibatalkan.', fn: id => window.SchoolDB.deleteActivity(id), toast: 'Data kegiatan berhasil dihapus.', title: 'Kegiatan Dihapus', refresh: () => { renderActivitiesTable(); renderDashboard(); } },
+    { cls: '.btn-delete-gallery', msg: 'Hapus foto dari galeri? Tindakan tidak dapat dibatalkan.', fn: id => (window.SchoolDB.deleteGalleryItem ? window.SchoolDB.deleteGalleryItem(id) : window.SchoolDB.deleteGallery(id)), toast: 'Foto galeri berhasil dihapus.', title: 'Foto Dihapus', refresh: () => { renderGalleryTable(); renderDashboard(); } },
+    { cls: '.btn-delete-testi', msg: 'Hapus testimoni ini?', fn: id => window.SchoolDB.deleteTestimonial(id), toast: 'Testimoni berhasil dihapus.', title: 'Testimoni Dihapus', refresh: () => renderTestimonialsTable() },
+    { cls: '.btn-delete-calendar', msg: 'Hapus agenda kalender ini?', fn: id => (window.SchoolDB.deleteCalendarItem ? window.SchoolDB.deleteCalendarItem(id) : window.SchoolDB.deleteCalendar(id)), toast: 'Agenda kalender berhasil dihapus.', title: 'Agenda Dihapus', refresh: () => renderCalendarTable() },
+    { cls: '.btn-delete-habit', msg: 'Hapus pembiasaan ini?', fn: id => window.SchoolDB.deleteHabit(id), toast: 'Pembiasaan berhasil dihapus.', title: 'Pembiasaan Dihapus', refresh: () => renderHabitsTable() },
+    { cls: '.btn-delete-comfort', msg: 'Hapus standar kenyamanan ini?', fn: id => window.SchoolDB.deleteComfortStandard(id), toast: 'Standar kenyamanan berhasil dihapus.', title: 'Standar Dihapus', refresh: () => renderComfortTable() }
+  ];
+  for (const item of DELETE_ROW_TRIGGERS) {
+    const btn = e.target.closest(item.cls);
+    if (btn) {
+      e.preventDefault();
+      const id = btn.getAttribute('data-id');
+      if (confirm(item.msg)) {
+        btn.disabled = true;
+        try {
+          await item.fn(id);
+          showAdminToast(item.toast, 'success', item.title);
+          item.refresh();
+        } catch (err) {
+          showAdminToast(err.message || 'Gagal menghapus data.', 'error');
+          btn.disabled = false;
+        }
       }
+      return;
     }
-    return;
-  }
-  const delFacilityBtn = e.target.closest('.btn-delete-facility');
-  if (delFacilityBtn) {
-    e.preventDefault();
-    const id = delFacilityBtn.getAttribute('data-id');
-    if (confirm('Hapus data fasilitas ini? Tindakan tidak dapat dibatalkan.')) {
-      try {
-        await window.SchoolDB.deleteFacility(id);
-        showAdminToast('Data fasilitas berhasil dihapus.', 'success', 'Fasilitas Dihapus');
-        renderFacilitiesTable();
-        renderDashboard();
-      } catch (err) {
-        showAdminToast('Gagal menghapus fasilitas: ' + err.message, 'error');
-      }
-    }
-    return;
-  }
-  const delActivityBtn = e.target.closest('.btn-delete-activity');
-  if (delActivityBtn) {
-    e.preventDefault();
-    const id = delActivityBtn.getAttribute('data-id');
-    if (confirm('Hapus data kegiatan ini? Tindakan tidak dapat dibatalkan.')) {
-      try {
-        await window.SchoolDB.deleteActivity(id);
-        showAdminToast('Data kegiatan berhasil dihapus.', 'success', 'Kegiatan Dihapus');
-        renderActivitiesTable();
-        renderDashboard();
-      } catch (err) {
-        showAdminToast('Gagal menghapus kegiatan: ' + err.message, 'error');
-      }
-    }
-    return;
-  }
-  const delGalleryBtn = e.target.closest('.btn-delete-gallery');
-  if (delGalleryBtn) {
-    e.preventDefault();
-    const id = delGalleryBtn.getAttribute('data-id');
-    if (confirm('Hapus foto dari galeri? Tindakan tidak dapat dibatalkan.')) {
-      try {
-        await window.SchoolDB.deleteGallery(id);
-        showAdminToast('Foto galeri berhasil dihapus.', 'success', 'Foto Dihapus');
-        renderGalleryTable();
-        renderDashboard();
-      } catch (err) {
-        showAdminToast('Gagal menghapus foto galeri: ' + err.message, 'error');
-      }
-    }
-    return;
-  }
-  const delTestiBtn = e.target.closest('.btn-delete-testi');
-  if (delTestiBtn) {
-    e.preventDefault();
-    const id = delTestiBtn.getAttribute('data-id');
-    if (confirm('Hapus testimoni ini?')) {
-      try {
-        await window.SchoolDB.deleteTestimonial(id);
-        showAdminToast('Testimoni berhasil dihapus.', 'success', 'Testimoni Dihapus');
-        renderTestimonialsTable();
-      } catch (err) {
-        showAdminToast('Gagal menghapus testimoni: ' + err.message, 'error');
-      }
-    }
-    return;
-  }
-  const delCalBtn = e.target.closest('.btn-delete-calendar');
-  if (delCalBtn) {
-    e.preventDefault();
-    const id = delCalBtn.getAttribute('data-id');
-    if (confirm('Hapus agenda kalender ini?')) {
-      try {
-        await window.SchoolDB.deleteCalendar(id);
-        showAdminToast('Agenda kalender berhasil dihapus.', 'success', 'Agenda Dihapus');
-        renderCalendarTable();
-      } catch (err) {
-        showAdminToast('Gagal menghapus agenda: ' + err.message, 'error');
-      }
-    }
-    return;
-  }
-  const delHabitBtn = e.target.closest('.btn-delete-habit');
-  if (delHabitBtn) {
-    e.preventDefault();
-    const id = delHabitBtn.getAttribute('data-id');
-    if (confirm('Hapus pembiasaan ini?')) {
-      try {
-        await window.SchoolDB.deleteHabit(id);
-        showAdminToast('Pembiasaan berhasil dihapus.', 'success', 'Pembiasaan Dihapus');
-        renderHabitsTable();
-      } catch (err) {
-        showAdminToast('Gagal menghapus pembiasaan: ' + err.message, 'error');
-      }
-    }
-    return;
-  }
-  const delComfortBtn = e.target.closest('.btn-delete-comfort');
-  if (delComfortBtn) {
-    e.preventDefault();
-    const id = delComfortBtn.getAttribute('data-id');
-    if (confirm('Hapus standar kenyamanan ini?')) {
-      try {
-        await window.SchoolDB.deleteComfortStandard(id);
-        showAdminToast('Standar kenyamanan berhasil dihapus.', 'success', 'Standar Dihapus');
-        renderComfortTable();
-      } catch (err) {
-        showAdminToast('Gagal menghapus standar: ' + err.message, 'error');
-      }
-    }
-    return;
   }
 
   // 6. Modal Close Buttons
@@ -742,7 +626,10 @@ function loadProfileForm() {
 
 // Helper: Byte Formatting & Compression Badge Feedback
 function formatBytes(bytes) {
-  if (bytes === 0 || !bytes) return '0 B';
+  if (window.SchoolFormatters && typeof window.SchoolFormatters.formatBytes === 'function') {
+    return window.SchoolFormatters.formatBytes(bytes);
+  }
+  if (!bytes) return '0 B';
   const k = 1024;
   const sizes = ['B', 'KB', 'MB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -778,47 +665,8 @@ function hideCompressionBadge(badgeId) {
 }
 
 // File Readers with Validation & Auto-Compression
-const uploadLogoFileEl = document.getElementById('upload-logo-file');
-if (uploadLogoFileEl) {
-  uploadLogoFileEl.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      try {
-        const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 400, maxHeight: 400, quality: 0.85 }) : fileToBase64(file, 400));
-        tempLogoBase64 = typeof res === 'object' ? res.dataUrl : res;
-        const previewImg = document.getElementById('preview-logo-img');
-        const previewContainer = document.getElementById('preview-logo-container');
-        if (previewImg) previewImg.src = tempLogoBase64;
-        if (previewContainer) previewContainer.style.display = 'block';
-        if (typeof res === 'object') showCompressionBadge('compression-badge-logo', res);
-        markDirty();
-      } catch (err) {
-        showAdminToast(err.message || 'Gagal memproses berkas logo.', 'error', 'Format Tidak Didukung');
-      }
-    }
-  });
-}
-
-const uploadHeroFileEl = document.getElementById('upload-hero-file');
-if (uploadHeroFileEl) {
-  uploadHeroFileEl.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      try {
-        const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 1400, maxHeight: 900, quality: 0.85 }) : fileToBase64(file, 1400));
-        tempHeroBase64 = typeof res === 'object' ? res.dataUrl : res;
-        const previewImg = document.getElementById('preview-hero-img');
-        const previewContainer = document.getElementById('preview-hero-container');
-        if (previewImg) previewImg.src = tempHeroBase64;
-        if (previewContainer) previewContainer.style.display = 'block';
-        if (typeof res === 'object') showCompressionBadge('compression-badge-hero', res);
-        markDirty();
-      } catch (err) {
-        showAdminToast(err.message || 'Gagal memproses berkas banner.', 'error', 'Format Tidak Didukung');
-      }
-    }
-  });
-}
+bindImageUploadHandler({ inputId: 'upload-logo-file', previewImgId: 'preview-logo-img', previewContainerId: 'preview-logo-container', badgeId: 'compression-badge-logo', maxWidth: 400, maxHeight: 400, onReady: url => { tempLogoBase64 = url; } });
+bindImageUploadHandler({ inputId: 'upload-hero-file', previewImgId: 'preview-hero-img', previewContainerId: 'preview-hero-container', badgeId: 'compression-badge-hero', maxWidth: 1400, maxHeight: 900, onReady: url => { tempHeroBase64 = url; } });
 
 // Submit Profile Form with Submit Lock
 const formEditProfile = document.getElementById('form-edit-profile');
@@ -875,45 +723,21 @@ if (formEditProfile) {
 // SEARCH & PAGINATION CONTROLS
 // ----------------------------------------------------
 function initSearchAndPagination() {
-  // Teachers search
-  const searchTeachers = document.getElementById('search-teachers');
-  if (searchTeachers) {
-    searchTeachers.addEventListener('input', debounce((e) => {
-      teacherSearchQuery = e.target.value.toLowerCase().trim();
-      teacherPage = 1;
-      renderTeachersTable();
-    }, 300));
-  }
+  const searchConfigs = [
+    { id: 'search-teachers', onInput: val => { teacherSearchQuery = val; teacherPage = 1; renderTeachersTable(); } },
+    { id: 'search-facilities', onInput: val => { facilitySearchQuery = val; facilityPage = 1; renderFacilitiesTable(); } },
+    { id: 'search-activities', onInput: val => { activitySearchQuery = val; activityPage = 1; renderActivitiesTable(); } },
+    { id: 'search-gallery', onInput: val => { gallerySearchQuery = val; galleryPage = 1; renderGalleryTable(); } }
+  ];
 
-  // Facilities search
-  const searchFacilities = document.getElementById('search-facilities');
-  if (searchFacilities) {
-    searchFacilities.addEventListener('input', debounce((e) => {
-      facilitySearchQuery = e.target.value.toLowerCase().trim();
-      facilityPage = 1;
-      renderFacilitiesTable();
-    }, 300));
-  }
-
-  // Activities search
-  const searchActivities = document.getElementById('search-activities');
-  if (searchActivities) {
-    searchActivities.addEventListener('input', debounce((e) => {
-      activitySearchQuery = e.target.value.toLowerCase().trim();
-      activityPage = 1;
-      renderActivitiesTable();
-    }, 300));
-  }
-
-  // Gallery search
-  const searchGallery = document.getElementById('search-gallery');
-  if (searchGallery) {
-    searchGallery.addEventListener('input', debounce((e) => {
-      gallerySearchQuery = e.target.value.toLowerCase().trim();
-      galleryPage = 1;
-      renderGalleryTable();
-    }, 300));
-  }
+  searchConfigs.forEach(({ id, onInput }) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', debounce((e) => {
+        onInput(e.target.value.toLowerCase().trim());
+      }, 300));
+    }
+  });
 }
 
 function renderPaginationControls(containerId, totalItems, currentPage, onPageChange) {
@@ -990,59 +814,9 @@ function renderTeachersTable() {
     teacherPage = newPage;
     renderTeachersTable();
   });
-  
-  listBody.querySelectorAll('.btn-edit-teacher').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const id = e.currentTarget.getAttribute('data-id');
-      openTeacherModal(id);
-    });
-  });
-  
-  listBody.querySelectorAll('.btn-delete-teacher').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      const id = e.currentTarget.getAttribute('data-id');
-      if (confirm('Hapus data guru/staf ini? Tindakan tidak dapat dibatalkan.')) {
-        e.currentTarget.disabled = true;
-        try {
-          await window.SchoolDB.deleteTeacher(id);
-          showAdminToast('Data guru/staf berhasil dihapus.', 'success', 'Guru Dihapus');
-          const remaining = (window.SchoolDB.getTeachers() || []).length;
-          if (teacherPage > 1 && (teacherPage - 1) * ITEMS_PER_PAGE >= remaining) {
-            teacherPage = Math.max(1, Math.ceil(remaining / ITEMS_PER_PAGE));
-          }
-          renderTeachersTable();
-          renderDashboard();
-        } catch (err) {
-          showAdminToast('Gagal menghapus data guru.', 'error');
-          e.currentTarget.disabled = false;
-        }
-      }
-    });
-  });
 }
 
-const teacherFileEl = document.getElementById('teacher-file');
-if (teacherFileEl) {
-  teacherFileEl.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      try {
-        const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 600, maxHeight: 600, quality: 0.82 }) : fileToBase64(file, 600));
-        tempTeacherBase64 = typeof res === 'object' ? res.dataUrl : res;
-        const previewImg = document.getElementById('preview-teacher-img');
-        const previewContainer = document.getElementById('preview-teacher-container');
-        const labelUpload = document.getElementById('label-teacher-upload');
-        if (previewImg) previewImg.src = tempTeacherBase64;
-        if (previewContainer) previewContainer.style.display = 'block';
-        if (labelUpload) labelUpload.textContent = 'Gambar siap';
-        if (typeof res === 'object') showCompressionBadge('compression-badge-teacher', res);
-        markDirty();
-      } catch (err) {
-        showAdminToast(err.message || 'Gagal memproses berkas.', 'error', 'Format Tidak Didukung');
-      }
-    }
-  });
-}
+bindImageUploadHandler({ inputId: 'teacher-file', previewImgId: 'preview-teacher-img', previewContainerId: 'preview-teacher-container', labelId: 'label-teacher-upload', badgeId: 'compression-badge-teacher', maxWidth: 600, maxHeight: 600, onReady: url => { tempTeacherBase64 = url; } });
 
 function openTeacherModal(id = null) {
   const modal = document.getElementById('admin-modal-overlay');
@@ -1130,10 +904,6 @@ if (formTeacher) {
   });
 }
 
-const addTeacherBtn = document.getElementById('admin-add-teacher-btn');
-if (addTeacherBtn) {
-  addTeacherBtn.addEventListener('click', () => openTeacherModal());
-}
 
 // ----------------------------------------------------
 // FACILITIES CRUD WITH SUBMIT LOCK & SAFE DELETE
@@ -1181,59 +951,9 @@ function renderFacilitiesTable() {
     facilityPage = newPage;
     renderFacilitiesTable();
   });
-  
-  listBody.querySelectorAll('.btn-edit-facility').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const id = e.currentTarget.getAttribute('data-id');
-      openFacilityModal(id);
-    });
-  });
-  
-  listBody.querySelectorAll('.btn-delete-facility').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      const id = e.currentTarget.getAttribute('data-id');
-      if (confirm('Hapus data fasilitas ini? Tindakan tidak dapat dibatalkan.')) {
-        e.currentTarget.disabled = true;
-        try {
-          await window.SchoolDB.deleteFacility(id);
-          showAdminToast('Data fasilitas berhasil dihapus.', 'success', 'Fasilitas Dihapus');
-          const remaining = (window.SchoolDB.getFacilities() || []).length;
-          if (facilityPage > 1 && (facilityPage - 1) * ITEMS_PER_PAGE >= remaining) {
-            facilityPage = Math.max(1, Math.ceil(remaining / ITEMS_PER_PAGE));
-          }
-          renderFacilitiesTable();
-          renderDashboard();
-        } catch (err) {
-          showAdminToast('Gagal menghapus fasilitas.', 'error');
-          e.currentTarget.disabled = false;
-        }
-      }
-    });
-  });
 }
 
-const facilityFileEl = document.getElementById('facility-file');
-if (facilityFileEl) {
-  facilityFileEl.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      try {
-        const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 800, maxHeight: 600, quality: 0.82 }) : fileToBase64(file, 800));
-        tempFacilityBase64 = typeof res === 'object' ? res.dataUrl : res;
-        const previewImg = document.getElementById('preview-facility-img');
-        const previewContainer = document.getElementById('preview-facility-container');
-        const labelUpload = document.getElementById('label-facility-upload');
-        if (previewImg) previewImg.src = tempFacilityBase64;
-        if (previewContainer) previewContainer.style.display = 'block';
-        if (labelUpload) labelUpload.textContent = 'Gambar siap';
-        if (typeof res === 'object') showCompressionBadge('compression-badge-facility', res);
-        markDirty();
-      } catch (err) {
-        showAdminToast(err.message || 'Gagal memproses berkas.', 'error', 'Format Tidak Didukung');
-      }
-    }
-  });
-}
+bindImageUploadHandler({ inputId: 'facility-file', previewImgId: 'preview-facility-img', previewContainerId: 'preview-facility-container', labelId: 'label-facility-upload', badgeId: 'compression-badge-facility', maxWidth: 800, maxHeight: 600, onReady: url => { tempFacilityBase64 = url; } });
 
 function openFacilityModal(id = null) {
   const modal = document.getElementById('admin-modal-overlay');
@@ -1326,10 +1046,6 @@ if (formFacility) {
   });
 }
 
-const addFacilityBtn = document.getElementById('admin-add-facility-btn');
-if (addFacilityBtn) {
-  addFacilityBtn.addEventListener('click', () => openFacilityModal());
-}
 
 // ----------------------------------------------------
 // ACTIVITIES CRUD WITH SUBMIT LOCK & SAFE DELETE
@@ -1390,59 +1106,9 @@ function renderActivitiesTable() {
     activityPage = newPage;
     renderActivitiesTable();
   });
-  
-  listBody.querySelectorAll('.btn-edit-activity').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const id = e.currentTarget.getAttribute('data-id');
-      openActivityModal(id);
-    });
-  });
-  
-  listBody.querySelectorAll('.btn-delete-activity').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      const id = e.currentTarget.getAttribute('data-id');
-      if (confirm('Hapus berita kegiatan ini? Tindakan tidak dapat dibatalkan.')) {
-        e.currentTarget.disabled = true;
-        try {
-          await window.SchoolDB.deleteActivity(id);
-          showAdminToast('Berita kegiatan berhasil dihapus.', 'success', 'Kegiatan Dihapus');
-          const remaining = (window.SchoolDB.getActivities() || []).length;
-          if (activityPage > 1 && (activityPage - 1) * ITEMS_PER_PAGE >= remaining) {
-            activityPage = Math.max(1, Math.ceil(remaining / ITEMS_PER_PAGE));
-          }
-          renderActivitiesTable();
-          renderDashboard();
-        } catch (err) {
-          showAdminToast('Gagal menghapus kegiatan.', 'error');
-          e.currentTarget.disabled = false;
-        }
-      }
-    });
-  });
 }
 
-const activityFileEl = document.getElementById('activity-file');
-if (activityFileEl) {
-  activityFileEl.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      try {
-        const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 1000, maxHeight: 700, quality: 0.82 }) : fileToBase64(file, 1000));
-        tempActivityBase64 = typeof res === 'object' ? res.dataUrl : res;
-        const previewImg = document.getElementById('preview-activity-img');
-        const previewContainer = document.getElementById('preview-activity-container');
-        const labelUpload = document.getElementById('label-activity-upload');
-        if (previewImg) previewImg.src = tempActivityBase64;
-        if (previewContainer) previewContainer.style.display = 'block';
-        if (labelUpload) labelUpload.textContent = 'Gambar siap';
-        if (typeof res === 'object') showCompressionBadge('compression-badge-activity', res);
-        markDirty();
-      } catch (err) {
-        showAdminToast(err.message || 'Gagal memproses berkas.', 'error', 'Format Tidak Didukung');
-      }
-    }
-  });
-}
+bindImageUploadHandler({ inputId: 'activity-file', previewImgId: 'preview-activity-img', previewContainerId: 'preview-activity-container', labelId: 'label-activity-upload', badgeId: 'compression-badge-activity', maxWidth: 1000, maxHeight: 700, onReady: url => { tempActivityBase64 = url; } });
 
 function openActivityModal(id = null) {
   const modal = document.getElementById('admin-modal-overlay');
@@ -1553,10 +1219,6 @@ if (formActivity) {
   });
 }
 
-const addActivityBtn = document.getElementById('admin-add-activity-btn');
-if (addActivityBtn) {
-  addActivityBtn.addEventListener('click', () => openActivityModal());
-}
 
 // ----------------------------------------------------
 // GALLERY CRUD WITH SUBMIT LOCK & SAFE DELETE
@@ -1604,59 +1266,9 @@ function renderGalleryTable() {
     galleryPage = newPage;
     renderGalleryTable();
   });
-  
-  listBody.querySelectorAll('.btn-edit-gallery').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const id = e.currentTarget.getAttribute('data-id');
-      openGalleryModal(id);
-    });
-  });
-  
-  listBody.querySelectorAll('.btn-delete-gallery').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      const id = e.currentTarget.getAttribute('data-id');
-      if (confirm('Hapus foto ini dari galeri?')) {
-        e.currentTarget.disabled = true;
-        try {
-          await window.SchoolDB.deleteGallery(id);
-          showAdminToast('Foto galeri berhasil dihapus.', 'success', 'Foto Dihapus');
-          const remaining = (window.SchoolDB.getGallery() || []).length;
-          if (galleryPage > 1 && (galleryPage - 1) * ITEMS_PER_PAGE >= remaining) {
-            galleryPage = Math.max(1, Math.ceil(remaining / ITEMS_PER_PAGE));
-          }
-          renderGalleryTable();
-          renderDashboard();
-        } catch (err) {
-          showAdminToast('Gagal menghapus foto galeri.', 'error');
-          e.currentTarget.disabled = false;
-        }
-      }
-    });
-  });
 }
 
-const galleryFileEl = document.getElementById('gallery-file');
-if (galleryFileEl) {
-  galleryFileEl.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      try {
-        const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 900, maxHeight: 700, quality: 0.82 }) : fileToBase64(file, 900));
-        tempGalleryBase64 = typeof res === 'object' ? res.dataUrl : res;
-        const previewImg = document.getElementById('preview-gallery-img');
-        const previewContainer = document.getElementById('preview-gallery-container');
-        const labelUpload = document.getElementById('label-gallery-upload');
-        if (previewImg) previewImg.src = tempGalleryBase64;
-        if (previewContainer) previewContainer.style.display = 'block';
-        if (labelUpload) labelUpload.textContent = 'Gambar siap';
-        if (typeof res === 'object') showCompressionBadge('compression-badge-gallery', res);
-        markDirty();
-      } catch (err) {
-        showAdminToast(err.message || 'Gagal memproses berkas.', 'error', 'Format Tidak Didukung');
-      }
-    }
-  });
-}
+bindImageUploadHandler({ inputId: 'gallery-file', previewImgId: 'preview-gallery-img', previewContainerId: 'preview-gallery-container', labelId: 'label-gallery-upload', badgeId: 'compression-badge-gallery', maxWidth: 900, maxHeight: 700, onReady: url => { tempGalleryBase64 = url; } });
 
 function openGalleryModal(id = null) {
   const modal = document.getElementById('admin-modal-overlay');
@@ -1740,10 +1352,6 @@ if (formGallery) {
   });
 }
 
-const addGalleryBtn = document.getElementById('admin-add-gallery-btn');
-if (addGalleryBtn) {
-  addGalleryBtn.addEventListener('click', () => openGalleryModal());
-}
 
 // ----------------------------------------------------
 // CONTACT MANAGEMENT WITH SUBMIT LOCK
@@ -1970,24 +1578,6 @@ function renderTestimonialsTable() {
       </td>
     </tr>
   `).join('');
-
-  listBody.querySelectorAll('.btn-edit-testi').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const id = e.currentTarget.getAttribute('data-id');
-      openTestimonialModal(id);
-    });
-  });
-
-  listBody.querySelectorAll('.btn-delete-testi').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      const id = e.currentTarget.getAttribute('data-id');
-      if (confirm('Hapus testimoni ini?')) {
-        await window.SchoolDB.deleteTestimonial(id);
-        showAdminToast('Testimoni berhasil dihapus.', 'success', 'Testimoni Dihapus');
-        renderTestimonialsTable();
-      }
-    });
-  });
 }
 
 function openTestimonialModal(id = null) {
@@ -2066,33 +1656,7 @@ if (formTestimonial) {
   });
 }
 
-const addTestimonialBtn = document.getElementById('btn-add-testimonial');
-if (addTestimonialBtn) {
-  addTestimonialBtn.addEventListener('click', () => openTestimonialModal());
-}
-
-const testiFileInput = document.getElementById('testi-file');
-if (testiFileInput) {
-  testiFileInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      try {
-        const res = await (window.compressImageFile ? window.compressImageFile(file, { maxWidth: 300, maxHeight: 300, quality: 0.82 }) : fileToBase64(file, 300));
-        tempTestiBase64 = typeof res === 'object' ? res.dataUrl : res;
-        const prevImg = document.getElementById('preview-testi-img');
-        const prevContainer = document.getElementById('preview-testi-container');
-        const labelUpload = document.getElementById('label-testi-upload');
-        if (prevImg) prevImg.src = tempTestiBase64;
-        if (prevContainer) prevContainer.style.display = 'block';
-        if (labelUpload) labelUpload.textContent = 'Foto siap';
-        if (typeof res === 'object') showCompressionBadge('compression-badge-testi', res);
-        markDirty();
-      } catch (err) {
-        showAdminToast(err.message || 'Gagal memproses foto.', 'error');
-      }
-    }
-  });
-}
+bindImageUploadHandler({ inputId: 'testi-file', previewImgId: 'preview-testi-img', previewContainerId: 'preview-testi-container', labelId: 'label-testi-upload', badgeId: 'compression-badge-testi', maxWidth: 400, maxHeight: 400, onReady: url => { tempTestiBase64 = url; } });
 
 // ----------------------------------------------------
 // ACADEMIC CALENDAR & AGENDA MANAGEMENT
@@ -2122,24 +1686,6 @@ function renderCalendarTable() {
       </td>
     </tr>
   `).join('');
-
-  listBody.querySelectorAll('.btn-edit-calendar').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const id = e.currentTarget.getAttribute('data-id');
-      openCalendarModal(id);
-    });
-  });
-
-  listBody.querySelectorAll('.btn-delete-calendar').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      const id = e.currentTarget.getAttribute('data-id');
-      if (confirm('Hapus agenda ini?')) {
-        await window.SchoolDB.deleteCalendarItem(id);
-        showAdminToast('Agenda berhasil dihapus.', 'success', 'Agenda Dihapus');
-        renderCalendarTable();
-      }
-    });
-  });
 }
 
 function openCalendarModal(id = null) {
@@ -2205,10 +1751,6 @@ if (formCalendar) {
   });
 }
 
-const addCalendarBtn = document.getElementById('btn-add-calendar');
-if (addCalendarBtn) {
-  addCalendarBtn.addEventListener('click', () => openCalendarModal());
-}
 
 // ----------------------------------------------------
 // SCHOOL HABITS & CULTURE MANAGEMENT
@@ -2234,24 +1776,6 @@ function renderHabitsTable() {
       </td>
     </tr>
   `).join('');
-
-  listBody.querySelectorAll('.btn-edit-habit').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const id = e.currentTarget.getAttribute('data-id');
-      openHabitModal(id);
-    });
-  });
-
-  listBody.querySelectorAll('.btn-delete-habit').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      const id = e.currentTarget.getAttribute('data-id');
-      if (confirm('Hapus pembiasaan ini?')) {
-        await window.SchoolDB.deleteHabit(id);
-        showAdminToast('Pembiasaan berhasil dihapus.', 'success', 'Pembiasaan Dihapus');
-        renderHabitsTable();
-      }
-    });
-  });
 }
 
 function openHabitModal(id = null) {
@@ -2316,10 +1840,6 @@ if (formHabit) {
   });
 }
 
-const addHabitBtn = document.getElementById('btn-add-habit');
-if (addHabitBtn) {
-  addHabitBtn.addEventListener('click', () => openHabitModal());
-}
 
 // ----------------------------------------------------
 // COMFORT & SAFETY STANDARDS MANAGEMENT
@@ -2344,24 +1864,6 @@ function renderComfortTable() {
       </td>
     </tr>
   `).join('');
-
-  listBody.querySelectorAll('.btn-edit-comfort').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const id = e.currentTarget.getAttribute('data-id');
-      openComfortModal(id);
-    });
-  });
-
-  listBody.querySelectorAll('.btn-delete-comfort').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      const id = e.currentTarget.getAttribute('data-id');
-      if (confirm('Hapus standar kenyamanan ini?')) {
-        await window.SchoolDB.deleteComfortStandard(id);
-        showAdminToast('Standar kenyamanan berhasil dihapus.', 'success', 'Standar Dihapus');
-        renderComfortTable();
-      }
-    });
-  });
 }
 
 function openComfortModal(id = null) {
@@ -2423,10 +1925,6 @@ if (formComfort) {
   });
 }
 
-const addComfortBtn = document.getElementById('btn-add-comfort');
-if (addComfortBtn) {
-  addComfortBtn.addEventListener('click', () => openComfortModal());
-}
 
 function hideAllModalForms() {
   const formIds = [

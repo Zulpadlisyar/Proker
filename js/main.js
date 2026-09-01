@@ -562,12 +562,13 @@
 
     // Render Full Academic Calendar Section
     // Render Academic Calendar Timeline (Delegated to modular SchoolCalendarTimeline component)
-    const fullCalendarContainer = document.getElementById('calendar-vertical-list');
+    const fullCalendarContainer = document.getElementById('calendar-vertical-list') || document.getElementById('full-calendar-container');
     if (fullCalendarContainer) {
+      const targetId = fullCalendarContainer.id;
       const allCalendarEvents = (window.SchoolDB ? window.SchoolDB.getCalendar() : []) || [];
       if (window.SchoolCalendarTimeline) {
         window.SchoolCalendarTimeline.renderTimeline({
-          containerId: 'calendar-vertical-list',
+          containerId: targetId,
           filterTabsId: 'calendar-filter-tabs',
           searchInputId: 'calendar-search-input',
           events: allCalendarEvents

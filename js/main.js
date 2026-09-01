@@ -327,10 +327,6 @@
       const tCount = profile.totalStaff || 2;
       identitasGuru.textContent = `${gCount + ksCount + tCount} Orang (${gCount} Guru, ${ksCount} KS, ${tCount} Tendik)`;
     }
-    const identitasKelas = document.getElementById('identitas-kelas');
-    if (identitasKelas && profile.totalClasses) identitasKelas.textContent = `${profile.totalClasses} Ruang Kelas`;
-    const identitasAlamat = document.getElementById('identitas-alamat');
-    if (identitasAlamat && contact && contact.address) identitasAlamat.textContent = contact.address;
 
     const missionList = document.getElementById('mission-list');
     if (missionList && Array.isArray(profile.missions)) {

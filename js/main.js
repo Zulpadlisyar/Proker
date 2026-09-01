@@ -18,21 +18,39 @@
 
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
-    toast.innerHTML = `<span>${message}</span>`;
+    
+    const iconSvg = type === 'success'
+      ? `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
+      : `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+
+    const titleText = type === 'success' ? 'Berhasil' : 'Pemberitahuan';
+
+    toast.innerHTML = `
+      <div class="toast-icon-wrap">${iconSvg}</div>
+      <div class="toast-content">
+        <div class="toast-title">${titleText}</div>
+        <div class="toast-message" style="font-size: 13px; color: var(--text); line-height: 1.4;">${message}</div>
+      </div>
+      <button type="button" class="toast-close" style="background:none; border:none; color:var(--text-muted); cursor:pointer; padding:2px; margin-left:auto; display:flex; align-items:center;" aria-label="Tutup Notifikasi">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    `;
     container.appendChild(toast);
 
     let isRemoved = false;
     const removeToast = () => {
       if (isRemoved) return;
       isRemoved = true;
-      toast.style.transition = 'opacity 250ms ease, transform 250ms ease';
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(-10px)';
+      toast.classList.add('toast-hide');
       setTimeout(() => {
         if (toast.parentNode) toast.remove();
-      }, 260);
+      }, 250);
     };
 
+    const closeBtn = toast.querySelector('.toast-close');
+    if (closeBtn) closeBtn.addEventListener('click', removeToast);
+
+    // Auto-dismiss in exactly 3 seconds (3000ms)
     setTimeout(removeToast, 3000);
   }
 
@@ -836,20 +854,6 @@
     initHeaderScrollBehavior();
     initGSAPAnimations();
     renderWhatsAppFloatingButton();
-  });
-
-  // Track clicks on "Baca selengkapnya" to ensure immediate view counting
-  document.addEventListener('click', (e) => {
-    const link = e.target.closest('a[href*="detail-kegiatan.html"]');
-    if (link && window.SchoolDB && typeof window.SchoolDB.incrementActivityViews === 'function') {
-      try {
-        const url = new URL(link.href, window.location.origin);
-        const id = url.searchParams.get('id');
-        if (id) {
-          window.SchoolDB.incrementActivityViews(id);
-        }
-      } catch (err) {}
-    }
   });
 
   // Listen to Cloud Sync / Backup Import updates

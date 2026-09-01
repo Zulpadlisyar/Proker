@@ -596,16 +596,18 @@ window.SchoolDB = {
         if (!Array.isArray(this.data.categories)) this.data.categories = (INITIAL_DATA.categories ? [...INITIAL_DATA.categories] : ['Akademik', 'Kepramukaan', 'Ekstrakurikuler', 'Prestasi', 'Sosial & Lingkungan', 'Umum']);
         if (!Array.isArray(this.data.auditLogs)) this.data.auditLogs = [];
         
-        // Ensure activities views reset to 0 per user requirement
-        if (!this.data._viewsResetV5) {
+        // Ensure activities views start cleanly at 0 if not yet reset
+        if (!this.data._viewsResetV6) {
           if (Array.isArray(this.data.activities)) {
             this.data.activities.forEach(a => {
-              if (a.views === 248 || a.views === 185 || a.views === 312 || typeof a.views !== 'number') {
-                a.views = 0;
-              }
+              a.views = 0;
+              try {
+                localStorage.removeItem(`act_views_${a.id}`);
+                sessionStorage.removeItem(`last_view_ts_${a.id}`);
+              } catch (e) {}
             });
           }
-          this.data._viewsResetV5 = true;
+          this.data._viewsResetV6 = true;
         }
         
         await this.save();
@@ -807,7 +809,17 @@ window.SchoolDB = {
   },
 
   getActivities() {
-    return [...this.data.activities].sort((a, b) => new Date(b.date) - new Date(a.date));
+    if (!this.data || !Array.isArray(this.data.activities)) return [];
+    return [...this.data.activities].map(act => {
+      try {
+        const stored = localStorage.getItem(`act_views_${act.id}`);
+        if (stored !== null) {
+          const count = parseInt(stored, 10);
+          if (!isNaN(count)) act.views = count;
+        }
+      } catch (e) {}
+      return act;
+    }).sort((a, b) => new Date(b.date) - new Date(a.date));
   },
 
   async incrementActivityViews(id) {
@@ -820,15 +832,31 @@ window.SchoolDB = {
     try {
       if (typeof sessionStorage !== 'undefined') {
         const lastView = parseInt(sessionStorage.getItem(lastViewKey) || '0', 10);
-        // 1.5s debounce to prevent rapid double-clicks while allowing genuine user clicks to count
-        if (now - lastView < 1500) {
+        // 800ms debounce to prevent instant double-trigger on reload while counting genuine user visits
+        if (now - lastView < 800) {
           return typeof act.views === 'number' ? act.views : 0;
         }
         sessionStorage.setItem(lastViewKey, String(now));
       }
     } catch (e) {}
 
-    act.views = (typeof act.views === 'number' && !isNaN(act.views)) ? act.views + 1 : 1;
+    // Read latest from localStorage if available to ensure synchronous accuracy across pages
+    let currentViews = (typeof act.views === 'number' && !isNaN(act.views)) ? act.views : 0;
+    try {
+      const stored = localStorage.getItem(`act_views_${id}`);
+      if (stored !== null) {
+        const count = parseInt(stored, 10);
+        if (!isNaN(count) && count > currentViews) currentViews = count;
+      }
+    } catch (e) {}
+
+    act.views = currentViews + 1;
+
+    // Immediately write to localStorage synchronously
+    try {
+      localStorage.setItem(`act_views_${id}`, String(act.views));
+    } catch (e) {}
+
     await this.save();
     return act.views;
   },

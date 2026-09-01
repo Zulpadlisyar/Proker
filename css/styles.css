@@ -152,11 +152,17 @@ body.hero-page header#main-header.scrolled {
 }
 
 .logo-img {
-  width: 42px;
-  height: 42px;
-  border-radius: var(--radius-sm);
+  width: auto;
+  height: 46px;
+  max-width: 48px;
   object-fit: contain;
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.12));
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.18));
+  transition: transform 200ms ease, filter 200ms ease;
+}
+
+.logo-link:hover .logo-img {
+  transform: scale(1.04);
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.26));
 }
 
 .logo-title {
@@ -245,6 +251,10 @@ body.hero-page header#main-header.scrolled .header-pill-btn:hover {
 }
 
 /* Text color contrast adaptations when Topbar is Transparent over dark Hero */
+body.hero-page header#main-header:not(.scrolled) .logo-img {
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+}
+
 body.hero-page header#main-header:not(.scrolled) .logo-title {
   color: #FFFFFF;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);

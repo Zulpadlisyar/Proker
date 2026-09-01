@@ -230,7 +230,7 @@ const INITIAL_DATA = (typeof window !== 'undefined' && window.SchoolConstants &&
           { title: 'Berprestasi', desc: 'Semangat belajar tinggi untuk meraih hasil terbaik.' },
           { title: 'Peduli Lingkungan', desc: 'Menjaga kebersihan dan kelestarian lingkungan sekolah.' }
         ],
-        logo: 'images/logo.png',
+        logo: 'images/logo.webp',
         hero: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&h=1000&fit=crop'
       },
       facilities: [
@@ -612,7 +612,7 @@ window.SchoolDB = {
         if (!this.data.profile.name || this.data.profile.name === 'SDN 2 Ngeposari') {
           this.data.profile.name = 'SDN Ngeposari 2';
         }
-        if (!this.data.profile.logo || this.data.profile.logo.startsWith('data:image/svg+xml')) {
+        if (!this.data.profile.logo || this.data.profile.logo.startsWith('data:image/svg+xml') || this.data.profile.logo === 'images/logo.png') {
           this.data.profile.logo = 'images/logo.webp';
         }
         this.data.profile.npsn = this.data.profile.npsn || '20401876';

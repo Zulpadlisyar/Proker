@@ -75,7 +75,7 @@
 
   // 4. Common Layout (Navbar, Footer, Contact CTAs)
   async function renderCommonUI() {
-    let profile = { name: 'SDN Ngeposari 2', logo: 'images/logo.png', tagline: 'Semanu, Gunungkidul' };
+    let profile = { name: 'SDN Ngeposari 2', logo: 'images/logo.webp', tagline: 'Semanu, Gunungkidul' };
     let contact = { address: 'Mojo RT 01 / RW 13, Ngeposari, Semanu, Gunungkidul, DIY 55893', phone: '0812-3456-7890', email: 'info@sdnngeposari2.sch.id' };
 
     try {

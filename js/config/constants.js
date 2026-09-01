@@ -57,7 +57,7 @@
         { title: 'Berprestasi', desc: 'Semangat belajar tinggi untuk meraih hasil terbaik.' },
         { title: 'Peduli Lingkungan', desc: 'Menjaga kebersihan dan kelestarian lingkungan sekolah.' }
       ],
-      logo: 'images/logo.png',
+      logo: 'images/logo.webp',
       hero: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&h=1000&fit=crop'
     },
     facilities: [

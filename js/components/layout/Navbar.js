@@ -10,7 +10,7 @@
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    const schoolProfile = profile || (root.SchoolDB ? root.SchoolDB.getProfile() : { name: 'SDN Ngeposari 2', tagline: 'Semanu, Gunungkidul', logo: 'images/logo.png' });
+    const schoolProfile = profile || (root.SchoolDB ? root.SchoolDB.getProfile() : { name: 'SDN Ngeposari 2', tagline: 'Semanu, Gunungkidul', logo: 'images/logo.webp' });
     const currentPath = window.location.pathname.toLowerCase().replace(/\/+$/, '') || '/';
     const lastSegment = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'index.html';
 
@@ -20,12 +20,12 @@
     const isKegiatan = lastSegment === 'kegiatan.html' || lastSegment === 'kegiatan' || lastSegment === 'detail-kegiatan.html' || lastSegment === 'detail-kegiatan' || currentPath.includes('kegiatan');
     const isKontak = lastSegment === 'kontak.html' || lastSegment === 'kontak' || currentPath.includes('kontak');
 
-    const logoSrc = schoolProfile.logo || 'images/logo.png';
+    const logoSrc = schoolProfile.logo || 'images/logo.webp';
 
     container.innerHTML = `
       <div class="header-container">
         <a href="index.html" class="logo-link">
-          <img src="${logoSrc}" alt="Logo ${schoolProfile.name}" class="logo-img" width="44" height="44" onerror="this.onerror=null;this.src='images/logo.png';">
+          <img src="${logoSrc}" alt="Logo ${schoolProfile.name}" class="logo-img" width="40" height="46" onerror="this.onerror=null;this.src='images/logo.png';">
           <div class="logo-text">
             <span class="logo-title">${schoolProfile.name}</span>
             <p>${schoolProfile.tagline}</p>

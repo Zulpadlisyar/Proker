@@ -600,15 +600,15 @@ body.hero-page header#main-header {
 
 /* Banner Highlight Section */
 .banner-highlight-section {
-  background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 60%, #0284C7 100%);
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
   border-radius: var(--radius-feature);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   padding: var(--space-6) var(--space-6) 0;
   max-width: 1280px;
   margin: 0 auto;
   box-sizing: border-box;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(29, 78, 216, 0.25);
+  box-shadow: 0 10px 30px rgba(33, 75, 49, 0.2);
   color: #FFFFFF;
 }
 
@@ -1569,7 +1569,7 @@ body.hero-page header#main-header {
 }
 
 .academic-date-block.theme-blue {
-  background: linear-gradient(135deg, var(--primary) 0%, #1E3A8A 100%);
+  background: linear-gradient(135deg, var(--color-blue) 0%, #295574 100%);
   color: #FFFFFF;
 }
 
@@ -1621,9 +1621,9 @@ body.hero-page header#main-header {
 }
 
 .academic-tag-badge.badge-akademik {
-  background-color: #EFF6FF;
-  color: #1D4ED8;
-  border: 1px solid #BFDBFE;
+  background-color: var(--color-blue-soft);
+  color: var(--color-blue);
+  border: 1px solid rgba(53, 107, 145, 0.25);
 }
 
 .academic-tag-badge.badge-ujian {
@@ -1898,89 +1898,99 @@ body.hero-page header#main-header {
   font-weight: 600;
 }
 
-/* Contact CTA Box - Split Full Width (Tepi Kiri & Tepi Kanan) */
+/* ==========================================================================
+   CONTACT CTA BOX (Master Prompt Section 28)
+   Clean, authentic editorial style with warm forest green & gold accents
+   ========================================================================== */
 .contact-cta-box {
-  background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 60%, #0284C7 100%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-feature);
-  padding: clamp(28px, 4vw, 48px) clamp(24px, 5vw, 56px);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: clamp(32px, 4vw, 48px) clamp(24px, 5vw, 48px);
   max-width: 1280px;
   width: 100%;
-  margin: 0 auto var(--space-7);
+  margin: 0 auto;
   box-sizing: border-box;
-  box-shadow: 0 10px 30px rgba(29, 78, 216, 0.25);
-  color: #FFFFFF;
+  box-shadow: 0 4px 24px rgba(20, 30, 20, 0.04);
+  color: var(--color-text);
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-cta-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-yellow) 100%);
 }
 
 .contact-cta-grid {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: clamp(24px, 4vw, 60px);
+  gap: clamp(24px, 4vw, 56px);
   width: 100%;
 }
 
 .contact-cta-left,
 .contact-cta-grid > div:first-child {
   flex: 1 1 520px;
-  max-width: 600px;
+  max-width: 620px;
   text-align: left;
 }
 
 .contact-cta-grid h2 {
   font-size: clamp(24px, 2.5vw, 32px);
   font-weight: 700;
-  color: #FFFFFF;
-  line-height: 1.2;
+  color: var(--color-text);
+  line-height: 1.25;
   margin-bottom: var(--space-2);
+  letter-spacing: -0.015em;
 }
 
 .contact-cta-grid p {
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.92);
-  line-height: 1.6;
+  font-size: 15.5px;
+  color: var(--color-text-muted);
+  line-height: 1.65;
   margin-bottom: var(--space-4);
 }
 
-.contact-cta-box .btn-primary {
-  background-color: #FFFFFF;
-  color: var(--primary);
-  border-color: #FFFFFF;
-  font-weight: 700;
-}
-
-.contact-cta-box .btn-primary:hover {
-  background-color: var(--accent-soft);
-  color: var(--primary-dark);
+.contact-cta-buttons {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
 }
 
 .contact-details-list {
   flex: 0 1 420px;
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
   margin-left: auto;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  background-color: #FFFFFF;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: var(--radius-card);
-  padding: 22px 26px;
+  background-color: var(--color-primary-tint);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 24px 28px;
   box-sizing: border-box;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 12px rgba(20, 30, 20, 0.03);
 }
 
 .contact-detail-row {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  font-size: 14px;
-  color: var(--text);
+  font-size: 14.5px;
+  color: var(--color-text);
   line-height: 1.5;
 }
 
 .contact-detail-row svg {
-  color: var(--primary);
+  color: var(--color-primary);
   flex-shrink: 0;
   margin-top: 3px;
 }
@@ -3629,7 +3639,7 @@ img.img-loaded {
   left: 0;
   width: 6px;
   height: 100%;
-  background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-yellow) 100%);
 }
 
 .principal-greeting-grid {

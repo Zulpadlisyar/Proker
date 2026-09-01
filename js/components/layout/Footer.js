@@ -20,7 +20,7 @@
     const schoolContact = contact || (root.SchoolDB ? root.SchoolDB.getContact() : {
       address: 'Mojo RT 01 / RW 13, Ngeposari, Semanu, Gunungkidul, DIY 55893',
       phone: '0812-3456-7890',
-      email: 'info@sdnngeposari2.sch.id'
+      email: 'sdngeposari2semanu@gmail.com'
     });
 
     const currentYear = new Date().getFullYear();

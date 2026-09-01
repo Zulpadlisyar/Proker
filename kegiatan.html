@@ -43,7 +43,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@1,400&display=swap">
-  <link rel="stylesheet" href="css/styles.css?v=4.8">
+  <link rel="stylesheet" href="css/styles.css?v=4.9">
 </head>
 <body class="sub-page">
 
@@ -126,8 +126,8 @@
     <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; margin-bottom: var(--space-4);">
       <div>
         <span class="section-label">JADWAL & AGENDA RESMI</span>
-        <h2 class="section-headline">Kalender Akademik & Agenda Tahunan</h2>
-        <p class="section-supporting" style="margin-bottom: 0;">Jadwal lengkap kegiatan belajar, asesmen, kepramukaan, dan hari libur sekolah tahun ajaran 2026/2027.</p>
+        <h2 class="section-headline">Kalender Akademik & Agenda Terdekat</h2>
+        <p class="section-supporting" style="margin-bottom: 0;">Jadwal penting kegiatan belajar, asesmen, kepramukaan, dan hari libur sekolah. Klik tombol <strong>+ Google Kalender</strong> pada setiap agenda untuk menyimpan pengingat otomatis ke perangkat Anda.</p>
       </div>
       <div>
         <span style="display: inline-flex; align-items: center; gap: 6px; background-color: var(--surface-alt); border: 1px solid var(--border); padding: 8px 16px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 700; color: var(--primary);">
@@ -139,7 +139,8 @@
     <!-- Calendar Semester Tabs & Search -->
     <div class="filter-search-container">
       <ul class="filter-tags-list" id="calendar-filter-tabs">
-        <li><button class="filter-tag-btn active" data-cal-filter="all">Semua Agenda</button></li>
+        <li><button class="filter-tag-btn active" data-cal-filter="nearest">⚡ 5 Terdekat</button></li>
+        <li><button class="filter-tag-btn" data-cal-filter="all">Semua Agenda</button></li>
         <li><button class="filter-tag-btn" data-cal-filter="gasal">Semester Gasal</button></li>
         <li><button class="filter-tag-btn" data-cal-filter="genap">Semester Genap</button></li>
         <li><button class="filter-tag-btn" data-cal-filter="ujian">Ujian & ANBK</button></li>
@@ -231,8 +232,8 @@
   <script src="js/components/public/FacilityCard.js?v=4.0"></script>
   <script src="js/components/public/TeacherCard.js?v=4.0"></script>
   <script src="js/components/public/GalleryCard.js?v=4.0"></script>
-  <script src="js/components/ui/Carousel.js?v=4.8"></script>
-  <script src="js/db.js?v=4.8"></script>
-  <script src="js/main.js?v=4.8"></script>
+  <script src="js/components/ui/Carousel.js?v=4.9"></script>
+  <script src="js/db.js?v=4.9"></script>
+  <script src="js/main.js?v=4.9"></script>
 </body>
 </html>

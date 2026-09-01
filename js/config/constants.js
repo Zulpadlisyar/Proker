@@ -182,24 +182,143 @@
     academicCalendar: [
       {
         id: 'cal-1',
-        date: '15',
-        month: 'SEP',
-        title: 'Asesmen Nasional Berbasis Komputer (ANBK)',
-        desc: 'Gladi bersih dan pelaksanaan ANBK kelas 5.'
+        date: '13-15',
+        month: 'JUL',
+        title: 'Masa Pengenalan Lingkungan Sekolah (MPLS) Ramah Anak',
+        desc: 'Pengenalan lingkungan belajar baru, pembiasaan budaya positif, dan adaptasi ramah anak bagi peserta didik baru kelas 1.',
+        category: 'Kegiatan',
+        semester: 'Gasal',
+        target: 'Kelas 1 & Siswa'
       },
       {
         id: 'cal-2',
-        date: '03',
-        month: 'OKT',
-        title: 'Perkemahan Sabtu Minggu (Persami) Pramuka',
-        desc: 'Kegiatan kepramukaan kemandirian dan keterampilan di bumi perkemahan.'
+        date: '17',
+        month: 'AGU',
+        title: 'Upacara HUT Kemerdekaan RI Ke-81 & Lomba Tradisional',
+        desc: 'Upacara bendera peringatan kemerdekaan Republik Indonesia dilanjutkan dengan lomba kreativitas dan kekompakan siswa.',
+        category: 'Kegiatan',
+        semester: 'Gasal',
+        target: 'Semua Siswa & Guru'
       },
       {
         id: 'cal-3',
-        date: '24',
+        date: '15-18',
+        month: 'SEP',
+        title: 'Asesmen Nasional Berbasis Komputer (ANBK)',
+        desc: 'Gladi bersih dan pelaksanaan asesmen kompetensi minimum (AKM) serta survei karakter peserta didik kelas 5 di Lab Komputer.',
+        category: 'Ujian',
+        semester: 'Gasal',
+        target: 'Siswa Kelas 5'
+      },
+      {
+        id: 'cal-4',
+        date: '03-04',
         month: 'OKT',
-        title: 'Penilaian Tengah Semester (PTS) Ganjil',
-        desc: 'Evaluasi belajar semester ganjil seluruh jenjang kelas 1-6.'
+        title: 'Perkemahan Sabtu Minggu (Persami) Pramuka',
+        desc: 'Kegiatan kepramukaan kemandirian, latihan simpul tali temali, api unggun, dan penjelajahan alam di bumi perkemahan.',
+        category: 'Kegiatan',
+        semester: 'Gasal',
+        target: 'Regu Penggalang'
+      },
+      {
+        id: 'cal-5',
+        date: '19-24',
+        month: 'OKT',
+        title: 'Penilaian Tengah Semester (PTS) Gasal',
+        desc: 'Evaluasi formatif dan asesmen sumatif tengah semester untuk mengukur capaian pembelajaran seluruh jenjang kelas 1-6.',
+        category: 'Ujian',
+        semester: 'Gasal',
+        target: 'Kelas 1 - 6'
+      },
+      {
+        id: 'cal-6',
+        date: '01-08',
+        month: 'DES',
+        title: 'Penilaian Akhir Semester (PAS) Gasal',
+        desc: 'Pelaksanaan asesmen sumatif akhir semester gasal tahun ajaran 2026/2027 untuk seluruh mata pelajaran.',
+        category: 'Ujian',
+        semester: 'Gasal',
+        target: 'Kelas 1 - 6'
+      },
+      {
+        id: 'cal-7',
+        date: '19',
+        month: 'DES',
+        title: 'Pembagian Rapor Semester Gasal & Sarasehan Wali Murid',
+        desc: 'Penyerahan laporan hasil belajar siswa semester gasal dan sarasehan evaluasi perkembangan anak bersama orang tua wali.',
+        category: 'Akademik',
+        semester: 'Gasal',
+        target: 'Orang Tua & Siswa'
+      },
+      {
+        id: 'cal-8',
+        date: '21-02',
+        month: 'DES',
+        title: 'Libur Akhir Semester Gasal & Tahun Baru',
+        desc: 'Masa libur pembelajaran akhir semester gasal dan libur pergantian tahun kalender sekolah.',
+        category: 'Libur',
+        semester: 'Gasal',
+        target: 'Seluruh Siswa'
+      },
+      {
+        id: 'cal-9',
+        date: '05',
+        month: 'JAN',
+        title: 'Hari Pertama Masuk Sekolah Semester Genap',
+        desc: 'Awal kegiatan belajar mengajar efektif semester genap tahun ajaran 2026/2027 dan penguatan komitmen belajar.',
+        category: 'Akademik',
+        semester: 'Genap',
+        target: 'Seluruh Siswa'
+      },
+      {
+        id: 'cal-10',
+        date: '18-20',
+        month: 'FEB',
+        title: 'Pekan Olahraga & Seni Antar Kelas (PORSENI)',
+        desc: 'Ajang kompetisi olahraga mini atletik, senam, tari tradisional, menggambar, dan menyanyi antar kelas.',
+        category: 'Kegiatan',
+        semester: 'Genap',
+        target: 'Kelas 1 - 6'
+      },
+      {
+        id: 'cal-11',
+        date: '08-13',
+        month: 'MAR',
+        title: 'Penilaian Tengah Semester (PTS) Genap',
+        desc: 'Asesmen sumatif tengah semester genap untuk memantau pemahaman materi pembelajaran para peserta didik.',
+        category: 'Ujian',
+        semester: 'Genap',
+        target: 'Kelas 1 - 6'
+      },
+      {
+        id: 'cal-12',
+        date: '04-09',
+        month: 'MEI',
+        title: 'Asesmen Akhir Jenjang Sekolah (Ujian Sekolah Kelas 6)',
+        desc: 'Pelaksanaan ujian sumatif kelulusan dan evaluasi capaian kompetensi akhir jenjang bagi siswa kelas 6.',
+        category: 'Ujian',
+        semester: 'Genap',
+        target: 'Siswa Kelas 6'
+      },
+      {
+        id: 'cal-13',
+        date: '08-13',
+        month: 'JUN',
+        title: 'Penilaian Akhir Tahun (PAT) Semester Genap',
+        desc: 'Asesmen sumatif akhir tahun ajaran sebagai dasar penentuan kenaikan kelas bagi peserta didik kelas 1 sampai kelas 5.',
+        category: 'Ujian',
+        semester: 'Genap',
+        target: 'Kelas 1 - 5'
+      },
+      {
+        id: 'cal-14',
+        date: '20',
+        month: 'JUN',
+        title: 'Penerimaan Rapor Kenaikan Kelas & Wisuda Kelas 6',
+        desc: 'Penyerahan laporan hasil belajar kenaikan kelas serta prosesi pelepasan siswa kelas 6 menuju jenjang SMP.',
+        category: 'Akademik',
+        semester: 'Genap',
+        target: 'Seluruh Warga Sekolah'
       }
     ],
     schoolHabits: [

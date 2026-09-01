@@ -474,6 +474,125 @@
       }
     }
 
+    // Render Full Academic Calendar Section
+    const fullCalendarContainer = document.getElementById('full-calendar-container');
+    const calendarFilterTabs = document.getElementById('calendar-filter-tabs');
+    const calendarSearchInput = document.getElementById('calendar-search-input');
+
+    if (fullCalendarContainer) {
+      const allCalendarEvents = (window.SchoolDB && window.SchoolDB.getCalendar()) || [];
+      let currentCalFilter = 'all';
+      let currentCalSearch = '';
+
+      function getCategoryMeta(cat, title) {
+        const c = ((cat || '') + ' ' + (title || '')).toLowerCase();
+        if (c.includes('ujian') || c.includes('anbk') || c.includes('pts') || c.includes('pas') || c.includes('pat') || c.includes('asesmen')) {
+          return { theme: 'theme-amber', badgeClass: 'badge-ujian', label: 'Ujian & Asesmen' };
+        }
+        if (c.includes('pramuka') || c.includes('mpls') || c.includes('porseni') || c.includes('lomba') || c.includes('kegiatan')) {
+          return { theme: 'theme-green', badgeClass: 'badge-kegiatan', label: 'Kegiatan & Lomba' };
+        }
+        if (c.includes('libur')) {
+          return { theme: 'theme-red', badgeClass: 'badge-libur', label: 'Hari Libur' };
+        }
+        return { theme: 'theme-blue', badgeClass: 'badge-akademik', label: 'Akademik' };
+      }
+
+      function applyCalendarFilter() {
+        let filtered = allCalendarEvents;
+
+        if (currentCalFilter !== 'all') {
+          filtered = filtered.filter(ev => {
+            const cat = (ev.category || '').toLowerCase();
+            const sem = (ev.semester || '').toLowerCase();
+            const title = (ev.title || '').toLowerCase();
+            const month = (ev.month || '').toLowerCase();
+
+            if (currentCalFilter === 'gasal' || currentCalFilter === 'ganjil') {
+              return sem.includes('gasal') || sem.includes('ganjil') || ['jul', 'agu', 'sep', 'okt', 'nov', 'des'].includes(month);
+            }
+            if (currentCalFilter === 'genap') {
+              return sem.includes('genap') || ['jan', 'feb', 'mar', 'apr', 'mei', 'jun'].includes(month);
+            }
+            if (currentCalFilter === 'ujian') {
+              return cat.includes('ujian') || title.includes('anbk') || title.includes('pts') || title.includes('pas') || title.includes('pat') || title.includes('asesmen');
+            }
+            if (currentCalFilter === 'kegiatan') {
+              return cat.includes('kegiatan') || title.includes('pramuka') || title.includes('mpls') || title.includes('porseni') || title.includes('lomba');
+            }
+            if (currentCalFilter === 'libur') {
+              return cat.includes('libur') || title.includes('libur');
+            }
+            return true;
+          });
+        }
+
+        if (currentCalSearch.trim() !== '') {
+          const q = currentCalSearch.toLowerCase().trim();
+          filtered = filtered.filter(ev => {
+            const str = ((ev.title || '') + ' ' + (ev.desc || ev.description || '') + ' ' + (ev.month || '') + ' ' + (ev.date || '') + ' ' + (ev.category || '')).toLowerCase();
+            return str.includes(q);
+          });
+        }
+
+        if (filtered.length === 0) {
+          fullCalendarContainer.innerHTML = window.SchoolEmptyState
+            ? window.SchoolEmptyState.createEmptyState({ title: 'Agenda tidak ditemukan', description: 'Tidak ada jadwal agenda yang cocok dengan filter atau kata kunci pencarian Anda.' })
+            : `<div style="grid-column: 1/-1; text-align:center; padding: 3rem 1.5rem; background-color: var(--surface); border-radius: var(--radius-card); border: 1px solid var(--border);"><p style="font-size:1rem; color:var(--text-muted);">Tidak ada agenda yang sesuai dengan filter pencarian.</p></div>`;
+          return;
+        }
+
+        fullCalendarContainer.innerHTML = filtered.map(ev => {
+          const meta = getCategoryMeta(ev.category, ev.title);
+          const semesterText = ev.semester ? `Semester ${ev.semester}` : (['JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'].includes((ev.month || '').toUpperCase()) ? 'Semester Gasal' : 'Semester Genap');
+          const targetText = ev.target || 'Semua Kelas';
+
+          return `
+            <div class="academic-card-full">
+              <div class="academic-card-header">
+                <div class="academic-date-block ${meta.theme}">
+                  <span class="month-txt">${ev.month || 'BLN'}</span>
+                  <span class="date-num">${ev.date || '01'}</span>
+                </div>
+                <div class="academic-card-meta">
+                  <span class="academic-tag-badge ${meta.badgeClass}">${ev.category || meta.label}</span>
+                  <h3 class="academic-card-title">${ev.title}</h3>
+                </div>
+              </div>
+              <p class="academic-card-body">${ev.desc || ev.description || 'Agenda pembelajaran, evaluasi capaian belajar, dan pembiasaan positif di SDN Ngeposari 2.'}</p>
+              <div class="academic-card-footer">
+                <span class="academic-target-pill">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  ${targetText}
+                </span>
+                <span class="academic-semester-label">${semesterText}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      if (calendarFilterTabs) {
+        calendarFilterTabs.querySelectorAll('.filter-tag-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            calendarFilterTabs.querySelectorAll('.filter-tag-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentCalFilter = btn.getAttribute('data-cal-filter') || 'all';
+            applyCalendarFilter();
+          });
+        });
+      }
+
+      if (calendarSearchInput) {
+        calendarSearchInput.addEventListener('input', (e) => {
+          currentCalSearch = e.target.value;
+          applyCalendarFilter();
+        });
+      }
+
+      applyCalendarFilter();
+    }
+
     // Tab switching
     const tabBtns = document.querySelectorAll('.tab-btn');
     tabBtns.forEach(btn => {

@@ -273,7 +273,8 @@ const INITIAL_DATA = (typeof window !== 'undefined' && window.SchoolConstants &&
         { id: 't9', name: 'Ibu Tri Wahyuni, S.Pd.I.', role: 'Guru Pendidikan Agama Islam', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=600&fit=crop' },
         { id: 't10', name: 'Bapak Danang Prasetyo', role: 'Tenaga Administrasi Sekolah (TU)', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&h=600&fit=crop' },
         { id: 't11', name: 'Bapak Sutrisno', role: 'Tenaga Kependidikan / Penjaga Sekolah', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&h=600&fit=crop' }
-      ]
+      ],
+      academicCalendar: (typeof window !== 'undefined' && window.SchoolConstants && window.SchoolConstants.INITIAL_DATA && window.SchoolConstants.INITIAL_DATA.academicCalendar) || []
     };
 
 // IndexedDB Helper class to handle rich uploads

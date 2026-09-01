@@ -121,7 +121,46 @@
 
   <div class="section-divider"></div>
 
-  <!-- 4. PHOTO GALLERY SECTION -->
+  <!-- 4. KALENDER AKADEMIK & AGENDA LENGKAP SEKOLAH -->
+  <section class="section" id="academic-calendar-page-sec">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; margin-bottom: var(--space-4);">
+      <div>
+        <span class="section-label">JADWAL & AGENDA RESMI</span>
+        <h2 class="section-headline">Kalender Akademik & Agenda Tahunan</h2>
+        <p class="section-supporting" style="margin-bottom: 0;">Jadwal lengkap kegiatan belajar, asesmen, kepramukaan, dan hari libur sekolah tahun ajaran 2026/2027.</p>
+      </div>
+      <div>
+        <span style="display: inline-flex; align-items: center; gap: 6px; background-color: var(--surface-alt); border: 1px solid var(--border); padding: 8px 16px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 700; color: var(--primary);">
+          📅 TA 2026 / 2027
+        </span>
+      </div>
+    </div>
+
+    <!-- Calendar Semester Tabs & Search -->
+    <div class="filter-search-container">
+      <ul class="filter-tags-list" id="calendar-filter-tabs">
+        <li><button class="filter-tag-btn active" data-cal-filter="all">Semua Agenda</button></li>
+        <li><button class="filter-tag-btn" data-cal-filter="gasal">Semester Gasal</button></li>
+        <li><button class="filter-tag-btn" data-cal-filter="genap">Semester Genap</button></li>
+        <li><button class="filter-tag-btn" data-cal-filter="ujian">Ujian & ANBK</button></li>
+        <li><button class="filter-tag-btn" data-cal-filter="kegiatan">Kegiatan & Pramuka</button></li>
+        <li><button class="filter-tag-btn" data-cal-filter="libur">Hari Libur</button></li>
+      </ul>
+      <div class="search-input-box">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="calendar-search-input" placeholder="Cari agenda atau bulan...">
+      </div>
+    </div>
+
+    <!-- Full Calendar Grid -->
+    <div class="full-calendar-timeline-container" id="full-calendar-container">
+      <!-- Mounted dynamically via JavaScript -->
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- 5. PHOTO GALLERY SECTION -->
   <section class="section" id="gallery-sec">
     <span class="section-label">DOKUMENTASI FOTO</span>
     <h2 class="section-headline">Galeri Momen Sekolah</h2>

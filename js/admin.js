@@ -3,6 +3,7 @@
 
 let tempLogoBase64 = null;
 let tempHeroBase64 = null;
+let tempPrincipalBase64 = null;
 let tempTeacherBase64 = null;
 let tempFacilityBase64 = null;
 let tempActivityBase64 = null;
@@ -608,17 +609,23 @@ function loadProfileForm() {
   setVal('profile-history', profile.history);
   setVal('profile-vision', profile.vision || '-');
   setVal('profile-missions', (profile.missions || []).join('\n'));
+  setVal('profile-principal-name', profile.principalName || 'Bapak Maryanto, M.Pd.');
+  setVal('profile-principal-role', profile.principalRole || 'Kepala Sekolah SD Negeri 2 Ngeposari');
+  setVal('profile-principal-greeting', profile.principalGreeting || '');
   
   const prevLogo = document.getElementById('preview-logo-img');
   const prevHero = document.getElementById('preview-hero-img');
+  const prevPrincipal = document.getElementById('preview-principal-img');
   if (prevLogo) prevLogo.src = profile.logo || '';
   if (prevHero) prevHero.src = profile.hero || '';
+  if (prevPrincipal) prevPrincipal.src = profile.principalImage || '';
   
   tempLogoBase64 = profile.logo;
   tempHeroBase64 = profile.hero;
+  tempPrincipalBase64 = profile.principalImage;
   
   // Attach dirty tracking
-  ['profile-name', 'profile-npsn', 'profile-nss', 'profile-akreditasi', 'profile-students', 'profile-classes', 'profile-tagline', 'profile-description', 'profile-history', 'profile-vision', 'profile-missions'].forEach(id => {
+  ['profile-name', 'profile-npsn', 'profile-nss', 'profile-akreditasi', 'profile-students', 'profile-classes', 'profile-tagline', 'profile-description', 'profile-history', 'profile-vision', 'profile-missions', 'profile-principal-name', 'profile-principal-role', 'profile-principal-greeting'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('input', markDirty);
   });
@@ -667,6 +674,7 @@ function hideCompressionBadge(badgeId) {
 // File Readers with Validation & Auto-Compression
 bindImageUploadHandler({ inputId: 'upload-logo-file', previewImgId: 'preview-logo-img', previewContainerId: 'preview-logo-container', badgeId: 'compression-badge-logo', maxWidth: 400, maxHeight: 400, onReady: url => { tempLogoBase64 = url; } });
 bindImageUploadHandler({ inputId: 'upload-hero-file', previewImgId: 'preview-hero-img', previewContainerId: 'preview-hero-container', badgeId: 'compression-badge-hero', maxWidth: 1400, maxHeight: 900, onReady: url => { tempHeroBase64 = url; } });
+bindImageUploadHandler({ inputId: 'upload-principal-file', previewImgId: 'preview-principal-img', previewContainerId: 'preview-principal-container', badgeId: 'compression-badge-principal', maxWidth: 600, maxHeight: 700, onReady: url => { tempPrincipalBase64 = url; } });
 
 // Submit Profile Form with Submit Lock
 const formEditProfile = document.getElementById('form-edit-profile');
@@ -692,6 +700,10 @@ if (formEditProfile) {
         .map(m => m.trim())
         .filter(m => m.length > 0);
       
+      const principalName = document.getElementById('profile-principal-name') ? document.getElementById('profile-principal-name').value.trim() : '';
+      const principalRole = document.getElementById('profile-principal-role') ? document.getElementById('profile-principal-role').value.trim() : '';
+      const principalGreeting = document.getElementById('profile-principal-greeting') ? document.getElementById('profile-principal-greeting').value.trim() : '';
+      
       await window.SchoolDB.updateProfile({
         name,
         npsn,
@@ -705,7 +717,11 @@ if (formEditProfile) {
         vision,
         missions,
         logo: tempLogoBase64,
-        hero: tempHeroBase64
+        hero: tempHeroBase64,
+        principalName,
+        principalRole,
+        principalGreeting,
+        principalImage: tempPrincipalBase64
       });
       
       clearDirty();

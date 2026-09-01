@@ -125,6 +125,35 @@
       heroSubtitle.textContent = profile.description;
     }
 
+    // Dynamic Principal Greeting (Sambutan Kepala Sekolah)
+    const principalImg = document.getElementById('principal-greeting-img');
+    const principalNameEl = document.getElementById('principal-greeting-name');
+    const principalRoleEl = document.getElementById('principal-greeting-role');
+    const principalSignNameEl = document.getElementById('principal-greeting-sign-name');
+    const principalTextEl = document.getElementById('principal-greeting-text');
+
+    if (profile.principalImage && principalImg) {
+      principalImg.src = profile.principalImage;
+      if (profile.principalName) principalImg.alt = `${profile.principalName} - Kepala Sekolah`;
+    }
+    if (profile.principalName) {
+      if (principalNameEl) principalNameEl.textContent = profile.principalName;
+      if (principalSignNameEl) principalSignNameEl.textContent = profile.principalName;
+    }
+    if (profile.principalRole && principalRoleEl) {
+      principalRoleEl.textContent = profile.principalRole;
+    }
+    if (profile.principalGreeting && principalTextEl) {
+      const paragraphs = profile.principalGreeting.split('\n\n').filter(p => p.trim().length > 0);
+      if (paragraphs.length > 0) {
+        principalTextEl.innerHTML = paragraphs.map((p, idx) => {
+          if (idx === 0) return `<p class="principal-lead-salutation"><strong>${p.trim()}</strong></p>`;
+          if (idx === paragraphs.length - 1) return `<p class="principal-closing-salutation">${p.trim()}</p>`;
+          return `<p>${p.trim()}</p>`;
+        }).join('');
+      }
+    }
+
     // Editorial News Grid
     const newsContainer = document.getElementById('news-editorial-grid') || document.getElementById('news-grid-container');
     if (newsContainer) {

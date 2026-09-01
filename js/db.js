@@ -852,7 +852,11 @@ window.SchoolDB = {
       vision: this.sanitizeText(profileData.vision || this.data.profile.vision),
       missions: Array.isArray(profileData.missions) ? profileData.missions.map(m => this.sanitizeText(m)) : this.data.profile.missions,
       logo: profileData.logo || this.data.profile.logo,
-      hero: profileData.hero || this.data.profile.hero
+      hero: profileData.hero || this.data.profile.hero,
+      principalName: this.sanitizeText(profileData.principalName || this.data.profile.principalName || 'Bapak Maryanto, M.Pd.'),
+      principalRole: this.sanitizeText(profileData.principalRole || this.data.profile.principalRole || 'Kepala Sekolah SD Negeri 2 Ngeposari'),
+      principalImage: profileData.principalImage || this.data.profile.principalImage || '',
+      principalGreeting: this.sanitizeText(profileData.principalGreeting !== undefined ? profileData.principalGreeting : (this.data.profile.principalGreeting || ''))
     };
 
     this.data.profile = { ...this.data.profile, ...sanitized };

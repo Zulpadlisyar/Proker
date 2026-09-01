@@ -3598,4 +3598,279 @@ img.img-loaded {
   border-color: #DC2626;
 }
 
+/* ====================================================
+   PRINCIPAL GREETING (SAMBUTAN KEPALA SEKOLAH)
+   ==================================================== */
+.principal-greeting-section {
+  padding-top: var(--space-7);
+  padding-bottom: var(--space-8);
+}
+
+.principal-greeting-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.principal-greeting-card {
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 44px 48px;
+  box-shadow: 0 4px 28px rgba(27, 77, 62, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.principal-greeting-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-accent) 100%);
+}
+
+.principal-greeting-grid {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+/* Left: Portrait */
+.principal-portrait-col {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.principal-portrait-frame {
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 4/5;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-primary-tint);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  position: relative;
+}
+
+.principal-portrait-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform 300ms var(--ease);
+}
+
+.principal-greeting-card:hover .principal-portrait-img {
+  transform: scale(1.02);
+}
+
+.principal-badge-overlay {
+  width: calc(100% - 24px);
+  margin-top: -34px;
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.principal-badge-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.principal-badge-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.principal-badge-text strong {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.principal-badge-text span {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Right: Editorial Content */
+.principal-content-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.principal-meta-pill {
+  margin-bottom: 8px;
+}
+
+.principal-headline {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.28;
+  margin: 6px 0 16px;
+  letter-spacing: -0.015em;
+}
+
+.principal-quote-wrap {
+  position: relative;
+  padding-left: 20px;
+  border-left: 3px solid var(--color-primary);
+  margin-bottom: 24px;
+}
+
+.principal-quote-mark {
+  position: absolute;
+  top: -12px;
+  left: -8px;
+  opacity: 0.12;
+  color: var(--color-primary);
+  pointer-events: none;
+}
+
+.principal-text-body p {
+  font-size: 15px;
+  color: var(--color-text-muted);
+  line-height: 1.68;
+  margin-bottom: 12px;
+}
+
+.principal-text-body p:last-child {
+  margin-bottom: 0;
+}
+
+.principal-lead-salutation strong {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.principal-closing-salutation {
+  font-style: italic;
+  color: var(--color-text) !important;
+}
+
+/* Signature Block & Actions */
+.principal-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+.principal-signature-block {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.principal-signature-pen {
+  font-family: 'Brush Script MT', 'Segoe Script', 'Caveat', cursive;
+  font-size: 32px;
+  color: var(--color-primary);
+  line-height: 1;
+  opacity: 0.85;
+  letter-spacing: 1px;
+}
+
+.principal-sign-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.principal-sign-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.principal-sign-title {
+  font-size: 12px;
+  color: var(--color-text-dim);
+}
+
+.principal-cta-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Responsive Styles */
+@media (max-width: 900px) {
+  .principal-greeting-card {
+    padding: 32px 24px;
+  }
+  .principal-greeting-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .principal-portrait-frame {
+    max-width: 280px;
+  }
+  .principal-badge-overlay {
+    max-width: 320px;
+  }
+  .principal-headline {
+    font-size: 22px;
+  }
+  .principal-footer-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .principal-cta-buttons {
+    width: 100%;
+  }
+  .principal-cta-buttons .btn {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .principal-greeting-container {
+    padding: 0 16px;
+  }
+  .principal-greeting-card {
+    padding: 24px 18px;
+  }
+  .principal-signature-block {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
+
 

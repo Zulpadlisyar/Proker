@@ -58,7 +58,11 @@
         { title: 'Peduli Lingkungan', desc: 'Menjaga kebersihan dan kelestarian lingkungan sekolah.' }
       ],
       logo: 'images/logo.webp',
-      hero: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&h=1000&fit=crop'
+      hero: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&h=1000&fit=crop',
+      principalName: 'Bapak Maryanto, M.Pd.',
+      principalRole: 'Kepala Sekolah SD Negeri 2 Ngeposari',
+      principalImage: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=600&h=700&fit=crop',
+      principalGreeting: "Assalamu’alaikum Warahmatullahi Wabarakatuh, Salam Sejahtera bagi Kita Semua.\n\nPuji syukur kita panjatkan ke hadirat Tuhan Yang Maha Esa atas limpahan rahmat dan karunia-Nya. Selamat datang di portal informasi resmi SD Negeri 2 Ngeposari, Kapanewon Semanu, Kabupaten Gunungkidul. Website ini kami hadirkan sebagai jendela keterbukaan informasi, media komunikasi yang hangat, dan sarana silaturahmi antara sekolah, orang tua wali, serta masyarakat luas.\n\nKami meyakini bahwa setiap anak yang melangkah masuk ke gerbang sekolah ini membawa benih potensi dan mimpi yang berharga. Di lingkungan yang asri dan teduh ini, para pendidik berkomitmen mendampingi siswa dengan penuh kesabaran, memadukan pembelajaran bermakna Kurikulum Merdeka, pembiasaan budi pekerti luhur Pancasila, serta kecintaan terhadap kelestarian lingkungan hidup.\n\nMari bersama-sama bergandeng tangan membimbing putra-putri kita menyongsong masa depan yang cerah, cerdas, dan berkarakter mulia."
     },
     facilities: [
       {

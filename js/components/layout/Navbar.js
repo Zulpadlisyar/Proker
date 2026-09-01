@@ -43,8 +43,6 @@
             </ul>
           </nav>
 
-          <a href="kontak.html" class="header-cta-btn header-cta-desktop" style="display: inline-flex;">Hubungi Kami</a>
-
           <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Menu">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="4" y1="12" x2="20" y2="12"></line>

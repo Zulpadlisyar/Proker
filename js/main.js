@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  // 2. Toast / Notification Primitive
+  // 2. Toast / Notification Primitive (Auto-dismisses in 3 seconds)
   function showToast(message, type = 'success') {
     let container = document.getElementById('toast-container');
     if (!container) {
@@ -21,10 +21,19 @@
     toast.innerHTML = `<span>${message}</span>`;
     container.appendChild(toast);
 
-    setTimeout(() => {
-      toast.style.animation = 'fadeOut 220ms forwards';
-      toast.addEventListener('animationend', () => toast.remove());
-    }, 3000);
+    let isRemoved = false;
+    const removeToast = () => {
+      if (isRemoved) return;
+      isRemoved = true;
+      toast.style.transition = 'opacity 250ms ease, transform 250ms ease';
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(-10px)';
+      setTimeout(() => {
+        if (toast.parentNode) toast.remove();
+      }, 260);
+    };
+
+    setTimeout(removeToast, 3000);
   }
 
   // 3. Dialog Modal Helper
@@ -587,8 +596,8 @@
     if (catDateEl) {
       const formattedDate = act.date ? new Date(act.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase() : 'TERBARU';
       const category = (act.category || 'KEGIATAN').toUpperCase();
-      const viewsText = typeof act.views === 'number' ? ` • ${act.views} pembaca` : '';
-      catDateEl.innerHTML = `<span style="color:var(--primary); font-weight:700;">${category}</span> • ${formattedDate}${viewsText}`;
+      const viewsCount = typeof act.views === 'number' ? act.views : 0;
+      catDateEl.innerHTML = `<span style="color:var(--primary); font-weight:700;">${category}</span> • ${formattedDate} • ${viewsCount} pembaca`;
     }
     if (imgEl && act.image) {
       imgEl.src = act.image;
@@ -831,6 +840,20 @@
     initHeaderScrollBehavior();
     initGSAPAnimations();
     renderWhatsAppFloatingButton();
+  });
+
+  // Track clicks on "Baca selengkapnya" to ensure immediate view counting
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href*="detail-kegiatan.html"]');
+    if (link && window.SchoolDB && typeof window.SchoolDB.incrementActivityViews === 'function') {
+      try {
+        const url = new URL(link.href, window.location.origin);
+        const id = url.searchParams.get('id');
+        if (id) {
+          window.SchoolDB.incrementActivityViews(id);
+        }
+      } catch (err) {}
+    }
   });
 
   // Listen to Cloud Sync / Backup Import updates

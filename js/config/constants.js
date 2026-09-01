@@ -104,7 +104,7 @@
         title: 'Upacara bendera senin dan latihan pramuka',
         date: '2026-08-17',
         category: 'Kepramukaan',
-        views: 248,
+        views: 0,
         excerpt: 'Kegiatan rutin mingguan untuk meningkatkan kedisiplinan dan jiwa nasionalisme siswa.',
         content: 'Setiap hari Senin pagi, seluruh siswa dan guru melaksanakan Upacara Bendera dengan khidmat. Setelah itu, kegiatan dilanjutkan dengan latihan Pramuka pada sore harinya untuk melatih kemandirian, gotong royong, dan keterampilan dasar kepramukaan.',
         image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=960&h=540&fit=crop'
@@ -114,7 +114,7 @@
         title: 'Lomba menulis kreatif dan mewarnai',
         date: '2026-08-10',
         category: 'Prestasi',
-        views: 185,
+        views: 0,
         excerpt: 'Wadah bagi siswa untuk menyalurkan bakat seni rupa, menulis indah, dan menuangkan imajinasi mereka.',
         content: 'Dalam rangka memperingati bulan bahasa, SDN Ngeposari 2 menyelenggarakan lomba menulis kreatif dan mewarnai tingkat kelas. Kegiatan ini bertujuan merangsang motorik halus serta imajinasi kreatif anak sejak usia dini.',
         image: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=960&h=540&fit=crop'
@@ -124,7 +124,7 @@
         title: 'Kerja bakti gerakan sekolah hijau',
         date: '2026-08-05',
         category: 'Sosial & Lingkungan',
-        views: 312,
+        views: 0,
         excerpt: 'Aksi peduli lingkungan bersama guru dan siswa menjaga kebersihan serta menanam pohon di sekolah.',
         content: 'Sebagai sekolah yang berbudaya lingkungan, SDN Ngeposari 2 mengadakan kerja bakti bulanan. Siswa diajarkan memilah sampah organik dan non-organik, serta melakukan penanaman bibit tanaman hias dan apotek hidup di area taman sekolah.',
         image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=960&h=540&fit=crop'

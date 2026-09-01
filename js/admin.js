@@ -125,7 +125,7 @@ function showAdminToast(message, type = 'success', title = '') {
     closeBtn.addEventListener('click', removeToast);
   }
   
-  setTimeout(removeToast, 3500);
+  setTimeout(removeToast, 3000);
 }
 
 // Button Submitting State Manager (Anti-Spam / Anti-Duplicate Click)

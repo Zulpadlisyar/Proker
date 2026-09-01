@@ -33,7 +33,7 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
               <span class="news-date">${activity.date ? formattedDate.toUpperCase() : 'TERBARU'}</span>
               <span style="font-size:0.78rem; color:var(--text-muted); display:inline-flex; align-items:center; gap:4px;" title="${views} kali dibaca">
-                ${eyeIconSvg} ${views}
+                ${eyeIconSvg} <span>${views} pembaca</span>
               </span>
             </div>
             <h3 class="news-title">${activity.title}</h3>
@@ -54,7 +54,7 @@
           <div class="news-meta-row" style="display:flex; justify-content:space-between; align-items:center;">
             <span>${formattedDate}</span>
             <span style="display:inline-flex; align-items:center; gap:4px; font-size:0.78rem; color:var(--text-muted);" title="${views} kali dibaca">
-              ${eyeIconSvg} ${views}
+              ${eyeIconSvg} <span>${views} pembaca</span>
             </span>
           </div>
           <h3 class="news-title">${activity.title}</h3>

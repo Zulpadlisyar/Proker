@@ -595,6 +595,19 @@ window.SchoolDB = {
         if (!Array.isArray(this.data.inquiries)) this.data.inquiries = JSON.parse(JSON.stringify(INITIAL_DATA.inquiries || []));
         if (!Array.isArray(this.data.categories)) this.data.categories = (INITIAL_DATA.categories ? [...INITIAL_DATA.categories] : ['Akademik', 'Kepramukaan', 'Ekstrakurikuler', 'Prestasi', 'Sosial & Lingkungan', 'Umum']);
         if (!Array.isArray(this.data.auditLogs)) this.data.auditLogs = [];
+        
+        // Ensure activities views reset to 0 per user requirement
+        if (!this.data._viewsResetV5) {
+          if (Array.isArray(this.data.activities)) {
+            this.data.activities.forEach(a => {
+              if (a.views === 248 || a.views === 185 || a.views === 312 || typeof a.views !== 'number') {
+                a.views = 0;
+              }
+            });
+          }
+          this.data._viewsResetV5 = true;
+        }
+        
         await this.save();
       }
 
@@ -802,13 +815,16 @@ window.SchoolDB = {
     const act = this.data.activities.find(a => String(a.id) === String(id));
     if (!act) return 0;
 
-    const viewedKey = `viewed_act_${id}`;
+    const now = Date.now();
+    const lastViewKey = `last_view_ts_${id}`;
     try {
       if (typeof sessionStorage !== 'undefined') {
-        if (sessionStorage.getItem(viewedKey)) {
+        const lastView = parseInt(sessionStorage.getItem(lastViewKey) || '0', 10);
+        // 1.5s debounce to prevent rapid double-clicks while allowing genuine user clicks to count
+        if (now - lastView < 1500) {
           return typeof act.views === 'number' ? act.views : 0;
         }
-        sessionStorage.setItem(viewedKey, 'true');
+        sessionStorage.setItem(lastViewKey, String(now));
       }
     } catch (e) {}
 

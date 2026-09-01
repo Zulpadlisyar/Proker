@@ -63,7 +63,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@1,400&display=swap">
-  <link rel="stylesheet" href="css/styles.css?v=4.7">
+  <link rel="stylesheet" href="css/styles.css?v=4.8">
 </head>
 <body class="sub-page">
 
@@ -93,9 +93,9 @@
           <div class="contact-item-card">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-              <strong style="font-size: 15px; color: var(--text);">Alamat Sekolah</strong>
+              <strong style="font-size: 15px; color: var(--text);">Alamat Lengkap Sekolah</strong>
             </div>
-            <span id="contact-address-val" style="font-size: 14.5px; color: var(--text-muted); line-height: 1.6;">Mojo RT 01 / RW 13, Ngeposari, Semanu, Gunungkidul, DIY 55893</span>
+            <span id="contact-address-val" style="font-size: 14.5px; color: var(--text-muted); line-height: 1.6;">Mojo RT 01/RW13, Ngeposari, Semanu, Gunungkidul, DI Yogyakarta, 55893</span>
           </div>
 
           <div class="contact-item-card">
@@ -103,15 +103,41 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
               <strong style="font-size: 15px; color: var(--text);">Telepon / WhatsApp</strong>
             </div>
-            <span id="contact-phone-val" style="font-size: 14.5px; color: var(--text-muted); line-height: 1.6;">0812-3456-7890</span>
+            <a href="tel:081234567890" style="text-decoration: none; color: inherit;">
+              <span id="contact-phone-val" style="font-size: 14.5px; color: var(--text-muted); line-height: 1.6;">0812-3456-7890</span>
+            </a>
           </div>
 
           <div class="contact-item-card">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-              <strong style="font-size: 15px; color: var(--text);">Email Resmi</strong>
+              <strong style="font-size: 15px; color: var(--text);">Email Resmi Sekolah</strong>
             </div>
-            <span id="contact-email-val" style="font-size: 14.5px; color: var(--text-muted); line-height: 1.6;">info@sdnngeposari2.sch.id</span>
+            <a id="contact-email-link" href="mailto:sdngeposari2semanu@gmail.com" style="color: var(--primary); font-weight: 600; text-decoration: none; word-break: break-all;">
+              <span id="contact-email-val" style="font-size: 14.5px; line-height: 1.6;">sdngeposari2semanu@gmail.com</span>
+            </a>
+          </div>
+
+          <!-- Social Media Channels Card -->
+          <div class="contact-item-card" style="border-left: 3px solid var(--primary);">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              <strong style="font-size: 15px; color: var(--text);">Kanal Media Sosial Resmi</strong>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px; font-size: 14px;">
+              <a id="contact-instagram-link" href="https://www.instagram.com/snada_02" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; padding: 6px 10px; border-radius: var(--radius-sm); background: var(--bg); transition: background 200ms ease;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#E1306C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                <span><strong>Instagram:</strong> <span id="contact-instagram-val">@snada_02</span></span>
+              </a>
+              <a id="contact-facebook-link" href="https://www.facebook.com/search/top?q=SD%20Ngeposari%20II" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; padding: 6px 10px; border-radius: var(--radius-sm); background: var(--bg); transition: background 200ms ease;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1877F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                <span><strong>Facebook:</strong> <span id="contact-facebook-val">SD Ngeposari II</span></span>
+              </a>
+              <a id="contact-youtube-link" href="https://www.youtube.com/@sdngeposari2" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; padding: 6px 10px; border-radius: var(--radius-sm); background: var(--bg); transition: background 200ms ease;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FF0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><polygon points="10 15 15 12 10 9 10 15"/></svg>
+                <span><strong>YouTube:</strong> <span id="contact-youtube-val">Sdngeposari2</span></span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -124,7 +150,14 @@
         </div>
 
         <div class="contact-map-wrapper">
-          <iframe id="contact-map-frame" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3950.563823439498!2d110.6473063!3d-7.9734185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a372132eb2c0b%3A0xc48cd4d0ee0ca2df!2sSD%20Negeri%202%20Ngeposari!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid" title="Lokasi Google Maps SDN 2 Ngeposari" allowfullscreen="" loading="lazy"></iframe>
+          <iframe id="contact-map-frame" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3950.563823439498!2d110.6473063!3d-7.9734185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7bb5cc01b87119%3A0x75e6f3182387f509!2sSD%20Negeri%20Ngeposari%20II!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid" title="Lokasi Google Maps SD Negeri Ngeposari II" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+        <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <span style="font-size: 13px; color: var(--text-muted);">Titik Gerbang: SD Negeri Ngeposari II</span>
+          <a id="contact-maps-btn" href="https://maps.app.goo.gl/y3Gzega74NqFi9N58" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="font-size: 13.5px; padding: 8px 18px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            <span>Buka di Google Maps</span>
+          </a>
         </div>
       </div>
     </div>
@@ -181,19 +214,19 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <!-- Modular Architecture Bundles -->
-  <script src="js/config/constants.js?v=4.7"></script>
-  <script src="js/utils/formatters.js?v=4.7"></script>
-  <script src="js/utils/guards.js?v=4.7"></script>
-  <script src="js/components/common/EmptyState.js?v=4.7"></script>
-  <script src="js/components/common/Skeleton.js?v=4.7"></script>
-  <script src="js/components/layout/Navbar.js?v=4.7"></script>
-  <script src="js/components/layout/Footer.js?v=4.7"></script>
-  <script src="js/components/public/ActivityCard.js?v=4.7"></script>
-  <script src="js/components/public/FacilityCard.js?v=4.7"></script>
-  <script src="js/components/public/TeacherCard.js?v=4.7"></script>
-  <script src="js/components/public/GalleryCard.js?v=4.7"></script>
-  <script src="js/components/ui/Carousel.js?v=4.7"></script>
-  <script src="js/db.js?v=4.7"></script>
-  <script src="js/main.js?v=4.7"></script>
+  <script src="js/config/constants.js?v=4.8"></script>
+  <script src="js/utils/formatters.js?v=4.8"></script>
+  <script src="js/utils/guards.js?v=4.8"></script>
+  <script src="js/components/common/EmptyState.js?v=4.8"></script>
+  <script src="js/components/common/Skeleton.js?v=4.8"></script>
+  <script src="js/components/layout/Navbar.js?v=4.8"></script>
+  <script src="js/components/layout/Footer.js?v=4.8"></script>
+  <script src="js/components/public/ActivityCard.js?v=4.8"></script>
+  <script src="js/components/public/FacilityCard.js?v=4.8"></script>
+  <script src="js/components/public/TeacherCard.js?v=4.8"></script>
+  <script src="js/components/public/GalleryCard.js?v=4.8"></script>
+  <script src="js/components/ui/Carousel.js?v=4.8"></script>
+  <script src="js/db.js?v=4.8"></script>
+  <script src="js/main.js?v=4.8"></script>
 </body>
 </html>

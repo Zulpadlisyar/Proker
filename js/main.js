@@ -693,8 +693,46 @@
 
     if (addrEl && contact.address) addrEl.textContent = contact.address;
     if (phoneEl && contact.phone) phoneEl.textContent = contact.phone;
-    if (emailEl && contact.email) emailEl.textContent = contact.email;
+    if (emailEl && contact.email) {
+      emailEl.textContent = contact.email;
+      const emailLink = document.getElementById('contact-email-link');
+      if (emailLink) emailLink.href = `mailto:${contact.email}`;
+    }
     if (mapFrame && contact.maps) mapFrame.src = contact.maps;
+    const mapBtn = document.getElementById('contact-maps-btn');
+    if (mapBtn) {
+      mapBtn.href = contact.mapsUrl || 'https://maps.app.goo.gl/y3Gzega74NqFi9N58';
+    }
+
+    // Dynamic Social Media Links
+    const igVal = document.getElementById('contact-instagram-val');
+    const igLink = document.getElementById('contact-instagram-link');
+    if (igVal && contact.instagram) {
+      igVal.textContent = contact.instagram.startsWith('@') ? contact.instagram : '@' + contact.instagram;
+      if (igLink) {
+        const cleanIg = contact.instagram.replace(/^@/, '');
+        igLink.href = contact.instagramUrl || `https://www.instagram.com/${cleanIg}`;
+      }
+    }
+
+    const fbVal = document.getElementById('contact-facebook-val');
+    const fbLink = document.getElementById('contact-facebook-link');
+    if (fbVal && contact.facebook) {
+      fbVal.textContent = contact.facebook;
+      if (fbLink) {
+        fbLink.href = contact.facebookUrl || `https://www.facebook.com/search/top?q=${encodeURIComponent(contact.facebook)}`;
+      }
+    }
+
+    const ytVal = document.getElementById('contact-youtube-val');
+    const ytLink = document.getElementById('contact-youtube-link');
+    if (ytVal && contact.youtube) {
+      ytVal.textContent = contact.youtube;
+      if (ytLink) {
+        const cleanYt = contact.youtube.startsWith('@') ? contact.youtube : '@' + contact.youtube;
+        ytLink.href = contact.youtubeUrl || `https://www.youtube.com/${cleanYt}`;
+      }
+    }
 
     const contactForm = document.getElementById('contact-form');
     if (contactForm) {

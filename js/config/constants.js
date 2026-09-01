@@ -135,13 +135,17 @@
       { id: 'g6', caption: 'Kerja bakti taman dan tanaman apotek hidup', image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&h=600&fit=crop' }
     ],
     contact: {
-      address: 'Mojo RT 01 / RW 13, Ngeposari, Semanu, Kabupaten Gunungkidul, Daerah Istimewa Yogyakarta 55893',
-      phone: '081234567890',
-      email: 'info@sdnngeposari2.sch.id',
-      maps: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3950.563823439498!2d110.6473063!3d-7.9734185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a372132eb2c0b%3A0xc48cd4d0ee0ca2df!2sSD%20Negeri%202%20Ngeposari!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid',
-      facebook: 'SDN Ngeposari 2',
-      instagram: 'sdnngeposari2',
-      youtube: 'SDN Ngeposari 2 Official'
+      address: 'Mojo RT 01/RW13, Ngeposari, Semanu, Gunungkidul, DI Yogyakarta, 55893',
+      phone: '0812-3456-7890',
+      email: 'sdngeposari2semanu@gmail.com',
+      maps: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3950.563823439498!2d110.6473063!3d-7.9734185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7bb5cc01b87119%3A0x75e6f3182387f509!2sSD%20Negeri%20Ngeposari%20II!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid',
+      mapsUrl: 'https://maps.app.goo.gl/y3Gzega74NqFi9N58',
+      facebook: 'SD Ngeposari II',
+      facebookUrl: 'https://www.facebook.com/search/top?q=SD%20Ngeposari%20II',
+      instagram: '@snada_02',
+      instagramUrl: 'https://www.instagram.com/snada_02',
+      youtube: 'Sdngeposari2',
+      youtubeUrl: 'https://www.youtube.com/@sdngeposari2'
     },
     teachers: [
       { id: 't1', name: 'Bapak Maryanto, M.Pd.', role: 'Kepala Sekolah', image: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=600&h=600&fit=crop' },

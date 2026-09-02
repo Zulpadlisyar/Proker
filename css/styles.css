@@ -3729,6 +3729,12 @@ textarea.form-control {
   color: #92400E;
 }
 
+.audit-badge-baseline {
+  background-color: #ECFDF5;
+  color: #065F46;
+  border: 1px solid rgba(47, 107, 69, 0.25);
+}
+
 .audit-detail {
   color: var(--text);
   font-weight: 500;

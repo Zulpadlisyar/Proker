@@ -742,21 +742,120 @@ window.SchoolDB = {
     return true;
   },
 
-  async reset() {
-    this.data = JSON.parse(JSON.stringify(INITIAL_DATA));
+  async saveResetBaseline() {
+    if (!this.data) return { success: false, error: 'Database belum diinisialisasi' };
+    try {
+      const baselineData = JSON.parse(JSON.stringify(this.data));
+      // Exclude temporary logs from baseline snapshot
+      delete baselineData.auditLogs;
+
+      const meta = {
+        timestamp: new Date().toISOString(),
+        totalActivities: Array.isArray(baselineData.activities) ? baselineData.activities.length : 0,
+        totalGallery: Array.isArray(baselineData.gallery) ? baselineData.gallery.length : 0,
+        totalFacilities: Array.isArray(baselineData.facilities) ? baselineData.facilities.length : 0,
+        totalTeachers: Array.isArray(baselineData.teachers) ? baselineData.teachers.length : 0,
+        totalCalendar: Array.isArray(baselineData.academicCalendar) ? baselineData.academicCalendar.length : 0,
+        schoolName: baselineData.profile ? baselineData.profile.name : 'SDN Ngeposari 2'
+      };
+
+      const payload = {
+        meta,
+        data: baselineData
+      };
+
+      if (idbStore) {
+        await idbStore.set('resetBaseline', payload);
+      }
+      try {
+        localStorage.setItem('sdn2_reset_baseline_meta', JSON.stringify(meta));
+        localStorage.setItem('sdn2_reset_baseline', JSON.stringify(baselineData));
+      } catch (e) {
+        console.warn('localStorage quota warning when caching baseline, IndexedDB remains active:', e);
+      }
+
+      await this.logAudit('BASELINE', 'Sistem', `Memperbarui titik reset baseline dengan ${meta.totalActivities} kegiatan dan ${meta.totalGallery} foto dokumentasi`);
+      return { success: true, meta };
+    } catch (err) {
+      console.error('Error saving reset baseline:', err);
+      return { success: false, error: err.message };
+    }
+  },
+
+  async getResetBaselineInfo() {
+    try {
+      let payload = null;
+      if (idbStore) {
+        payload = await idbStore.get('resetBaseline');
+      }
+      if (!payload) {
+        const raw = localStorage.getItem('sdn2_reset_baseline');
+        const rawMeta = localStorage.getItem('sdn2_reset_baseline_meta');
+        if (raw) {
+          try {
+            payload = {
+              meta: rawMeta ? JSON.parse(rawMeta) : null,
+              data: JSON.parse(raw)
+            };
+          } catch (e) {}
+        }
+      }
+      return payload && payload.meta ? payload.meta : null;
+    } catch (e) {
+      return null;
+    }
+  },
+
+  async reset(toFactoryDefault = false) {
+    let targetData = null;
+    let detailMsg = '';
+    let isCustomBaseline = false;
+
+    if (!toFactoryDefault) {
+      // Check if custom baseline exists
+      let customPayload = null;
+      if (idbStore) {
+        customPayload = await idbStore.get('resetBaseline');
+      }
+      if (!customPayload) {
+        const raw = localStorage.getItem('sdn2_reset_baseline');
+        if (raw) {
+          try {
+            customPayload = { data: JSON.parse(raw) };
+          } catch (e) {}
+        }
+      }
+
+      if (customPayload && customPayload.data) {
+        targetData = JSON.parse(JSON.stringify(customPayload.data));
+        detailMsg = 'Mereset database ke titik simpan baseline sekolah (seluruh kegiatan dan aset kustom terjaga)';
+        isCustomBaseline = true;
+      }
+    }
+
+    if (!targetData) {
+      targetData = JSON.parse(JSON.stringify(INITIAL_DATA));
+      detailMsg = 'Mereset database ke data awal bawaan sistem';
+    }
+
+    this.data = targetData;
     this.data.auditLogs = [
       {
         id: 'log_' + Date.now(),
         timestamp: new Date().toISOString(),
         action: 'RESET',
         entity: 'Sistem',
-        detail: 'Mereset seluruh database ke pengaturan awal',
+        detail: detailMsg,
         user: 'Administrator'
       }
     ];
+
     await this.save();
-    console.log('Database has been reset to defaults.');
-    return this.data;
+    console.log('[SchoolDB] Database reset completed:', detailMsg);
+    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+      window.dispatchEvent(new CustomEvent('schooldb-synced', { detail: this.data }));
+    }
+    return { data: this.data, isCustomBaseline };
   },
 
   // GETTERS

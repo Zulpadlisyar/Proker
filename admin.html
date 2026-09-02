@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="css/styles.css?v=5.4">
+  <link rel="stylesheet" href="css/styles.css?v=5.5">
   
   <!-- Firebase SDK App & Firestore Compat -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -191,8 +191,33 @@
             <p style="margin-bottom: var(--space-4);"><strong>Slogan / Tagline:</strong> <span id="dash-school-tagline"></span></p>
             <p style="color:var(--text-muted); font-size:0.95rem;">Gunakan bilah navigasi samping untuk mengedit detail profil, mengunggah media, menambahkan data guru & staf, menambahkan kegiatan terbaru, atau mengubah kontak resmi sekolah.</p>
             
-            <div style="margin-top: var(--space-6); border-top: 1px solid var(--border); padding-top: var(--space-5);">
-              <button id="admin-reset-db-btn" class="btn btn-secondary" style="border-color: var(--error); color: var(--error); font-size: 0.9rem;">Reset Seluruh Database ke Bawaan</button>
+            <!-- Baseline & Reset Management Box -->
+            <div style="margin-top: var(--space-6); border-top: 1px solid var(--border); padding-top: var(--space-5); background: var(--surface-alt); padding: 18px 20px; border-radius: var(--radius-card); border: 1px solid var(--border);">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                <div>
+                  <h4 style="font-size: 1rem; font-weight: 700; color: var(--primary); margin: 0 0 4px;">Titik Pemulihan Database (Reset Baseline)</h4>
+                  <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0; line-height: 1.5;">
+                    Simpan kondisi saat ini setelah menambahkan banyak kegiatan &amp; aset sekolah. Jika sewaktu-waktu dilakukan reset, seluruh kegiatan dan foto yang sudah disimpan <strong>tidak akan hilang</strong>.
+                  </p>
+                </div>
+              </div>
+              <div style="font-size: 0.84rem; margin-bottom: 14px; padding: 6px 12px; background: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-sm); display: inline-flex; align-items: center; gap: 8px;">
+                <span style="color: var(--text-muted);">Status Titik Reset:</span>
+                <span id="dash-reset-baseline-status" style="font-weight: 600; color: var(--primary);">Memeriksa...</span>
+              </div>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                <button type="button" id="admin-update-baseline-btn" class="btn btn-primary" style="font-size: 0.88rem; height: 38px; padding: 0 16px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                  <span>Simpan Data &amp; Aset Saat Ini Sebagai Titik Reset</span>
+                </button>
+                <button type="button" id="admin-reset-db-btn" class="btn btn-secondary" style="border-color: var(--primary); color: var(--primary); font-size: 0.88rem; height: 38px; padding: 0 16px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                  <span>Pulihkan ke Titik Reset Terakhir</span>
+                </button>
+                <button type="button" id="admin-reset-factory-btn" class="btn btn-secondary" style="border-color: var(--error); color: var(--error); font-size: 0.82rem; height: 38px; padding: 0 14px; margin-left: auto;">
+                  <span>Reset Bawaan Pabrik</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -744,8 +769,33 @@
               </div>
             </form>
 
+            <!-- Baseline & Reset Protection Section -->
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--primary); margin: 32px 0 16px; border-top: 1px solid var(--border); padding-top: 20px;">Titik Pemulihan Database (Update Baseline Reset)</h3>
+            <div style="background: var(--surface-alt); padding: 18px 20px; border-radius: var(--radius-card); border: 1px solid var(--border); margin-bottom: 24px;">
+              <p style="font-size: 0.88rem; color: var(--text-muted); margin: 0 0 12px; line-height: 1.6;">
+                Fitur ini dirancang khusus agar saat sekolah telah menambahkan banyak kegiatan, foto dokumentasi, dan aset fasilitas, data tersebut dapat disimpan menjadi <strong>Titik Reset Resmi Sekolah</strong>. Jika sewaktu-waktu dilakukan reset, semua kegiatan &amp; aset yang sudah ditambahkan tidak akan hilang dan akan kembali ke titik ini.
+              </p>
+              <div style="font-size: 0.84rem; margin-bottom: 14px; padding: 6px 12px; background: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-sm); display: inline-flex; align-items: center; gap: 8px;">
+                <span style="color: var(--text-muted);">Status Titik Reset:</span>
+                <span id="settings-reset-baseline-status" style="font-weight: 600; color: var(--primary);">Memeriksa...</span>
+              </div>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                <button type="button" id="settings-update-baseline-btn" class="btn btn-primary" style="font-size: 0.88rem; height: 38px; padding: 0 16px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                  <span>Simpan Data &amp; Aset Saat Ini Sebagai Titik Reset</span>
+                </button>
+                <button type="button" id="settings-reset-db-btn" class="btn btn-secondary" style="border-color: var(--primary); color: var(--primary); font-size: 0.88rem; height: 38px; padding: 0 16px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                  <span>Pulihkan ke Titik Reset Terakhir</span>
+                </button>
+                <button type="button" id="settings-reset-factory-btn" class="btn btn-secondary" style="border-color: var(--error); color: var(--error); font-size: 0.82rem; height: 38px; padding: 0 14px; margin-left: auto;">
+                  <span>Reset Bawaan Pabrik</span>
+                </button>
+              </div>
+            </div>
+
             <!-- Backup and Restore Section -->
-            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--primary); margin: 32px 0 16px; border-top: 1px solid var(--border); padding-top: 20px;">Arsip & Pemulihan Data Cadangan (Backup / Restore)</h3>
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--primary); margin: 32px 0 16px; border-top: 1px solid var(--border); padding-top: 20px;">Arsip &amp; Pemulihan Data Cadangan (Backup / Restore)</h3>
             <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center;">
               <button type="button" id="btn-export-backup" class="btn btn-secondary">Unduh Cadangan Data (Backup JSON)</button>
               <button type="button" id="btn-import-backup-trigger" class="btn btn-secondary">Pulihkan Data dari JSON (Restore)</button>
@@ -1013,10 +1063,10 @@
   </div>
 
   <!-- Modular Architecture Bundles -->
-  <script src="js/config/constants.js?v=5.4"></script>
-  <script src="js/utils/formatters.js?v=5.4"></script>
-  <script src="js/utils/guards.js?v=5.4"></script>
-  <script src="js/db.js?v=5.4"></script>
-  <script src="js/admin.js?v=5.4"></script>
+  <script src="js/config/constants.js?v=5.5"></script>
+  <script src="js/utils/formatters.js?v=5.5"></script>
+  <script src="js/utils/guards.js?v=5.5"></script>
+  <script src="js/db.js?v=5.5"></script>
+  <script src="js/admin.js?v=5.5"></script>
 </body>
 </html>

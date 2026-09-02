@@ -350,6 +350,7 @@ document.addEventListener('click', async (e) => {
         else if (targetId === 'pane-facilities') renderFacilitiesTable();
         else if (targetId === 'pane-activities') renderActivitiesTable();
         else if (targetId === 'pane-gallery') renderGalleryTable();
+        else if (targetId === 'pane-settings') updateBaselineStatusUI();
       } catch (err) {
         console.error(`Gagal memuat pane ${targetId}:`, err);
       }
@@ -539,6 +540,7 @@ function renderDashboard() {
 
   updateInboxBadge();
   renderAuditFeed();
+  updateBaselineStatusUI();
 }
 
 function renderAuditFeed() {
@@ -550,13 +552,14 @@ function renderAuditFeed() {
     feedContainer.innerHTML = '<p style="color:var(--text-muted); font-size:0.88rem; padding: 8px 0;">Belum ada catatan aktivitas.</p>';
     return;
   }
-  
   feedContainer.innerHTML = logs.map(log => {
     const timeStr = new Date(log.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' - ' + new Date(log.timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-    let badgeClass = 'audit-badge-ubah';
+    let badgeClass = 'audit-badge-tambah';
     if (log.action === 'TAMBAH') badgeClass = 'audit-badge-tambah';
+    if (log.action === 'UBAH') badgeClass = 'audit-badge-ubah';
     if (log.action === 'HAPUS') badgeClass = 'audit-badge-hapus';
     if (log.action === 'RESET') badgeClass = 'audit-badge-reset';
+    if (log.action === 'BASELINE') badgeClass = 'audit-badge-baseline';
     
     return `
       <div class="audit-item">
@@ -570,28 +573,135 @@ function renderAuditFeed() {
   }).join('');
 }
 
-// Reset Database Handler
-const resetDbBtn = document.getElementById('admin-reset-db-btn');
-if (resetDbBtn) {
-  resetDbBtn.addEventListener('click', async () => {
-    if (confirm('PERINGATAN: Apakah Anda yakin ingin mereset seluruh database konten? Semua perubahan data kustom akan hilang dan dikembalikan ke data awal bawaan.')) {
-      setButtonSubmitting(resetDbBtn, true, 'Mereset Database...');
+// ----------------------------------------------------
+// BASELINE PROTECTION & DATABASE RESET HANDLERS
+// ----------------------------------------------------
+
+// Baseline Status UI Updater
+async function updateBaselineStatusUI() {
+  const statusEls = [
+    document.getElementById('dash-reset-baseline-status'),
+    document.getElementById('settings-reset-baseline-status')
+  ];
+  try {
+    const info = await window.SchoolDB.getResetBaselineInfo();
+    statusEls.forEach(el => {
+      if (!el) return;
+      if (info && info.timestamp) {
+        const dateStr = new Date(info.timestamp).toLocaleDateString('id-ID', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        el.innerHTML = `Tersimpan: <strong>${dateStr} WIB</strong> (${info.totalActivities || 0} Kegiatan, ${info.totalGallery || 0} Foto)`;
+      } else {
+        el.innerHTML = `<em>Belum ada titik kustom (Default Sistem Aktif)</em>`;
+      }
+    });
+  } catch (e) {
+    console.error('Error updating baseline status:', e);
+  }
+}
+
+// 1. Save Current Data as Reset Baseline Handler
+const updateBaselineBtns = [
+  document.getElementById('admin-update-baseline-btn'),
+  document.getElementById('settings-update-baseline-btn')
+];
+
+updateBaselineBtns.forEach(btn => {
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    const activities = window.SchoolDB.getActivities();
+    const gallery = window.SchoolDB.getGallery();
+    const confirmMsg = `Konfirmasi Simpan Titik Reset:\n\nApakah Anda ingin menyimpan seluruh data saat ini (${activities.length} Kegiatan, ${gallery.length} Foto Dokumentasi, Profil, Fasilitas, Guru, dll.) sebagai Titik Reset Baru?\n\nSetelah disimpan, jika suatu saat dilakukan reset database, seluruh kegiatan dan aset yang telah Anda tambahkan TIDAK AKAN HILANG dan akan dipulihkan ke titik ini.`;
+
+    if (!confirm(confirmMsg)) return;
+
+    setButtonSubmitting(btn, true, 'Menyimpan Titik Reset...');
+    try {
+      const res = await window.SchoolDB.saveResetBaseline();
+      if (res && res.success) {
+        showAdminToast('Titik reset berhasil diperbarui! Seluruh aset dan kegiatan saat ini aman sebagai baseline pemulihan.', 'success', 'Titik Reset Tersimpan');
+        await updateBaselineStatusUI();
+        renderAuditFeed();
+      } else {
+        showAdminToast('Gagal menyimpan titik reset: ' + ((res && res.error) || 'Terjadi kesalahan.'), 'error');
+      }
+    } catch (err) {
+      showAdminToast('Terjadi kesalahan saat menyimpan titik reset.', 'error');
+    } finally {
+      setButtonSubmitting(btn, false);
+    }
+  });
+});
+
+// 2. Reset / Restore to Saved Baseline Handler
+const resetDbBtns = [
+  document.getElementById('admin-reset-db-btn'),
+  document.getElementById('settings-reset-db-btn')
+];
+
+resetDbBtns.forEach(btn => {
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    const info = await window.SchoolDB.getResetBaselineInfo();
+    const hasCustomBaseline = !!(info && info.timestamp);
+
+    const confirmMsg = hasCustomBaseline
+      ? `Konfirmasi Pemulihan Data:\n\nApakah Anda yakin ingin memulihkan database ke Titik Reset Terakhir (${info.totalActivities || 0} Kegiatan, ${info.totalGallery || 0} Foto)?\n\nSemua aset dan kegiatan yang telah Anda simpan pada titik reset ini tetap aman dan akan dipulihkan.`
+      : 'PERINGATAN: Anda belum pernah memperbarui titik reset kustom. Database akan dikembalikan ke data awal bawaan sistem. Lanjutkan pemulihan?';
+
+    if (confirm(confirmMsg)) {
+      setButtonSubmitting(btn, true, 'Memulihkan Data...');
       try {
-        await window.SchoolDB.reset();
-        showAdminToast('Seluruh database telah direset ke data awal bawaan.', 'success', 'Database Direset');
-        setTimeout(() => window.location.reload(), 1000);
+        const result = await window.SchoolDB.reset(false);
+        showAdminToast(
+          result.isCustomBaseline
+            ? 'Database berhasil dipulihkan ke titik reset tersimpan Anda. Seluruh aset sekolah tetap aman!'
+            : 'Database telah direset ke data awal bawaan.',
+          'success',
+          'Database Dipulihkan'
+        );
+        setTimeout(() => window.location.reload(), 1200);
       } catch (err) {
-        showAdminToast('Gagal mereset database.', 'error');
-        setButtonSubmitting(resetDbBtn, false);
+        showAdminToast('Gagal memulihkan database.', 'error');
+        setButtonSubmitting(btn, false);
       }
     }
   });
-}
+});
+
+// 3. Factory Reset Handler (Secondary Safe Option)
+const resetFactoryBtns = [
+  document.getElementById('admin-reset-factory-btn'),
+  document.getElementById('settings-reset-factory-btn')
+];
+
+resetFactoryBtns.forEach(btn => {
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    if (confirm('PERINGATAN TINGGI: Anda akan mereset database ke BAWAAN PABRIK AWAL. Seluruh data kustom termasuk titik reset yang pernah disimpan akan dihapus. Lanjutkan?')) {
+      if (confirm('Konfirmasi Terakhir: Hapus seluruh data sekolah dan kembalikan ke setelan awal pabrik pertama kali?')) {
+        setButtonSubmitting(btn, true, 'Mereset ke Pabrik...');
+        try {
+          await window.SchoolDB.reset(true);
+          showAdminToast('Database telah direset total ke setelan awal pabrik.', 'warning', 'Reset Pabrik Selesai');
+          setTimeout(() => window.location.reload(), 1200);
+        } catch (err) {
+          showAdminToast('Gagal mereset ke pabrik.', 'error');
+          setButtonSubmitting(btn, false);
+        }
+      }
+    }
+  });
+});
 
 // Profile Management
 function loadProfileForm() {
   const profile = window.SchoolDB.getProfile();
-  if (!profile) return;
   
   const setVal = (id, val) => {
     const el = document.getElementById(id);

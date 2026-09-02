@@ -851,11 +851,43 @@ if (formEditProfile) {
       const tagline = document.getElementById('profile-tagline').value;
       const description = document.getElementById('profile-description').value;
       const history = document.getElementById('profile-history').value;
-      const vision = document.getElementById('profile-vision').value;
-      const missions = document.getElementById('profile-missions').value
+      const vision = document.getElementById('profile-vision').value.trim();
+      const rawMissions = document.getElementById('profile-missions').value
         .split('\n')
         .map(m => m.trim())
         .filter(m => m.length > 0);
+      
+      // Aturan Visi Sekolah: Maksimal 300 karakter dan tidak mengandung kata tanpa spasi abnormal
+      if (vision.length > 300) {
+        showAdminToast('Visi sekolah maksimal 300 karakter agar tampilan tetap proporsional.', 'error', 'Validasi Visi');
+        return;
+      }
+      if (/\S{36,}/.test(vision)) {
+        showAdminToast('Visi mengandung kata tanpa spasi yang terlalu panjang. Mohon gunakan susunan kata yang wajar.', 'error', 'Format Visi Tidak Valid');
+        return;
+      }
+
+      // Aturan Misi Sekolah: Maksimal 10 butir, maksimal 250 karakter per butir, kata tanpa spasi tidak melebihi 35 karakter
+      if (rawMissions.length === 0) {
+        showAdminToast('Mohon masukkan minimal 1 butir misi sekolah.', 'error', 'Misi Kosong');
+        return;
+      }
+      if (rawMissions.length > 10) {
+        showAdminToast('Misi sekolah maksimal 10 butir agar tata letak halaman tetap seimbang dan proporsional.', 'error', 'Misi Terlalu Banyak');
+        return;
+      }
+      for (let i = 0; i < rawMissions.length; i++) {
+        const m = rawMissions[i];
+        if (m.length > 250) {
+          showAdminToast(`Butir misi ke-${i + 1} terlalu panjang (maksimal 250 karakter per butir).`, 'error', 'Misi Terlalu Panjang');
+          return;
+        }
+        if (/\S{36,}/.test(m)) {
+          showAdminToast(`Butir misi ke-${i + 1} mengandung kata tanpa spasi yang tidak wajar. Mohon gunakan kata yang wajar.`, 'error', 'Format Misi Tidak Valid');
+          return;
+        }
+      }
+      const missions = rawMissions;
       
       const principalName = document.getElementById('profile-principal-name') ? document.getElementById('profile-principal-name').value.trim() : '';
       const principalRole = document.getElementById('profile-principal-role') ? document.getElementById('profile-principal-role').value.trim() : '';

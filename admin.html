@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="css/styles.css?v=5.6">
+  <link rel="stylesheet" href="css/styles.css?v=5.7">
   
   <!-- Firebase SDK App & Firestore Compat -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -280,12 +280,14 @@
                 <textarea id="profile-history" class="form-control" style="min-height: 160px;" required></textarea>
               </div>
               <div class="form-group">
-                <label for="profile-vision">Visi Sekolah (Gunakan '-' jika belum ada)</label>
-                <input type="text" id="profile-vision" class="form-control" required>
+                <label for="profile-vision">Visi Sekolah</label>
+                <input type="text" id="profile-vision" class="form-control" maxlength="300" placeholder="Contoh: Terwujudnya Peserta Didik yang Beriman, Cerdas, Berkarakter, dan Berbudaya Lingkungan" required>
+                <small style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-top: 4px;">Aturan: Maksimal 300 karakter. Ditampilkan pada kartu visi hijau di halaman Tentang Sekolah.</small>
               </div>
               <div class="form-group">
-                <label>Misi Sekolah (Satu baris untuk setiap poin misi)</label>
-                <textarea id="profile-missions" class="form-control" style="min-height: 120px;" placeholder="Tulis satu misi per baris..." required></textarea>
+                <label for="profile-missions">Misi Sekolah (Satu baris untuk setiap poin misi, maksimal 10 butir)</label>
+                <textarea id="profile-missions" class="form-control" style="min-height: 120px;" placeholder="Tulis satu butir misi per baris..." required></textarea>
+                <small style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-top: 4px;">Aturan: Maksimal 10 butir misi, maksimal 250 karakter per butir. Gunakan kata yang wajar agar kartu misi tetap proporsional dan elegan.</small>
               </div>
 
               <!-- Sambutan Kepala Sekolah Section CMS -->
@@ -1098,10 +1100,10 @@
   </div>
 
   <!-- Modular Architecture Bundles -->
-  <script src="js/config/constants.js?v=5.6"></script>
-  <script src="js/utils/formatters.js?v=5.6"></script>
-  <script src="js/utils/guards.js?v=5.6"></script>
-  <script src="js/db.js?v=5.6"></script>
-  <script src="js/admin.js?v=5.6"></script>
+  <script src="js/config/constants.js?v=5.7"></script>
+  <script src="js/utils/formatters.js?v=5.7"></script>
+  <script src="js/utils/guards.js?v=5.7"></script>
+  <script src="js/db.js?v=5.7"></script>
+  <script src="js/admin.js?v=5.7"></script>
 </body>
 </html>

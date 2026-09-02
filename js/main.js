@@ -382,12 +382,15 @@
 
     const missionList = document.getElementById('mission-list');
     if (missionList && Array.isArray(profile.missions)) {
-      missionList.innerHTML = profile.missions.map((m, index) => `
+      missionList.innerHTML = profile.missions.slice(0, 10).map((m, index) => {
+        const safeText = String(m || '').trim();
+        return `
         <li class="mission-item">
           <span class="mission-number">${index + 1}</span>
-          <span class="mission-text-item">${m}</span>
+          <span class="mission-text-item">${safeText}</span>
         </li>
-      `).join('');
+      `;
+      }).join('');
     }
 
     const valuesGrid = document.getElementById('values-grid');

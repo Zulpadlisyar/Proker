@@ -566,6 +566,16 @@ window.SchoolDB = {
           this.data.profile.vision = '-';
         }
 
+        // Clean up broken/stretched missions if any corrupted words exist
+        if (Array.isArray(this.data.profile.missions)) {
+          this.data.profile.missions = this.data.profile.missions
+            .filter(m => typeof m === 'string' && m.trim().length > 0)
+            .map(m => m.replace(/(\S{35})/g, '$1 ').trim())
+            .slice(0, 10);
+        } else {
+          this.data.profile.missions = JSON.parse(JSON.stringify(INITIAL_DATA.profile.missions));
+        }
+
         this.data.contact = { ...INITIAL_DATA.contact, ...this.data.contact };
         if (!this.data.contact.email || this.data.contact.email.includes('info@sdn')) {
           this.data.contact.email = INITIAL_DATA.contact.email;
@@ -992,8 +1002,11 @@ window.SchoolDB = {
       tagline: this.sanitizeText(profileData.tagline || this.data.profile.tagline),
       description: this.sanitizeText(profileData.description || this.data.profile.description),
       history: this.sanitizeText(profileData.history || this.data.profile.history),
-      vision: this.sanitizeText(profileData.vision || this.data.profile.vision),
-      missions: Array.isArray(profileData.missions) ? profileData.missions.map(m => this.sanitizeText(m)) : this.data.profile.missions,
+      vision: this.sanitizeText(profileData.vision || this.data.profile.vision).slice(0, 300),
+      missions: Array.isArray(profileData.missions) ? profileData.missions.slice(0, 10).map(m => {
+        let clean = this.sanitizeText(m).slice(0, 250);
+        return clean.replace(/(\S{35})/g, '$1 ').trim();
+      }) : this.data.profile.missions,
       logo: profileData.logo || this.data.profile.logo,
       hero: profileData.hero || this.data.profile.hero,
       principalName: this.sanitizeText(profileData.principalName || this.data.profile.principalName || 'Bapak Maryanto, M.Pd.'),

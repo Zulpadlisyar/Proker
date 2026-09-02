@@ -1112,7 +1112,7 @@ window.SchoolDB = {
       date: date,
       category: this.sanitizeText(activity.category || 'Umum'),
       views: typeof activity.views === 'number' ? activity.views : 0,
-      excerpt: this.sanitizeText(activity.excerpt || ''),
+      excerpt: this.sanitizeText(activity.excerpt || activity.summary || ''),
       content: this.sanitizeHTML(activity.content || ''),
       image: activity.image || generateSVGPlaceholder('general', title)
     };
@@ -1238,6 +1238,13 @@ window.SchoolDB = {
     const role = this.sanitizeText(item.role || 'Orang Tua Wali');
     const quote = this.sanitizeText(item.quote || '');
 
+    // Rule: Name and role can be identical, but quote (pesan) must be unique
+    const normQuote = quote.trim().toLowerCase();
+    const isDuplicateQuote = (this.data.testimonials || []).some(t => (t.quote || '').trim().toLowerCase() === normQuote);
+    if (isDuplicateQuote) {
+      throw new Error('Pesan kesan & apresiasi ini sudah ada di daftar. Pesan tidak boleh sama persis.');
+    }
+
     const newTesti = {
       id: 'testi_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
       name: name,
@@ -1255,7 +1262,14 @@ window.SchoolDB = {
     const sanitized = {};
     if (updatedFields.name !== undefined) sanitized.name = this.sanitizeText(updatedFields.name);
     if (updatedFields.role !== undefined) sanitized.role = this.sanitizeText(updatedFields.role);
-    if (updatedFields.quote !== undefined) sanitized.quote = this.sanitizeText(updatedFields.quote);
+    if (updatedFields.quote !== undefined) {
+      sanitized.quote = this.sanitizeText(updatedFields.quote);
+      const normQuote = sanitized.quote.trim().toLowerCase();
+      const isDuplicateQuote = (this.data.testimonials || []).some(t => String(t.id) !== String(id) && (t.quote || '').trim().toLowerCase() === normQuote);
+      if (isDuplicateQuote) {
+        throw new Error('Pesan kesan & apresiasi ini sudah ada di daftar. Pesan tidak boleh sama persis.');
+      }
+    }
     if (updatedFields.avatar) sanitized.avatar = updatedFields.avatar;
     return this._updateItem('testimonials', id, sanitized, 'Kesan & Apresiasi', 'name');
   },
@@ -1365,6 +1379,20 @@ window.SchoolDB = {
     const title = this.sanitizeText(item.title || 'Standar Kenyamanan Baru');
     const desc = this.sanitizeText(item.desc || item.description || '');
 
+    // Rule: Title and description must both be unique
+    const normTitle = this.normalizeName(title);
+    const normDesc = desc.trim().toLowerCase();
+
+    const isTitleDup = (this.data.comfortStandards || []).some(c => this.normalizeName(c.title) === normTitle);
+    if (isTitleDup) {
+      throw new Error(`Standar kenyamanan dengan judul "${title}" sudah ada.`);
+    }
+
+    const isDescDup = (this.data.comfortStandards || []).some(c => (c.desc || c.description || '').trim().toLowerCase() === normDesc);
+    if (isDescDup) {
+      throw new Error('Deskripsi standar kenyamanan tidak boleh sama dengan standar yang sudah ada.');
+    }
+
     const newComfort = {
       id: 'comfort_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
       title: title,
@@ -1378,9 +1406,22 @@ window.SchoolDB = {
 
   async updateComfortStandard(id, updatedFields) {
     const sanitized = {};
-    if (updatedFields.title !== undefined) sanitized.title = this.sanitizeText(updatedFields.title);
-    if (updatedFields.desc !== undefined) sanitized.desc = this.sanitizeText(updatedFields.desc);
-    if (updatedFields.description !== undefined) sanitized.desc = this.sanitizeText(updatedFields.description);
+    if (updatedFields.title !== undefined) {
+      sanitized.title = this.sanitizeText(updatedFields.title);
+      const normTitle = this.normalizeName(sanitized.title);
+      const isTitleDup = (this.data.comfortStandards || []).some(c => String(c.id) !== String(id) && this.normalizeName(c.title) === normTitle);
+      if (isTitleDup) {
+        throw new Error(`Standar kenyamanan dengan judul "${sanitized.title}" sudah ada.`);
+      }
+    }
+    if (updatedFields.desc !== undefined || updatedFields.description !== undefined) {
+      sanitized.desc = this.sanitizeText(updatedFields.desc !== undefined ? updatedFields.desc : updatedFields.description);
+      const normDesc = sanitized.desc.trim().toLowerCase();
+      const isDescDup = (this.data.comfortStandards || []).some(c => String(c.id) !== String(id) && (c.desc || c.description || '').trim().toLowerCase() === normDesc);
+      if (isDescDup) {
+        throw new Error('Deskripsi standar kenyamanan tidak boleh sama dengan standar yang sudah ada.');
+      }
+    }
     return this._updateItem('comfortStandards', id, sanitized, 'Standar Kenyamanan', 'title');
   },
 

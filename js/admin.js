@@ -310,7 +310,69 @@ async function initAdminPanel() {
   });
 
   clearDirty(); // Start clean
+
+  // Restore previously active tab from URL hash or sessionStorage on boot/reload
+  const hashVal = (window.location.hash || '').replace('#', '').trim();
+  const storedTab = sessionStorage.getItem('sdn2_admin_active_tab');
+  const targetInitialTab = (hashVal && document.getElementById(hashVal)) 
+    ? hashVal 
+    : ((storedTab && document.getElementById(storedTab)) ? storedTab : 'pane-dashboard');
+  switchAdminTab(targetInitialTab, false);
 }
+
+// ----------------------------------------------------
+// UNIVERSAL TAB SWITCHING & RELOAD STATE PERSISTENCE
+// ----------------------------------------------------
+function switchAdminTab(targetId, updateHistory = true) {
+  if (!targetId) return;
+  const targetPane = document.getElementById(targetId);
+  if (!targetPane) return;
+
+  document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.admin-tab-pane').forEach(p => p.classList.remove('active'));
+
+  const matchingBtn = document.querySelector(`.admin-nav-btn[data-target="${targetId}"]`);
+  if (matchingBtn) {
+    matchingBtn.classList.add('active');
+  }
+  targetPane.classList.add('active');
+
+  // Persist in sessionStorage and URL hash so reload returns to this exact section!
+  try {
+    sessionStorage.setItem('sdn2_admin_active_tab', targetId);
+    if (updateHistory && window.location.hash !== '#' + targetId) {
+      history.replaceState(null, '', '#' + targetId);
+    }
+  } catch (e) {}
+
+  // Safely refresh specific pane content
+  try {
+    if (targetId === 'pane-dashboard') renderDashboard();
+    else if (targetId === 'pane-inbox') renderInboxList();
+    else if (targetId === 'pane-testimonials') renderTestimonialsTable();
+    else if (targetId === 'pane-calendar') renderCalendarTable();
+    else if (targetId === 'pane-habits') renderHabitsTable();
+    else if (targetId === 'pane-comfort') renderComfortTable();
+    else if (targetId === 'pane-teachers') renderTeachersTable();
+    else if (targetId === 'pane-facilities') renderFacilitiesTable();
+    else if (targetId === 'pane-activities') renderActivitiesTable();
+    else if (targetId === 'pane-gallery') renderGalleryTable();
+    else if (targetId === 'pane-settings') updateBaselineStatusUI();
+  } catch (err) {
+    console.error(`Gagal memuat pane ${targetId}:`, err);
+  }
+
+  const adminContent = document.querySelector('.admin-content');
+  if (adminContent) adminContent.scrollTop = 0;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+window.addEventListener('hashchange', () => {
+  const hashTab = (window.location.hash || '').replace('#', '').trim();
+  if (hashTab && document.getElementById(hashTab)) {
+    switchAdminTab(hashTab, false);
+  }
+});
 
 // ----------------------------------------------------
 // UNIVERSAL DELEGATED ACTION DISPATCHER FOR ALL BUTTONS
@@ -330,35 +392,20 @@ document.addEventListener('click', async (e) => {
       clearDirty();
     }
     
-    document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.admin-tab-pane').forEach(p => p.classList.remove('active'));
-    
-    navBtn.classList.add('active');
-    const targetPane = document.getElementById(targetId);
-    if (targetPane) {
-      targetPane.classList.add('active');
-      
-      // Safely refresh specific pane content
-      try {
-        if (targetId === 'pane-dashboard') renderDashboard();
-        else if (targetId === 'pane-inbox') renderInboxList();
-        else if (targetId === 'pane-testimonials') renderTestimonialsTable();
-        else if (targetId === 'pane-calendar') renderCalendarTable();
-        else if (targetId === 'pane-habits') renderHabitsTable();
-        else if (targetId === 'pane-comfort') renderComfortTable();
-        else if (targetId === 'pane-teachers') renderTeachersTable();
-        else if (targetId === 'pane-facilities') renderFacilitiesTable();
-        else if (targetId === 'pane-activities') renderActivitiesTable();
-        else if (targetId === 'pane-gallery') renderGalleryTable();
-        else if (targetId === 'pane-settings') updateBaselineStatusUI();
-      } catch (err) {
-        console.error(`Gagal memuat pane ${targetId}:`, err);
-      }
-      
-      const adminContent = document.querySelector('.admin-content');
-      if (adminContent) adminContent.scrollTop = 0;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    switchAdminTab(targetId);
+    return;
+  }
+
+  // Clickable Stat Cards on Dashboard
+  const statCard = e.target.closest('.stat-card');
+  if (statCard) {
+    const label = statCard.querySelector('.stat-label')?.textContent.trim();
+    if (label === 'Guru & Staf') switchAdminTab('pane-teachers');
+    else if (label === 'Fasilitas') switchAdminTab('pane-facilities');
+    else if (label === 'Kegiatan') switchAdminTab('pane-activities');
+    else if (label === 'Dokumentasi') switchAdminTab('pane-gallery');
+    else if (label === 'Pesan Masuk') switchAdminTab('pane-inbox');
+    else if (label === 'Total Pembaca') switchAdminTab('pane-activities');
     return;
   }
 
@@ -1040,8 +1087,7 @@ function renderFacilitiesTable() {
   if (!listBody) return;
   
   const filtered = allFacilities.filter(f => {
-    return f.name.toLowerCase().includes(facilitySearchQuery) ||
-           f.description.toLowerCase().includes(facilitySearchQuery);
+    return (f.name || '').toLowerCase().includes(facilitySearchQuery);
   });
   
   if (filtered.length === 0) {
@@ -1182,8 +1228,7 @@ function renderActivitiesTable() {
   if (!listBody) return;
   
   const filtered = allActivities.filter(a => {
-    return a.title.toLowerCase().includes(activitySearchQuery) ||
-           a.excerpt.toLowerCase().includes(activitySearchQuery);
+    return (a.title || '').toLowerCase().includes(activitySearchQuery);
   });
   
   if (filtered.length === 0) {
@@ -1261,7 +1306,7 @@ function openActivityModal(id = null) {
   
   populateActivityCategoriesDropdown();
   
-  if (id) {
+    if (id) {
     if (title) title.textContent = 'Edit Kegiatan';
     const activity = window.SchoolDB.getActivities().find(a => String(a.id) === String(id));
     if (activity) {
@@ -1269,7 +1314,8 @@ function openActivityModal(id = null) {
       if (document.getElementById('activity-title')) document.getElementById('activity-title').value = activity.title;
       if (document.getElementById('activity-category')) document.getElementById('activity-category').value = activity.category;
       if (document.getElementById('activity-date')) document.getElementById('activity-date').value = activity.date;
-      if (document.getElementById('activity-summary')) document.getElementById('activity-summary').value = activity.summary || '';
+      const excerptInput = document.getElementById('activity-excerpt') || document.getElementById('activity-summary');
+      if (excerptInput) excerptInput.value = activity.excerpt || activity.summary || '';
       if (document.getElementById('activity-content')) document.getElementById('activity-content').value = activity.content;
       if (activity.image) {
         if (prevImg) prevImg.src = activity.image;
@@ -1281,7 +1327,8 @@ function openActivityModal(id = null) {
   } else {
     if (title) title.textContent = 'Tambah Kegiatan Baru';
     if (document.getElementById('activity-id')) document.getElementById('activity-id').value = '';
-    if (document.getElementById('activity-summary')) document.getElementById('activity-summary').value = '';
+    const excerptInput = document.getElementById('activity-excerpt') || document.getElementById('activity-summary');
+    if (excerptInput) excerptInput.value = '';
   }
   
   attachDirtyListeners('form-activity');
@@ -1298,7 +1345,8 @@ if (formActivity) {
     const title = document.getElementById('activity-title').value;
     const category = document.getElementById('activity-category').value;
     const date = document.getElementById('activity-date').value;
-    const summary = document.getElementById('activity-summary').value;
+    const excerptInput = document.getElementById('activity-excerpt') || document.getElementById('activity-summary');
+    const excerpt = excerptInput ? excerptInput.value : '';
     const content = document.getElementById('activity-content').value;
 
     const normTitle = normalizeName(title);
@@ -1316,7 +1364,8 @@ if (formActivity) {
           title,
           category,
           date,
-          summary,
+          excerpt,
+          summary: excerpt,
           content,
           image: tempActivityBase64
         });
@@ -1326,7 +1375,8 @@ if (formActivity) {
           title,
           category,
           date,
-          summary,
+          excerpt,
+          summary: excerpt,
           content,
           image: tempActivityBase64
         });
@@ -1355,12 +1405,12 @@ function renderGalleryTable() {
   if (!listBody) return;
   
   const filtered = allGallery.filter(g => {
-    return g.title.toLowerCase().includes(gallerySearchQuery) ||
-           g.category.toLowerCase().includes(gallerySearchQuery);
+    const caption = (g.caption || g.title || '').toLowerCase();
+    return caption.includes(gallerySearchQuery);
   });
   
   if (filtered.length === 0) {
-    listBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted); padding: 20px;">${gallerySearchQuery ? 'Tidak ada foto yang cocok.' : 'Belum ada foto di galeri.'}</td></tr>`;
+    listBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: var(--text-muted); padding: 20px;">${gallerySearchQuery ? 'Tidak ada foto yang cocok.' : 'Belum ada foto di galeri.'}</td></tr>`;
     renderPaginationControls('pagination-gallery', 0, 1, () => {});
     return;
   }
@@ -1368,25 +1418,27 @@ function renderGalleryTable() {
   const startIndex = (galleryPage - 1) * ITEMS_PER_PAGE;
   const paginated = filtered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
   
-  listBody.innerHTML = paginated.map(g => `
-    <tr>
-      <td><img src="${g.image}" class="admin-thumb" alt="${g.title}"></td>
-      <td><strong>${g.title}</strong></td>
-      <td><span style="background:var(--surface-alt); padding:2px 8px; border-radius:4px; font-size:12px; border:1px solid var(--border); font-weight:600;">${g.category}</span></td>
-      <td>
-        <div class="table-actions">
-          <button class="btn-action-edit btn-edit-gallery" data-id="${g.id}" title="Edit Foto">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-            <span>Edit</span>
-          </button>
-          <button class="btn-action-delete btn-delete-gallery" data-id="${g.id}" title="Hapus Foto">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2M10 11v6M14 11v6"/></svg>
-            <span>Hapus</span>
-          </button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
+  listBody.innerHTML = paginated.map(g => {
+    const captionText = g.caption || g.title || 'Foto Dokumentasi';
+    return `
+      <tr>
+        <td><img src="${g.image}" class="admin-thumb" alt="${captionText}" onerror="this.onerror=null;this.src='images/logo.webp';"></td>
+        <td><strong>${captionText}</strong></td>
+        <td>
+          <div class="table-actions">
+            <button class="btn-action-edit btn-edit-gallery" data-id="${g.id}" title="Edit Foto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+              <span>Edit</span>
+            </button>
+            <button class="btn-action-delete btn-delete-gallery" data-id="${g.id}" title="Hapus Foto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2M10 11v6M14 11v6"/></svg>
+              <span>Hapus</span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
   
   renderPaginationControls('pagination-gallery', filtered.length, galleryPage, (newPage) => {
     galleryPage = newPage;
@@ -1418,13 +1470,13 @@ function openGalleryModal(id = null) {
   hideCompressionBadge('compression-badge-gallery');
   clearDirty();
   
+  const captionInput = document.getElementById('gallery-caption') || document.getElementById('gallery-title');
   if (id) {
     if (title) title.textContent = 'Edit Foto Galeri';
     const item = window.SchoolDB.getGallery().find(g => String(g.id) === String(id));
     if (item) {
       if (document.getElementById('gallery-id')) document.getElementById('gallery-id').value = item.id;
-      if (document.getElementById('gallery-title')) document.getElementById('gallery-title').value = item.title;
-      if (document.getElementById('gallery-category')) document.getElementById('gallery-category').value = item.category || 'Dokumentasi';
+      if (captionInput) captionInput.value = item.caption || item.title || '';
       if (item.image) {
         if (prevImg) prevImg.src = item.image;
         if (prevContainer) prevContainer.style.display = 'block';
@@ -1435,7 +1487,7 @@ function openGalleryModal(id = null) {
   } else {
     if (title) title.textContent = 'Tambah Foto Galeri Baru';
     if (document.getElementById('gallery-id')) document.getElementById('gallery-id').value = '';
-    if (document.getElementById('gallery-category')) document.getElementById('gallery-category').value = 'Dokumentasi';
+    if (captionInput) captionInput.value = '';
   }
   
   attachDirtyListeners('form-gallery');
@@ -1762,6 +1814,14 @@ if (formTestimonial) {
     const role = document.getElementById('testi-role').value;
     const quote = document.getElementById('testi-quote').value;
 
+    // Rule: Name and role can be the same, but quote/pesan must be unique
+    const normQuote = quote.trim().toLowerCase();
+    const isDup = window.SchoolDB.getTestimonials().some(t => String(t.id) !== String(id) && (t.quote || '').trim().toLowerCase() === normQuote);
+    if (isDup) {
+      showAdminToast('Pesan kesan & apresiasi ini sudah ada di daftar. Pesan tidak boleh sama persis.', 'error', 'Pesan Duplikat');
+      return;
+    }
+
     setButtonSubmitting(submitBtn, true, 'Menyimpan Testimoni...');
     try {
       if (id) {
@@ -1775,7 +1835,7 @@ if (formTestimonial) {
       closeModal(true);
       renderTestimonialsTable();
     } catch (err) {
-      showAdminToast('Gagal menyimpan testimoni: ' + err.message, 'error');
+      showAdminToast(err.message || 'Gagal menyimpan testimoni.', 'error');
     } finally {
       setButtonSubmitting(submitBtn, false);
     }
@@ -1814,6 +1874,56 @@ function renderCalendarTable() {
   `).join('');
 }
 
+const CALENDAR_MONTH_CODES = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
+
+function initCalendarControls() {
+  const daySelect = document.getElementById('calendar-day-select');
+  const monthSelect = document.getElementById('calendar-month-select');
+  const nativePicker = document.getElementById('calendar-native-picker');
+  const hiddenDate = document.getElementById('calendar-date');
+  const hiddenMonth = document.getElementById('calendar-month');
+
+  if (daySelect && daySelect.options.length <= 1) {
+    daySelect.innerHTML = '';
+    for (let d = 1; d <= 31; d++) {
+      const opt = document.createElement('option');
+      opt.value = String(d);
+      opt.textContent = 'Tanggal ' + d;
+      daySelect.appendChild(opt);
+    }
+  }
+
+  function syncCalendarValues() {
+    if (hiddenDate && daySelect) hiddenDate.value = daySelect.value;
+    if (hiddenMonth && monthSelect) hiddenMonth.value = monthSelect.value;
+  }
+
+  if (nativePicker && !nativePicker.dataset.bound) {
+    nativePicker.dataset.bound = 'true';
+    nativePicker.addEventListener('change', () => {
+      if (!nativePicker.value) return;
+      const parts = nativePicker.value.split('-');
+      if (parts.length === 3) {
+        const d = parseInt(parts[2], 10);
+        const mIdx = parseInt(parts[1], 10) - 1;
+        const mCode = CALENDAR_MONTH_CODES[mIdx] || 'JUL';
+        if (daySelect) daySelect.value = String(d);
+        if (monthSelect) monthSelect.value = mCode;
+        syncCalendarValues();
+      }
+    });
+  }
+
+  if (daySelect && !daySelect.dataset.bound) {
+    daySelect.dataset.bound = 'true';
+    daySelect.addEventListener('change', syncCalendarValues);
+  }
+  if (monthSelect && !monthSelect.dataset.bound) {
+    monthSelect.dataset.bound = 'true';
+    monthSelect.addEventListener('change', syncCalendarValues);
+  }
+}
+
 function openCalendarModal(id = null) {
   const modal = document.getElementById('admin-modal-overlay');
   const title = document.getElementById('admin-modal-title');
@@ -1826,6 +1936,13 @@ function openCalendarModal(id = null) {
     formEl.reset();
   }
   clearDirty();
+  initCalendarControls();
+
+  const daySelect = document.getElementById('calendar-day-select');
+  const monthSelect = document.getElementById('calendar-month-select');
+  const nativePicker = document.getElementById('calendar-native-picker');
+  const hiddenDate = document.getElementById('calendar-date');
+  const hiddenMonth = document.getElementById('calendar-month');
 
   if (id) {
     if (title) title.textContent = 'Edit Agenda Kalender';
@@ -1833,13 +1950,26 @@ function openCalendarModal(id = null) {
     if (item) {
       if (document.getElementById('calendar-id')) document.getElementById('calendar-id').value = item.id;
       if (document.getElementById('calendar-title')) document.getElementById('calendar-title').value = item.title;
-      if (document.getElementById('calendar-date')) document.getElementById('calendar-date').value = item.date || '';
-      if (document.getElementById('calendar-month')) document.getElementById('calendar-month').value = item.month || '';
       if (document.getElementById('calendar-desc')) document.getElementById('calendar-desc').value = item.desc || item.description || '';
+      
+      const dayNum = parseInt(String(item.date).match(/\d+/)?.[0] || '1', 10);
+      const mCode = (item.month || 'JUL').toUpperCase();
+      if (daySelect) daySelect.value = String(dayNum);
+      if (monthSelect) monthSelect.value = mCode;
+      if (hiddenDate) hiddenDate.value = item.date || String(dayNum);
+      if (hiddenMonth) hiddenMonth.value = mCode;
     }
   } else {
     if (title) title.textContent = 'Tambah Agenda Kalender Baru';
     if (document.getElementById('calendar-id')) document.getElementById('calendar-id').value = '';
+    const now = new Date();
+    const curDay = now.getDate();
+    const curMonthCode = CALENDAR_MONTH_CODES[now.getMonth()] || 'JUL';
+    if (daySelect) daySelect.value = String(curDay);
+    if (monthSelect) monthSelect.value = curMonthCode;
+    if (hiddenDate) hiddenDate.value = String(curDay);
+    if (hiddenMonth) hiddenMonth.value = curMonthCode;
+    if (nativePicker) nativePicker.value = now.toISOString().split('T')[0];
   }
 
   attachDirtyListeners('form-calendar');
@@ -1853,8 +1983,13 @@ if (formCalendar) {
     const submitBtn = formCalendar.querySelector('button[type="submit"]');
     const id = document.getElementById('calendar-id').value;
     const title = document.getElementById('calendar-title').value;
-    const date = document.getElementById('calendar-date').value;
-    const month = document.getElementById('calendar-month').value;
+    const hiddenDate = document.getElementById('calendar-date');
+    const hiddenMonth = document.getElementById('calendar-month');
+    const daySelect = document.getElementById('calendar-day-select');
+    const monthSelect = document.getElementById('calendar-month-select');
+    
+    const date = (hiddenDate && hiddenDate.value) ? hiddenDate.value : (daySelect ? daySelect.value : '1');
+    const month = (hiddenMonth && hiddenMonth.value) ? hiddenMonth.value : (monthSelect ? monthSelect.value : 'JUL');
     const desc = document.getElementById('calendar-desc').value;
 
     setButtonSubmitting(submitBtn, true, 'Menyimpan Agenda...');
@@ -1904,6 +2039,61 @@ function renderHabitsTable() {
   `).join('');
 }
 
+const DEFAULT_HABIT_CATEGORIES = [
+  'Akademik & Literasi',
+  'Karakter & Budi Pekerti',
+  'Lingkungan & Kebersihan',
+  'Kesehatan & Jasmani',
+  'Keagamaan & Spiritual',
+  'Sosial & Gotong Royong'
+];
+
+function getHabitCategories() {
+  let custom = [];
+  try {
+    const raw = localStorage.getItem('sdn2_habit_categories');
+    if (raw) custom = JSON.parse(raw);
+  } catch (e) {}
+
+  const existingFromHabits = (window.SchoolDB.getHabits ? window.SchoolDB.getHabits() : []).map(h => h.category).filter(Boolean);
+  const allSet = new Set([...DEFAULT_HABIT_CATEGORIES, ...custom, ...existingFromHabits]);
+  return Array.from(allSet);
+}
+
+function populateHabitCategoriesDropdown(selectedVal = '') {
+  const select = document.getElementById('habit-category');
+  if (!select) return;
+
+  const cats = getHabitCategories();
+  select.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+  if (selectedVal && cats.includes(selectedVal)) {
+    select.value = selectedVal;
+  } else if (cats.length > 0) {
+    select.value = cats[0];
+  }
+}
+
+// Quick add habit category button listener
+document.addEventListener('click', (e) => {
+  if (e.target && e.target.id === 'btn-quick-add-habit-category') {
+    e.preventDefault();
+    const newCat = prompt('Masukkan nama kategori pembiasaan baru:');
+    if (!newCat || !newCat.trim()) return;
+    const cleanCat = newCat.trim();
+    let custom = [];
+    try {
+      const raw = localStorage.getItem('sdn2_habit_categories');
+      if (raw) custom = JSON.parse(raw);
+    } catch (e) {}
+    if (!custom.includes(cleanCat)) {
+      custom.push(cleanCat);
+      localStorage.setItem('sdn2_habit_categories', JSON.stringify(custom));
+    }
+    populateHabitCategoriesDropdown(cleanCat);
+    showAdminToast(`Kategori pembiasaan "${cleanCat}" berhasil ditambahkan.`, 'success', 'Kategori Ditambahkan');
+  }
+});
+
 function openHabitModal(id = null) {
   const modal = document.getElementById('admin-modal-overlay');
   const title = document.getElementById('admin-modal-title');
@@ -1923,13 +2113,13 @@ function openHabitModal(id = null) {
     if (item) {
       if (document.getElementById('habit-id')) document.getElementById('habit-id').value = item.id;
       if (document.getElementById('habit-title')) document.getElementById('habit-title').value = item.title;
-      if (document.getElementById('habit-category')) document.getElementById('habit-category').value = item.category || 'Karakter';
+      populateHabitCategoriesDropdown(item.category || 'Karakter & Budi Pekerti');
       if (document.getElementById('habit-desc')) document.getElementById('habit-desc').value = item.desc || item.description || '';
     }
   } else {
     if (title) title.textContent = 'Tambah Pembiasaan Baik Baru';
     if (document.getElementById('habit-id')) document.getElementById('habit-id').value = '';
-    if (document.getElementById('habit-category')) document.getElementById('habit-category').value = 'Karakter';
+    populateHabitCategoriesDropdown('Akademik & Literasi');
   }
 
   attachDirtyListeners('form-habit');
@@ -2031,6 +2221,23 @@ if (formComfort) {
     const title = document.getElementById('comfort-title').value;
     const desc = document.getElementById('comfort-desc').value;
 
+    // Rule: Title and description must both be unique
+    const normTitle = normalizeName(title);
+    const normDesc = desc.trim().toLowerCase();
+    const allComfort = window.SchoolDB.getComfortStandards();
+
+    const titleDup = allComfort.some(c => String(c.id) !== String(id) && normalizeName(c.title) === normTitle);
+    if (titleDup) {
+      showAdminToast(`Standar kenyamanan dengan judul "${title}" sudah ada.`, 'error', 'Judul Duplikat');
+      return;
+    }
+
+    const descDup = allComfort.some(c => String(c.id) !== String(id) && (c.desc || c.description || '').trim().toLowerCase() === normDesc);
+    if (descDup) {
+      showAdminToast('Deskripsi standar kenyamanan tidak boleh sama dengan standar yang sudah ada.', 'error', 'Deskripsi Duplikat');
+      return;
+    }
+
     setButtonSubmitting(submitBtn, true, 'Menyimpan Standar...');
     try {
       if (id) {
@@ -2044,7 +2251,7 @@ if (formComfort) {
       closeModal(true);
       renderComfortTable();
     } catch (err) {
-      showAdminToast('Gagal menyimpan standar: ' + err.message, 'error');
+      showAdminToast(err.message || 'Gagal menyimpan standar.', 'error');
     } finally {
       setButtonSubmitting(submitBtn, false);
     }

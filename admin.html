@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="css/styles.css?v=5.5">
+  <link rel="stylesheet" href="css/styles.css?v=5.6">
   
   <!-- Firebase SDK App & Firestore Compat -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -259,11 +259,11 @@
                 </div>
                 <div class="form-group">
                   <label for="profile-students">Jumlah Siswa</label>
-                  <input type="number" id="profile-students" class="form-control" placeholder="143" min="1" required>
+                  <input type="text" id="profile-students" class="form-control" placeholder="143" min="1" required>
                 </div>
                 <div class="form-group">
                   <label for="profile-classes">Jumlah Ruang Kelas</label>
-                  <input type="number" id="profile-classes" class="form-control" placeholder="6" min="1" required>
+                  <input type="text" id="profile-classes" class="form-control" placeholder="6" min="1" required>
                 </div>
               </div>
 
@@ -968,16 +968,46 @@
             <label for="calendar-title">Judul Agenda / Kegiatan</label>
             <input type="text" id="calendar-title" class="form-control" placeholder="Contoh: Asesmen Nasional Berbasis Komputer (ANBK)" required>
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div class="form-group">
-              <label for="calendar-date">Tanggal (Angka)</label>
-              <input type="text" id="calendar-date" class="form-control" placeholder="Contoh: 15 / 15-18" required>
+          
+          <!-- Mekanisme Input Tanggal & Bulan Otomatis (Tanpa Ketik Manual) -->
+          <div style="background: var(--surface-alt); padding: 14px 16px; border-radius: var(--radius-card); border: 1px solid var(--border); margin-bottom: var(--space-4);">
+            <div style="margin-bottom: 12px;">
+              <label for="calendar-native-picker" style="font-size: 0.85rem; font-weight: 600; color: var(--primary); display: block; margin-bottom: 4px;">Pilih Tanggal dari Kalender</label>
+              <input type="date" id="calendar-native-picker" class="form-control" style="cursor: pointer;">
+              <small style="color: var(--text-muted); font-size: 0.78rem; display: block; margin-top: 3px;">Pilih langsung lewat kalender di atas, atau tentukan tanggal &amp; bulan lewat pilihan di bawah ini:</small>
             </div>
-            <div class="form-group">
-              <label for="calendar-month">Bulan (Singkatan)</label>
-              <input type="text" id="calendar-month" class="form-control" placeholder="Contoh: SEP / OKT / NOV" required>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="calendar-day-select" style="font-size: 0.82rem; font-weight: 600;">Tanggal (Hari)</label>
+                <select id="calendar-day-select" class="form-control" required>
+                  <!-- Populated by JS: 1 sampai 31 -->
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="calendar-month-select" style="font-size: 0.82rem; font-weight: 600;">Bulan</label>
+                <select id="calendar-month-select" class="form-control" required>
+                  <option value="JUL">JUL - Juli</option>
+                  <option value="AGU">AGU - Agustus</option>
+                  <option value="SEP">SEP - September</option>
+                  <option value="OKT">OKT - Oktober</option>
+                  <option value="NOV">NOV - November</option>
+                  <option value="DES">DES - Desember</option>
+                  <option value="JAN">JAN - Januari</option>
+                  <option value="FEB">FEB - Februari</option>
+                  <option value="MAR">MAR - Maret</option>
+                  <option value="APR">APR - April</option>
+                  <option value="MEI">MEI - Mei</option>
+                  <option value="JUN">JUN - Juni</option>
+                </select>
+              </div>
             </div>
+            
+            <!-- Hidden inputs preserving exact contract for CalendarTimeline and SchoolDB -->
+            <input type="hidden" id="calendar-date" required>
+            <input type="hidden" id="calendar-month" required>
           </div>
+
           <div class="form-group">
             <label for="calendar-desc">Keterangan Singkat</label>
             <textarea id="calendar-desc" class="form-control" style="min-height: 70px;" placeholder="Penjelasan ringkas agenda..."></textarea>
@@ -993,8 +1023,13 @@
             <input type="text" id="habit-title" class="form-control" placeholder="Contoh: Literasi 15 Menit Pagi" required>
           </div>
           <div class="form-group">
-            <label for="habit-category">Kategori Pilar</label>
-            <input type="text" id="habit-category" class="form-control" placeholder="Contoh: Akademik / Karakter / Lingkungan" required>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+              <label for="habit-category" style="margin-bottom:0;">Kategori Pilar Pembiasaan</label>
+              <button type="button" id="btn-quick-add-habit-category" class="btn-text-link" style="font-size:12px; color:var(--primary); background:none; border:none; cursor:pointer; font-weight:600;">+ Tambah Kategori Baru</button>
+            </div>
+            <select id="habit-category" class="form-control" required>
+              <!-- Populated by JS -->
+            </select>
           </div>
           <div class="form-group">
             <label for="habit-desc">Deskripsi Pembiasaan</label>
@@ -1063,10 +1098,10 @@
   </div>
 
   <!-- Modular Architecture Bundles -->
-  <script src="js/config/constants.js?v=5.5"></script>
-  <script src="js/utils/formatters.js?v=5.5"></script>
-  <script src="js/utils/guards.js?v=5.5"></script>
-  <script src="js/db.js?v=5.5"></script>
-  <script src="js/admin.js?v=5.5"></script>
+  <script src="js/config/constants.js?v=5.6"></script>
+  <script src="js/utils/formatters.js?v=5.6"></script>
+  <script src="js/utils/guards.js?v=5.6"></script>
+  <script src="js/db.js?v=5.6"></script>
+  <script src="js/admin.js?v=5.6"></script>
 </body>
 </html>

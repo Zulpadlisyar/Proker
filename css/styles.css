@@ -3062,6 +3062,31 @@ body.admin-body {
   stroke: #FFFFFF;
 }
 
+/* Active State for Inbox Section Filters */
+.filter-inbox-btn {
+  transition: all 180ms ease;
+  cursor: pointer;
+}
+
+.filter-inbox-btn.active {
+  background-color: var(--color-primary) !important;
+  color: #FFFFFF !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 2px 8px rgba(47, 107, 69, 0.25) !important;
+  font-weight: 700 !important;
+}
+
+.stat-card.clickable-stat {
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.stat-card.clickable-stat:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-primary);
+  box-shadow: 0 6px 16px rgba(47, 107, 69, 0.12);
+}
+
 /* 5. Admin Main Content */
 .admin-content {
   padding: 28px 32px;

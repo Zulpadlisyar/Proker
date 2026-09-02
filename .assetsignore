@@ -27,3 +27,4 @@ package.json
 package-lock.json
 wrangler.jsonc
 vercel.json
+tests/

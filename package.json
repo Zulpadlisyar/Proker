@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Website Informasi Sekolah SDN Ngeposari 2",
   "scripts": {
+    "test": "node tests/audit.test.js && node tests/database.test.js",
+    "dev": "wrangler dev",
+    "start": "wrangler dev",
     "deploy": "wrangler deploy",
     "preview": "wrangler dev"
   },

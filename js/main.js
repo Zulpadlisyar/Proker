@@ -54,7 +54,7 @@
     setTimeout(removeToast, 3000);
   }
 
-  // 3. Dialog Modal Helper
+  // 3. Dialog Modal Helper & Dedicated Gallery Lightbox
   function openDialog(title, htmlContent) {
     const overlay = document.getElementById('dialog-overlay');
     const bodyContent = document.getElementById('dialog-body-content');
@@ -77,7 +77,9 @@
         <div class="dialog-modal">
           <div class="dialog-header">
             <h3 id="dialog-title-text" style="font-size: 1.15rem; font-weight:700; color:var(--primary); margin:0;"></h3>
-            <button class="dialog-close-btn" id="dialog-close-btn" aria-label="Tutup Dialog">&times;</button>
+            <button class="dialog-close-btn" id="dialog-close-btn" aria-label="Tutup Dialog" title="Tutup (Esc)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
           </div>
           <div class="dialog-body" id="dialog-body-content" style="padding: 1.5rem;"></div>
         </div>
@@ -96,6 +98,70 @@
       });
       window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && dialog.classList.contains('open')) closeDialog();
+      });
+    }
+  }
+
+  // Dedicated High-End Gallery Lightbox Viewer
+  function openGalleryLightbox(imgSrc, caption = '') {
+    initGalleryLightbox();
+    const lightbox = document.getElementById('gallery-lightbox-overlay');
+    const imgEl = document.getElementById('gallery-lightbox-img');
+    const captionEl = document.getElementById('gallery-lightbox-caption');
+
+    if (lightbox && imgEl) {
+      imgEl.src = imgSrc;
+      imgEl.alt = caption || 'Dokumentasi Sekolah';
+      if (captionEl) {
+        captionEl.textContent = caption || 'Dokumentasi SD Negeri 2 Ngeposari';
+      }
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function initGalleryLightbox() {
+    if (!document.getElementById('gallery-lightbox-overlay')) {
+      const lightbox = document.createElement('div');
+      lightbox.id = 'gallery-lightbox-overlay';
+      lightbox.className = 'gallery-lightbox-overlay';
+      lightbox.innerHTML = `
+        <div class="gallery-lightbox-container">
+          <button class="gallery-lightbox-close-btn" id="gallery-lightbox-close" aria-label="Tutup Pratinjau Foto" title="Tutup (Esc)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6 6 18M6 6l12 12"/>
+            </svg>
+          </button>
+          
+          <div class="gallery-lightbox-img-wrapper">
+            <img id="gallery-lightbox-img" class="gallery-lightbox-img" src="" alt="Pratinjau Foto">
+          </div>
+
+          <div class="gallery-lightbox-caption-box">
+            <span class="gallery-lightbox-badge">DOKUMENTASI SEKOLAH</span>
+            <p id="gallery-lightbox-caption" class="gallery-lightbox-caption"></p>
+            <span class="gallery-lightbox-sub">SD Negeri 2 Ngeposari &bull; Semanu, Gunungkidul</span>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(lightbox);
+
+      const closeBtn = document.getElementById('gallery-lightbox-close');
+      const closeLightbox = () => {
+        lightbox.classList.remove('open');
+        document.body.style.overflow = '';
+      };
+
+      if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox || e.target.classList.contains('gallery-lightbox-container')) {
+          closeLightbox();
+        }
+      });
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox.classList.contains('open')) {
+          closeLightbox();
+        }
       });
     }
   }
@@ -337,10 +403,7 @@
         card.addEventListener('click', () => {
           const img = card.getAttribute('data-image');
           const caption = card.getAttribute('data-caption');
-          openDialog(caption, `
-            <img src="${img}" alt="${caption}" style="width:100%; border-radius: var(--radius-sm); margin-bottom: 0;">
-            <p style="margin-top:1rem; font-weight:600; text-align:center; color:var(--text);">${caption}</p>
-          `);
+          openGalleryLightbox(img, caption);
         });
       });
     }
@@ -554,10 +617,7 @@
           card.addEventListener('click', () => {
             const img = card.getAttribute('data-image');
             const caption = card.getAttribute('data-caption');
-            openDialog(caption, `
-              <img src="${img}" alt="${caption}" style="width:100%; border-radius: var(--radius-sm); margin-bottom: 0;">
-              <p style="margin-top:1rem; font-weight:600; text-align:center; color:var(--text);">${caption}</p>
-            `);
+            openGalleryLightbox(img, caption);
           });
         });
       }
@@ -931,7 +991,8 @@
     if (document.getElementById('article-title')) renderActivityDetailPage();
   });
 
-  // Export showToast and openDialog for global scope compatibility
+  // Export showToast, openDialog, and openGalleryLightbox for global scope compatibility
   window.showToast = showToast;
   window.openDialog = openDialog;
+  window.openGalleryLightbox = openGalleryLightbox;
 })();

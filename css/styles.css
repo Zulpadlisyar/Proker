@@ -2957,9 +2957,9 @@ footer, footer#main-footer {
 .dialog-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background-color: rgba(10, 24, 16, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2977,27 +2977,29 @@ footer, footer#main-footer {
   pointer-events: auto;
 }
 
-.dialog-box {
+.dialog-box,
+.dialog-modal {
   background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   width: 100%;
-  max-width: 600px;
-  max-height: 85vh;
+  max-width: 640px;
+  max-height: 88vh;
   overflow-y: auto;
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
   transform: scale(0.95);
-  transition: transform 250ms ease;
+  transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
 }
 
-.dialog-overlay.open .dialog-box {
+.dialog-overlay.open .dialog-box,
+.dialog-overlay.open .dialog-modal {
   transform: scale(1);
 }
 
 .dialog-header {
-  padding: 18px 24px;
+  padding: 16px 22px;
   border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
@@ -3008,26 +3010,213 @@ footer, footer#main-footer {
   z-index: 2;
 }
 
-.dialog-close {
-  background: none;
-  border: none;
+.dialog-close,
+.dialog-close-btn {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
   color: var(--text-muted);
   cursor: pointer;
-  padding: 6px;
-  border-radius: var(--radius-sm);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 150ms ease, background-color 150ms ease;
+  transition: all 200ms ease;
+  font-size: 1.1rem;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
-.dialog-close:hover {
-  color: var(--text);
-  background-color: var(--bg);
+.dialog-close:hover,
+.dialog-close-btn:hover {
+  color: #FFFFFF;
+  background-color: var(--primary);
+  border-color: var(--primary);
+  transform: rotate(90deg) scale(1.08);
 }
 
 .dialog-body {
+  padding: 20px 24px;
+}
+
+.dialog-body img {
+  max-width: 100%;
+  max-height: 65vh;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+  display: block;
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   GALLERY LIGHTBOX VIEWER (High-End Proportional Image Modal)
+   ========================================================================== */
+.gallery-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(10, 24, 16, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 24px;
+  z-index: 10000;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 280ms cubic-bezier(0.16, 1, 0.3, 1), visibility 280ms ease;
+}
+
+.gallery-lightbox-overlay.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.gallery-lightbox-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 95vw;
+  max-height: 94vh;
+  width: 100%;
+  animation: lightboxZoomIn 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes lightboxZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Premium Floating 'X' Close Button */
+.gallery-lightbox-close-btn {
+  position: absolute;
+  top: -16px;
+  right: 12px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10005;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gallery-lightbox-close-btn:hover {
+  background: #E3B63F;
+  border-color: #E3B63F;
+  color: #153220;
+  transform: rotate(90deg) scale(1.12);
+  box-shadow: 0 6px 24px rgba(227, 182, 63, 0.4);
+}
+
+.gallery-lightbox-close-btn:active {
+  transform: rotate(90deg) scale(0.96);
+}
+
+/* Image Wrapper with Perfect Proportions */
+.gallery-lightbox-img-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 90vw;
+  max-height: 72vh;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.gallery-lightbox-img {
+  max-width: 100%;
+  max-height: 72vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Caption and Meta Box */
+.gallery-lightbox-caption-box {
+  margin-top: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 12px 24px;
+  border-radius: var(--radius-pill);
+  text-align: center;
+  max-width: 800px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.gallery-lightbox-badge {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-yellow);
+}
+
+.gallery-lightbox-caption {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.gallery-lightbox-sub {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 400;
+}
+
+@media (max-width: 768px) {
+  .gallery-lightbox-close-btn {
+    top: -12px;
+    right: 4px;
+    width: 40px;
+    height: 40px;
+  }
+  .gallery-lightbox-img-wrapper {
+    max-height: 65vh;
+  }
+  .gallery-lightbox-img {
+    max-height: 65vh;
+  }
+  .gallery-lightbox-caption-box {
+    border-radius: 12px;
+    padding: 10px 16px;
+  }
+  .gallery-lightbox-caption {
+    font-size: 13.5px;
+  }
 }
 
 /* Production Rendering & Layout Stability Optimizations */

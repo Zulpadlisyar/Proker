@@ -1503,9 +1503,9 @@ function renderInboxList() {
               </span>
             </div>
             <div style="font-size: 12.5px; color: var(--text-muted); display: flex; gap: 14px; flex-wrap: wrap;">
-              ${inq.email ? `<span>✉️ ${inq.email}</span>` : ''}
-              ${inq.phone ? `<span>📞 ${inq.phone}</span>` : ''}
-              ${inq.subject ? `<span>📌 ${inq.subject}</span>` : ''}
+              ${inq.email ? `<span>Email: ${inq.email}</span>` : ''}
+              ${inq.phone ? `<span>Telp: ${inq.phone}</span>` : ''}
+              ${inq.subject ? `<span>Subjek: ${inq.subject}</span>` : ''}
             </div>
           </div>
           <span style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">${inq.date || ''}</span>

@@ -38,7 +38,7 @@
             </div>
             <h3 class="news-title">${activity.title}</h3>
             <p class="news-excerpt">${excerpt}</p>
-            <a href="detail-kegiatan.html?id=${activity.id}" class="btn-tertiary">Baca selengkapnya →</a>
+            <a href="detail-kegiatan.html?id=${activity.id}&from=kegiatan" class="btn-tertiary">Baca selengkapnya →</a>
           </div>
         </div>
       `;
@@ -59,7 +59,7 @@
           </div>
           <h3 class="news-title">${activity.title}</h3>
           <p class="news-snippet-text">${excerpt}</p>
-          <a href="detail-kegiatan.html?id=${activity.id}" class="news-read-more">Baca selengkapnya &rarr;</a>
+          <a href="detail-kegiatan.html?id=${activity.id}&from=beranda" class="news-read-more">Baca selengkapnya &rarr;</a>
         </div>
       </article>
     `;

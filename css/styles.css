@@ -18,8 +18,8 @@
   --color-yellow: #E3B63F;
   --color-yellow-soft: #FFF5D8;
 
-  --color-blue: #356B91;
-  --color-blue-soft: #EAF2F7;
+  --color-blue: var(--color-primary);
+  --color-blue-soft: var(--color-primary-soft);
 
   --color-bg: #FAF9F5;
   --color-surface: #FFFFFF;
@@ -37,8 +37,8 @@
   --primary: var(--color-primary);
   --primary-dark: var(--color-primary-dark);
   --primary-light: #3D8557;
-  --accent: var(--color-blue);
-  --accent-soft: var(--color-blue-soft);
+  --accent: var(--color-primary);
+  --accent-soft: var(--color-primary-soft);
   --accent-glow: var(--color-yellow);
   --text: var(--color-text);
   --text-muted: var(--color-text-muted);
@@ -716,7 +716,7 @@ body.hero-page header#main-header {
 .info-card-item:hover {
   border-color: var(--primary-light);
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(29, 78, 216, 0.12);
+  box-shadow: 0 8px 24px rgba(47, 107, 69, 0.12);
 }
 
 .info-card-num {
@@ -760,7 +760,7 @@ body.hero-page header#main-header {
 .pillar-card:hover {
   border-color: var(--primary-light);
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(29, 78, 216, 0.12);
+  box-shadow: 0 8px 24px rgba(47, 107, 69, 0.12);
 }
 
 .pillar-icon {
@@ -768,7 +768,7 @@ body.hero-page header#main-header {
   height: 40px;
   border-radius: var(--radius-sm);
   background-color: var(--accent-soft);
-  border: 1px solid #BFDBFE;
+  border: 1px solid var(--color-border);
   color: var(--primary);
   display: flex;
   align-items: center;
@@ -1326,7 +1326,7 @@ body.hero-page header#main-header {
 
 .calendar-date-badge {
   background-color: var(--accent-soft);
-  border: 1px solid #BFDBFE;
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   padding: 6px 10px;
   text-align: center;
@@ -1371,8 +1371,8 @@ body.hero-page header#main-header {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-width: 920px;
-  margin: var(--space-4) auto 0;
+  max-width: 100%;
+  margin: var(--space-4) 0 0;
   width: 100%;
 }
 
@@ -1510,7 +1510,7 @@ body.hero-page header#main-header {
   background-color: var(--primary);
   color: #FFFFFF;
   border-color: var(--primary);
-  box-shadow: 0 3px 10px rgba(30, 64, 175, 0.28);
+  box-shadow: 0 3px 10px rgba(47, 107, 69, 0.28);
 }
 
 @media (max-width: 680px) {
@@ -2017,15 +2017,15 @@ body.hero-page header#main-header {
 }
 
 /* ==========================================================================
-   EDITORIAL BENTO GALLERY GRID (Section 27 - Dokumentasi Sekolah)
-   Harmonious 3-Column x 3-Row Mosaic with Anchor Feature
+   EDITORIAL DOCUMENTATION GALLERY GRID (Section 27 - Dokumentasi Sekolah)
+   Harmonious non-overlapping 3-column responsive layout
    ========================================================================== */
 .home-gallery-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: 240px 240px 220px;
   gap: 20px;
   margin-top: var(--space-5);
+  width: 100%;
 }
 
 .home-gallery-grid .gallery-card {
@@ -2036,6 +2036,9 @@ body.hero-page header#main-header {
   border: 1px solid var(--border);
   background-color: var(--surface-alt);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  aspect-ratio: 16/10;
+  min-height: 220px;
+  height: auto;
   transition: transform var(--duration-fast) var(--ease), box-shadow var(--duration-fast) var(--ease), border-color var(--duration-fast) var(--ease);
 }
 
@@ -2043,37 +2046,6 @@ body.hero-page header#main-header {
   transform: translateY(-4px);
   box-shadow: 0 12px 28px rgba(33, 75, 49, 0.14);
   border-color: var(--primary);
-}
-
-/* Specific Positions in Bento Grid */
-.home-gallery-grid .gallery-card-featured {
-  grid-column: 1 / span 2;
-  grid-row: 1 / span 2;
-}
-
-.home-gallery-grid .gallery-card-top-right {
-  grid-column: 3;
-  grid-row: 1;
-}
-
-.home-gallery-grid .gallery-card-mid-right {
-  grid-column: 3;
-  grid-row: 2;
-}
-
-.home-gallery-grid .gallery-card-bottom-1 {
-  grid-column: 1;
-  grid-row: 3;
-}
-
-.home-gallery-grid .gallery-card-bottom-2 {
-  grid-column: 2;
-  grid-row: 3;
-}
-
-.home-gallery-grid .gallery-card-bottom-3 {
-  grid-column: 3;
-  grid-row: 3;
 }
 
 .home-gallery-grid .gallery-img {
@@ -2095,24 +2067,15 @@ body.hero-page header#main-header {
   top: 14px;
   left: 14px;
   z-index: 2;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  color: var(--color-primary-dark);
+  background: var(--color-primary);
+  color: #FFFFFF;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
   padding: 5px 12px;
   border-radius: var(--radius-pill);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.home-gallery-grid .gallery-card-featured .gallery-card-badge {
-  background: var(--color-primary);
-  color: #FFFFFF;
-  border-color: var(--color-primary);
-  box-shadow: 0 3px 10px rgba(47, 107, 69, 0.3);
+  border: 1px solid var(--color-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* Zoom Hint Button */
@@ -2148,7 +2111,7 @@ body.hero-page header#main-header {
   position: absolute;
   inset: auto 0 0 0;
   background: linear-gradient(180deg, rgba(15, 35, 23, 0) 0%, rgba(15, 35, 23, 0.68) 45%, rgba(10, 25, 16, 0.94) 100%);
-  padding: 28px 20px 16px;
+  padding: 24px 18px 14px;
   color: #FFFFFF;
   display: flex;
   flex-direction: column;
@@ -2166,7 +2129,7 @@ body.hero-page header#main-header {
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--color-gold);
+  color: var(--color-yellow);
   margin-bottom: 3px;
 }
 
@@ -2179,17 +2142,12 @@ body.hero-page header#main-header {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
-.home-gallery-grid .gallery-card-featured .gallery-card-title {
-  font-size: 20px;
-  line-height: 1.3;
-  margin-bottom: 6px;
-}
-
 .home-gallery-grid .gallery-card-desc {
-  font-size: 13px;
+  font-size: 12.5px;
   color: rgba(255, 255, 255, 0.9);
-  line-height: 1.5;
-  margin: 0;
+  line-height: 1.45;
+  margin-top: 3px;
+  margin-bottom: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -2200,18 +2158,11 @@ body.hero-page header#main-header {
 @media (max-width: 960px) {
   .home-gallery-grid {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: auto;
     gap: 16px;
   }
-  .home-gallery-grid .gallery-card-featured {
-    grid-column: 1 / -1;
-    grid-row: auto;
-    height: 320px;
-  }
   .home-gallery-grid .gallery-card {
-    height: 220px;
-    grid-column: auto !important;
-    grid-row: auto !important;
+    aspect-ratio: 16/10;
+    min-height: 200px;
   }
 }
 
@@ -2220,11 +2171,9 @@ body.hero-page header#main-header {
     grid-template-columns: 1fr;
     gap: 14px;
   }
-  .home-gallery-grid .gallery-card-featured {
-    height: 260px;
-  }
   .home-gallery-grid .gallery-card {
-    height: 200px;
+    aspect-ratio: 16/10;
+    min-height: 190px;
   }
 }
 
@@ -2462,7 +2411,7 @@ body.hero-page header#main-header {
 
 .consultation-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+  box-shadow: 0 0 0 3px rgba(47, 107, 69, 0.15);
 }
 
 .consultation-textarea {
@@ -2579,7 +2528,7 @@ body.hero-page header#main-header {
 }
 
 .loading-spinner-primary {
-  border-color: rgba(29, 78, 216, 0.2);
+  border-color: rgba(47, 107, 69, 0.2);
   border-top-color: var(--primary);
 }
 
@@ -3013,7 +2962,7 @@ body.admin-body {
   justify-content: center;
   min-height: 100vh;
   padding: 24px;
-  background: radial-gradient(circle at 50% 30%, #EFF6FF 0%, #DBEAFE 100%);
+  background: radial-gradient(circle at 50% 30%, #F4F8F4 0%, #EAF3EC 100%);
 }
 
 .login-container > div {
@@ -3106,7 +3055,7 @@ body.admin-body {
 .admin-nav-btn.active {
   background-color: var(--primary);
   color: #FFFFFF;
-  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
+  box-shadow: 0 4px 12px rgba(47, 107, 69, 0.25);
 }
 
 .admin-nav-btn.active svg {
@@ -3162,7 +3111,7 @@ body.admin-body {
 .stat-card:hover {
   transform: translateY(-2px);
   border-color: var(--primary-light);
-  box-shadow: 0 6px 18px rgba(29, 78, 216, 0.08);
+  box-shadow: 0 6px 18px rgba(47, 107, 69, 0.08);
 }
 
 .stat-num {
@@ -3182,7 +3131,7 @@ body.admin-body {
 /* 7. Disclaimer & Info Callouts */
 .upload-disclaimer-box {
   background-color: var(--accent-soft);
-  border: 1px solid #BFDBFE;
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-default);
   padding: 16px 20px;
   display: flex;
@@ -3262,7 +3211,7 @@ body.admin-body {
 .form-control:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
+  box-shadow: 0 0 0 3px rgba(47, 107, 69, 0.15);
 }
 
 textarea.form-control {
@@ -3371,12 +3320,12 @@ textarea.form-control {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background-color: #EFF6FF;
-  border: 1px solid #BFDBFE;
+  background-color: var(--color-primary-soft);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm, 0px);
   padding: 6px 12px;
   cursor: pointer;
-  color: #1E40AF;
+  color: var(--color-primary-dark);
   font-size: 0.82rem;
   font-weight: 600;
   transition: all 150ms ease;
@@ -3388,8 +3337,8 @@ textarea.form-control {
 }
 
 .btn-action-edit:hover {
-  background-color: #1E40AF;
-  border-color: #1E40AF;
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
   color: #FFFFFF;
 }
 
@@ -3681,7 +3630,7 @@ textarea.form-control {
 .admin-search-input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.12);
+  box-shadow: 0 0 0 3px rgba(47, 107, 69, 0.12);
 }
 
 .admin-pagination {
@@ -3766,8 +3715,8 @@ textarea.form-control {
 }
 
 .audit-badge-ubah {
-  background-color: #EFF6FF;
-  color: #1E40AF;
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary-dark);
 }
 
 .audit-badge-hapus {

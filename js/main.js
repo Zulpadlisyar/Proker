@@ -630,6 +630,32 @@
       return;
     }
 
+    // Smart back button navigation
+    const backBtn = document.querySelector('.btn-back');
+    if (backBtn) {
+      const fromSource = params.get('from');
+      const referrer = document.referrer || '';
+      const hasSameHostReferrer = referrer && referrer.includes(window.location.host) && !referrer.includes('detail-kegiatan.html');
+      const isFromBeranda = fromSource === 'beranda' || (hasSameHostReferrer && (referrer.endsWith('/') || referrer.includes('index.html')));
+
+      if (isFromBeranda) {
+        backBtn.setAttribute('href', 'index.html#activities-section');
+        const textSpan = backBtn.querySelector('span');
+        if (textSpan) textSpan.textContent = 'Kembali ke Beranda';
+      } else {
+        backBtn.setAttribute('href', 'kegiatan.html#activities-page-sec');
+        const textSpan = backBtn.querySelector('span');
+        if (textSpan) textSpan.textContent = 'Kembali ke Berita';
+      }
+
+      backBtn.addEventListener('click', (e) => {
+        if (hasSameHostReferrer && window.history.length > 1) {
+          e.preventDefault();
+          window.history.back();
+        }
+      });
+    }
+
     // Increment view count
     if (act.id) {
       const newViews = await window.SchoolDB.incrementActivityViews(act.id);

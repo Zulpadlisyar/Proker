@@ -52,7 +52,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="css/styles.css?v=5.3">
+  <link rel="stylesheet" href="css/styles.css?v=5.4">
 </head>
 <body class="sub-page">
 
@@ -81,13 +81,13 @@
       </p>
     </div>
 
-    <!-- Article Featured Image (Balanced Aspect Ratio) -->
-    <div style="border-radius: var(--radius-card); overflow: hidden; border: 1px solid var(--border); margin-bottom: var(--space-6); aspect-ratio: 16/9; max-height: 440px; background-color: var(--surface-alt);">
-      <img id="article-img" src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1200&h=675&fit=crop" alt="Foto Kegiatan" style="width:100%; height:100%; object-fit:cover;">
+    <!-- Article Featured Image (Full width matching paragraph text) -->
+    <div class="article-img-box" style="width: 100%; border-radius: var(--radius-card); overflow: hidden; border: 1px solid var(--border); margin-bottom: var(--space-6); aspect-ratio: 16/9; background-color: var(--surface-alt);">
+      <img id="article-img" src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1200&h=675&fit=crop" alt="Foto Kegiatan" style="width:100%; height:100%; object-fit:cover; display:block;">
     </div>
 
     <!-- Article Main Text Content -->
-    <article id="article-body" style="font-size: 1.05rem; line-height: 1.8; color: var(--text);">
+    <article id="article-body" style="width: 100%; font-size: 1.05rem; line-height: 1.8; color: var(--text);">
       <p style="margin-bottom: 1.5rem;">
         SD Negeri 2 Ngeposari kembali menyelenggarakan kegiatan latihan rutin Pramuka Penggalang yang diikuti oleh seluruh siswa-siswi kelas IV, V, dan VI di lapangan utama sekolah. Kegiatan ini bertujuan memupuk rasa kedisiplinan, kemandirian, kepemimpinan, serta rasa cinta tanah air sejak usia sekolah dasar.
       </p>
@@ -115,19 +115,19 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <!-- Modular Architecture Bundles -->
-  <script src="js/config/constants.js?v=5.3"></script>
-  <script src="js/utils/formatters.js?v=5.3"></script>
-  <script src="js/utils/guards.js?v=5.3"></script>
-  <script src="js/components/common/EmptyState.js?v=5.3"></script>
-  <script src="js/components/common/Skeleton.js?v=5.3"></script>
-  <script src="js/components/layout/Navbar.js?v=5.3"></script>
-  <script src="js/components/layout/Footer.js?v=5.3"></script>
-  <script src="js/components/public/ActivityCard.js?v=5.3"></script>
-  <script src="js/components/public/FacilityCard.js?v=5.3"></script>
-  <script src="js/components/public/TeacherCard.js?v=5.3"></script>
-  <script src="js/components/public/GalleryCard.js?v=5.3"></script>
-  <script src="js/components/ui/Carousel.js?v=5.3"></script>
-  <script src="js/db.js?v=5.3"></script>
-  <script src="js/main.js?v=5.3"></script>
+  <script src="js/config/constants.js?v=5.4"></script>
+  <script src="js/utils/formatters.js?v=5.4"></script>
+  <script src="js/utils/guards.js?v=5.4"></script>
+  <script src="js/components/common/EmptyState.js?v=5.4"></script>
+  <script src="js/components/common/Skeleton.js?v=5.4"></script>
+  <script src="js/components/layout/Navbar.js?v=5.4"></script>
+  <script src="js/components/layout/Footer.js?v=5.4"></script>
+  <script src="js/components/public/ActivityCard.js?v=5.4"></script>
+  <script src="js/components/public/FacilityCard.js?v=5.4"></script>
+  <script src="js/components/public/TeacherCard.js?v=5.4"></script>
+  <script src="js/components/public/GalleryCard.js?v=5.4"></script>
+  <script src="js/components/ui/Carousel.js?v=5.4"></script>
+  <script src="js/db.js?v=5.4"></script>
+  <script src="js/main.js?v=5.4"></script>
 </body>
 </html>

@@ -12,7 +12,7 @@ Portal web informasi resmi dan sistem manajemen konten (CMS) **SD Negeri 2 Ngepo
 | **NPSN** | 20401876 |
 | **NSS** | 101040310002 |
 | **Status Akreditasi** | Terakreditasi **A** (Unggul) |
-| **Kepala Sekolah** | Bapak Maryanto, M.Pd. |
+| **Kepala Sekolah** | Sumarni, S.Pd.SD., M.Pd. |
 | **Alamat Lengkap** | Mojo RT 01 / RW 13, Kalurahan Ngeposari, Kapanewon Semanu, Kabupaten Gunungkidul, D.I. Yogyakarta 55893 |
 | **Email Resmi** | sdn2ngeposari@gmail.com |
 

@@ -619,6 +619,74 @@ window.SchoolDB = {
           }
           this.data._viewsResetV6 = true;
         }
+
+        // Ensure activities and gallery use authentic school photos
+        if (!this.data._authenticActivitiesV1) {
+          if (Array.isArray(this.data.activities)) {
+            const a1 = this.data.activities.find(a => a.id === 'a1');
+            if (a1 && (a1.image.includes('unsplash') || a1.image.includes('photo-1509062522246'))) {
+              a1.image = 'images/school/upacara_bendera.webp';
+              a1.title = 'Upacara bendera senin dan pembinaan karakter';
+            }
+            const a2 = this.data.activities.find(a => a.id === 'a2');
+            if (a2 && (a2.image.includes('unsplash') || a2.image.includes('photo-1497633762265'))) {
+              a2.image = 'images/school/latihan_pramuka.webp';
+              a2.title = 'Latihan rutin pramuka penggalang dan siaga';
+            }
+            const a3 = this.data.activities.find(a => a.id === 'a3');
+            if (a3 && (a3.image.includes('unsplash') || a3.image.includes('photo-1542601906990'))) {
+              a3.image = 'images/school/latihan_tari.webp';
+              a3.title = 'Latihan seni tari tradisional dan olah kreasi';
+            }
+            if (!this.data.activities.some(a => a.id === 'a4')) {
+              this.data.activities.push({
+                id: 'a4',
+                title: 'Kerja bakti gerakan sekolah hijau',
+                date: '2026-08-05',
+                category: 'Sosial & Lingkungan',
+                views: 0,
+                excerpt: 'Aksi peduli lingkungan bersama guru dan siswa menjaga kebersihan serta menanam pohon di sekolah.',
+                content: 'Sebagai sekolah yang berbudaya lingkungan, SDN Ngeposari 2 mengadakan kerja bakti bulanan. Siswa diajarkan memilah sampah organik dan non-organik, serta melakukan penanaman bibit tanaman hias dan apotek hidup di area taman sekolah.',
+                image: 'images/school/kegiatan1.webp'
+              });
+            }
+          }
+          if (Array.isArray(this.data.gallery)) {
+            const g3 = this.data.gallery.find(g => g.id === 'g3');
+            if (g3 && (g3.image.includes('fasilitas1') || g3.image.includes('unsplash'))) {
+              g3.image = 'images/school/latihan_pramuka.webp';
+              g3.caption = 'Latihan kepramukaan penggalang membentuk kedisiplinan';
+            }
+            const g4 = this.data.gallery.find(g => g.id === 'g4');
+            if (g4 && (g4.image.includes('unsplash') || g4.image.includes('photo-1509062522246'))) {
+              g4.image = 'images/school/upacara_bendera.webp';
+              g4.caption = 'Upacara bendera & apel pembinaan karakter';
+            }
+            const g5 = this.data.gallery.find(g => g.id === 'g5');
+            if (g5 && (g5.image.includes('unsplash') || g5.image.includes('photo-1521587760476'))) {
+              g5.image = 'images/school/latihan_tari.webp';
+              g5.caption = 'Latihan seni tari tradisional siswa di ruang kelas';
+            }
+          }
+          this.data._authenticActivitiesV1 = true;
+        }
+
+        // Ensure teachers and principal match official school faculty records
+        if (!this.data._authenticTeachersV2) {
+          this.data.teachers = JSON.parse(JSON.stringify(INITIAL_DATA.teachers || []));
+          if (this.data.profile) {
+            if (!this.data.profile.principalName || this.data.profile.principalName.includes('Maryanto') || this.data.profile.principalName.includes('Hartono')) {
+              this.data.profile.principalName = INITIAL_DATA.profile.principalName;
+            }
+            if (!this.data.profile.principalImage || this.data.profile.principalImage.includes('unsplash')) {
+              this.data.profile.principalImage = INITIAL_DATA.profile.principalImage;
+            }
+            this.data.profile.totalTeachers = 8;
+            this.data.profile.totalPrincipal = 1;
+            this.data.profile.totalStaff = 2;
+          }
+          this.data._authenticTeachersV2 = true;
+        }
         
         await this.save();
       }
@@ -1009,7 +1077,7 @@ window.SchoolDB = {
       }) : this.data.profile.missions,
       logo: profileData.logo || this.data.profile.logo,
       hero: profileData.hero || this.data.profile.hero,
-      principalName: this.sanitizeText(profileData.principalName || this.data.profile.principalName || 'Bapak Maryanto, M.Pd.'),
+      principalName: this.sanitizeText(profileData.principalName || this.data.profile.principalName || 'Sumarni, S.Pd.SD., M.Pd.'),
       principalRole: this.sanitizeText(profileData.principalRole || this.data.profile.principalRole || 'Kepala Sekolah SD Negeri 2 Ngeposari'),
       principalImage: profileData.principalImage || this.data.profile.principalImage || '',
       principalGreeting: this.sanitizeText(profileData.principalGreeting !== undefined ? profileData.principalGreeting : (this.data.profile.principalGreeting || ''))

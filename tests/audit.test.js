@@ -75,7 +75,7 @@ test('1.4: All local images referenced in HTML exist on disk', () => {
   }
 });
 
-test('1.5: Headmaster official name is Bapak Maryanto, M.Pd. across all pages', () => {
+test('1.5: Headmaster official name is Sumarni, S.Pd.SD., M.Pd. across all pages', () => {
   for (const page of allPages) {
     const content = fs.readFileSync(page, 'utf8');
     assert(!content.includes('Bapak Hartono'), `${page} still contains legacy name Bapak Hartono`);

@@ -766,7 +766,7 @@ function loadProfileForm() {
   setVal('profile-history', profile.history);
   setVal('profile-vision', profile.vision || '-');
   setVal('profile-missions', (profile.missions || []).join('\n'));
-  setVal('profile-principal-name', profile.principalName || 'Bapak Maryanto, M.Pd.');
+  setVal('profile-principal-name', profile.principalName || 'Sumarni, S.Pd.SD., M.Pd.');
   setVal('profile-principal-role', profile.principalRole || 'Kepala Sekolah SD Negeri 2 Ngeposari');
   setVal('profile-principal-greeting', profile.principalGreeting || '');
   

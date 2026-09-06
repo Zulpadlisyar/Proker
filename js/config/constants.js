@@ -59,9 +59,9 @@
       ],
       logo: 'images/logo.webp',
       hero: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&h=1000&fit=crop',
-      principalName: 'Bapak Maryanto, M.Pd.',
+      principalName: 'Sumarni, S.Pd.SD., M.Pd.',
       principalRole: 'Kepala Sekolah SD Negeri 2 Ngeposari',
-      principalImage: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=600&h=700&fit=crop',
+      principalImage: 'images/teachers/sumarni.webp',
       principalGreeting: "Assalamu’alaikum Warahmatullahi Wabarakatuh, Salam Sejahtera bagi Kita Semua.\n\nPuji syukur kita panjatkan ke hadirat Tuhan Yang Maha Esa atas limpahan rahmat dan karunia-Nya. Selamat datang di portal informasi resmi SD Negeri 2 Ngeposari, Kapanewon Semanu, Kabupaten Gunungkidul. Website ini kami hadirkan sebagai jendela keterbukaan informasi, media komunikasi yang hangat, dan sarana silaturahmi antara sekolah, orang tua wali, serta masyarakat luas.\n\nKami meyakini bahwa setiap anak yang melangkah masuk ke gerbang sekolah ini membawa benih potensi dan mimpi yang berharga. Di lingkungan yang asri dan teduh ini, para pendidik berkomitmen mendampingi siswa dengan penuh kesabaran, memadukan pembelajaran bermakna Kurikulum Merdeka, pembiasaan budi pekerti luhur Pancasila, serta kecintaan terhadap kelestarian lingkungan hidup.\n\nMari bersama-sama bergandeng tangan membimbing putra-putri kita menyongsong masa depan yang cerah, cerdas, dan berkarakter mulia."
     },
     facilities: [
@@ -101,42 +101,52 @@
     activities: [
       {
         id: 'a1',
-        title: 'Upacara bendera senin dan latihan pramuka',
+        title: 'Upacara bendera senin dan pembinaan karakter',
         date: '2026-08-17',
-        category: 'Kepramukaan',
+        category: 'Akademik',
         views: 0,
-        excerpt: 'Kegiatan rutin mingguan untuk meningkatkan kedisiplinan dan jiwa nasionalisme siswa.',
-        content: 'Setiap hari Senin pagi, seluruh siswa dan guru melaksanakan Upacara Bendera dengan khidmat. Setelah itu, kegiatan dilanjutkan dengan latihan Pramuka pada sore harinya untuk melatih kemandirian, gotong royong, dan keterampilan dasar kepramukaan.',
-        image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=960&h=540&fit=crop'
+        excerpt: 'Kegiatan rutin upacara bendera hari Senin untuk memupuk jiwa nasionalisme, patriotisme, dan kedisiplinan siswa.',
+        content: 'Setiap hari Senin pagi, seluruh siswa, dewan guru, dan staf SDN Ngeposari 2 melaksanakan Upacara Bendera dengan khidmat di halaman utama sekolah. Di bawah kibaran bendera merah putih, para siswa dilatih kedisiplinan, kerapian baris-berbaris, serta mendengarkan amanat pembina upacara yang menekankan pentingnya pembentukan karakter budi pekerti luhur dan nilai-nilai Pancasila dalam kehidupan sehari-hari.',
+        image: 'images/school/upacara_bendera.webp'
       },
       {
         id: 'a2',
-        title: 'Lomba menulis kreatif dan mewarnai',
-        date: '2026-08-10',
-        category: 'Prestasi',
+        title: 'Latihan rutin pramuka penggalang dan siaga',
+        date: '2026-08-15',
+        category: 'Kepramukaan',
         views: 0,
-        excerpt: 'Wadah bagi siswa untuk menyalurkan bakat seni rupa, menulis indah, dan menuangkan imajinasi mereka.',
-        content: 'Dalam rangka memperingati bulan bahasa, SDN Ngeposari 2 menyelenggarakan lomba menulis kreatif dan mewarnai tingkat kelas. Kegiatan ini bertujuan merangsang motorik halus serta imajinasi kreatif anak sejak usia dini.',
-        image: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=960&h=540&fit=crop'
+        excerpt: 'Siswa-siswi antusias mengikuti latihan kepramukaan, simpul tali-temali, dan pembentukan jiwa kepemimpinan.',
+        content: 'Kegiatan ekstrakurikuler kepramukaan di SDN Ngeposari 2 berlangsung dengan penuh semangat di halaman sekolah. Dipandu oleh para guru pembina, siswa belajar keterampilan kepramukaan seperti baris-berbaris, penggunaan atribut seragam lengkap, semaphore, simpul tali-temali, serta permainan kerja sama regu. Melalui kegiatan ini, siswa dilatih kemandirian, kekompakan gotong royong, dan kecintaan pada alam.',
+        image: 'images/school/latihan_pramuka.webp'
       },
       {
         id: 'a3',
+        title: 'Latihan seni tari tradisional dan olah kreasi',
+        date: '2026-08-10',
+        category: 'Prestasi',
+        views: 0,
+        excerpt: 'Wadah ekspresi kreativitas dan pelestarian seni budaya daerah melalui ekstrakurikuler tari tradisi di kelas.',
+        content: 'Sebagai bagian dari penguatan profil pelajar Pancasila yang berkebhinekaan global dan mencintai kearifan lokal, SDN Ngeposari 2 menyelenggarakan latihan seni tari tradisional. Para siswa dengan antusias mempelajari gerak dasar tari, kelenturan ritme, dan kekompakan kelompok di ruang kelas dengan bimbingan guru seni. Kegiatan ini menumbuhkan rasa percaya diri sekaligus melestarikan kekayaan seni tari nusantara.',
+        image: 'images/school/latihan_tari.webp'
+      },
+      {
+        id: 'a4',
         title: 'Kerja bakti gerakan sekolah hijau',
         date: '2026-08-05',
         category: 'Sosial & Lingkungan',
         views: 0,
         excerpt: 'Aksi peduli lingkungan bersama guru dan siswa menjaga kebersihan serta menanam pohon di sekolah.',
         content: 'Sebagai sekolah yang berbudaya lingkungan, SDN Ngeposari 2 mengadakan kerja bakti bulanan. Siswa diajarkan memilah sampah organik dan non-organik, serta melakukan penanaman bibit tanaman hias dan apotek hidup di area taman sekolah.',
-        image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=960&h=540&fit=crop'
+        image: 'images/school/kegiatan1.webp'
       }
     ],
     gallery: [
       { id: 'g1', caption: 'Suasana pembelajaran aktif & interaktif di kelas', image: 'images/school/kegiatan1.webp' },
       { id: 'g2', caption: 'Gedung utama dan halaman asri SDN 2 Ngeposari', image: 'images/school/hero.webp' },
-      { id: 'g3', caption: 'Fasilitas ruang kelas ramah anak & bersih', image: 'images/school/fasilitas1.webp' },
-      { id: 'g4', caption: 'Upacara bendera & apel pembinaan karakter', image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&h=600&fit=crop' },
-      { id: 'g5', caption: 'Kegiatan membaca bersama di perpustakaan', image: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&h=600&fit=crop' },
-      { id: 'g6', caption: 'Aksi peduli lingkungan & gerakan sekolah hijau', image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&h=600&fit=crop' }
+      { id: 'g3', caption: 'Latihan kepramukaan penggalang membentuk kedisiplinan', image: 'images/school/latihan_pramuka.webp' },
+      { id: 'g4', caption: 'Upacara bendera & apel pembinaan karakter', image: 'images/school/upacara_bendera.webp' },
+      { id: 'g5', caption: 'Latihan seni tari tradisional siswa di ruang kelas', image: 'images/school/latihan_tari.webp' },
+      { id: 'g6', caption: 'Fasilitas ruang kelas ramah anak & bersih', image: 'images/school/fasilitas1.webp' }
     ],
     contact: {
       address: 'Mojo RT 01/RW13, Ngeposari, Semanu, Gunungkidul, DI Yogyakarta, 55893',
@@ -152,17 +162,17 @@
       youtubeUrl: 'https://www.youtube.com/@sdngeposari2'
     },
     teachers: [
-      { id: 't1', name: 'Bapak Maryanto, M.Pd.', role: 'Kepala Sekolah', image: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=600&h=600&fit=crop' },
-      { id: 't2', name: 'Ibu Siti Nurhaliza, S.Pd.', role: 'Guru Kelas 1', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=600&fit=crop' },
-      { id: 't3', name: 'Ibu Rahmawati, S.Pd.', role: 'Guru Kelas 2', image: 'https://images.unsplash.com/photo-1580894732413-87b1c31274cf?w=600&h=600&fit=crop' },
-      { id: 't4', name: 'Bapak Supriyadi, S.Pd.', role: 'Guru Kelas 3', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&h=600&fit=crop' },
-      { id: 't5', name: 'Ibu Endang Lestari, S.Pd.', role: 'Guru Kelas 4', image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&h=600&fit=crop' },
-      { id: 't6', name: 'Bapak Wahyudi, S.Pd.', role: 'Guru Kelas 5', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=600&fit=crop' },
-      { id: 't7', name: 'Ibu Sri Mulyani, S.Pd.', role: 'Guru Kelas 6', image: 'https://images.unsplash.com/photo-1580894732470-349f50e82e5b?w=600&h=600&fit=crop' },
-      { id: 't8', name: 'Bapak Bambang Wijaya, S.Pd.', role: 'Guru PJOK', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=600&fit=crop' },
-      { id: 't9', name: 'Ibu Tri Wahyuni, S.Pd.I.', role: 'Guru Pendidikan Agama Islam', image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=600&fit=crop' },
-      { id: 't10', name: 'Bapak Danang Prasetyo', role: 'Tenaga Administrasi Sekolah (TU)', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&h=600&fit=crop' },
-      { id: 't11', name: 'Bapak Sutrisno', role: 'Tenaga Kependidikan / Penjaga Sekolah', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&h=600&fit=crop' }
+      { id: 't1', name: 'Sumarni, S.Pd.SD., M.Pd.', role: 'Kepala Sekolah', image: 'images/teachers/sumarni.webp' },
+      { id: 't2', name: 'Surip Lestari, S.Pd.SD.', role: 'Guru Kelas 1', image: 'images/teachers/surip_lestari.webp' },
+      { id: 't3', name: 'Diana Eka Prasetiawati, S.Pd.SD.', role: 'Guru Kelas 2', image: 'images/teachers/diana_eka.webp' },
+      { id: 't4', name: 'Ediwaljana, S.Pd.SD.', role: 'Guru Kelas 3', image: 'images/teachers/ediwaljana.webp' },
+      { id: 't5', name: 'Isih Subekti, S.Pd.SD.', role: 'Guru Kelas 4', image: 'images/teachers/isih_subekti.webp' },
+      { id: 't6', name: 'Maria Rosalina, S.Pd. Mat.', role: 'Guru Kelas 5', image: 'images/teachers/maria_rosalina.webp' },
+      { id: 't7', name: 'Wahid Rahmanto, S.Pd.', role: 'Guru Kelas 6', image: 'images/teachers/wahid_rahmanto.webp' },
+      { id: 't8', name: 'Winda Hendrawati, S.E.', role: 'Guru PJOK', image: 'images/teachers/winda_hendrawati.webp' },
+      { id: 't9', name: 'Nureza Fauziyah, S.Pd.', role: 'Guru Pendidikan Agama Islam', image: 'images/teachers/nureza_fauziyah.webp' },
+      { id: 't10', name: 'Retno Untari, S.I.Pust.', role: 'Tenaga Administrasi Perpustakaan', image: 'images/teachers/retno_untari.webp' },
+      { id: 't11', name: 'Dzul Jalal', role: 'Tenaga Kependidikan / Penjaga Sekolah', image: 'images/teachers/dzul_jalal.webp' }
     ],
     testimonials: [
       {

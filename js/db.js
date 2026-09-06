@@ -699,6 +699,7 @@ window.SchoolDB = {
           this.data.profile.principalName = INITIAL_DATA.profile.principalName;
           this.data.profile.principalRole = INITIAL_DATA.profile.principalRole;
           this.data.profile.principalImage = INITIAL_DATA.profile.principalImage;
+          this.data.profile.logo = 'images/logo.webp';
           this.data.profile.totalTeachers = 8;
           this.data.profile.totalPrincipal = 1;
           this.data.profile.totalStaff = 2;

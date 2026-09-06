@@ -420,8 +420,15 @@
     }
 
     const visionText = document.getElementById('vision-text');
-    if (visionText) {
-      visionText.textContent = profile.vision || '-';
+    if (visionText && profile.vision) {
+      visionText.textContent = `“${profile.vision.replace(/^“|”$/g, '')}”`;
+    }
+
+    const visionIndicatorsList = document.getElementById('vision-indicators-list');
+    if (visionIndicatorsList && Array.isArray(profile.visionIndicators)) {
+      visionIndicatorsList.innerHTML = profile.visionIndicators.map((ind, i) => `
+        <li style="display: flex; gap: 8px; align-items: flex-start;"><span style="color: var(--color-yellow); font-weight: bold;">${i + 1}.</span> <span>${ind}</span></li>
+      `).join('');
     }
 
     // Dynamic Official School Identity Bindings

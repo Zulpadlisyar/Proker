@@ -687,6 +687,33 @@ window.SchoolDB = {
           }
           this.data._authenticTeachersV2 = true;
         }
+
+        // 2026-09-06: Comprehensive Content & Footage Reset to Official 2026/2027 Baseline
+        if (!this.data._officialReset2026V1) {
+          if (!this.data.profile) this.data.profile = {};
+          this.data.profile.vision = INITIAL_DATA.profile.vision;
+          this.data.profile.visionYear = INITIAL_DATA.profile.visionYear;
+          this.data.profile.visionIndicators = JSON.parse(JSON.stringify(INITIAL_DATA.profile.visionIndicators || []));
+          this.data.profile.missions = JSON.parse(JSON.stringify(INITIAL_DATA.profile.missions || []));
+          this.data.profile.values = JSON.parse(JSON.stringify(INITIAL_DATA.profile.values || []));
+          this.data.profile.principalName = INITIAL_DATA.profile.principalName;
+          this.data.profile.principalRole = INITIAL_DATA.profile.principalRole;
+          this.data.profile.principalImage = INITIAL_DATA.profile.principalImage;
+          this.data.profile.totalTeachers = 8;
+          this.data.profile.totalPrincipal = 1;
+          this.data.profile.totalStaff = 2;
+          this.data.teachers = JSON.parse(JSON.stringify(INITIAL_DATA.teachers || []));
+          this.data.activities = JSON.parse(JSON.stringify(INITIAL_DATA.activities || []));
+          this.data.gallery = JSON.parse(JSON.stringify(INITIAL_DATA.gallery || []));
+          
+          this.data._resetBaseline = {
+            data: JSON.parse(JSON.stringify(this.data)),
+            timestamp: new Date().toISOString(),
+            label: 'Data Resmi 2026/2027 (Visi, Misi & Footage Terlengkap)',
+            schoolName: this.data.profile.name || 'SD Negeri 2 Ngeposari'
+          };
+          this.data._officialReset2026V1 = true;
+        }
         
         await this.save();
       }
@@ -1072,7 +1099,7 @@ window.SchoolDB = {
       history: this.sanitizeText(profileData.history || this.data.profile.history),
       vision: this.sanitizeText(profileData.vision || this.data.profile.vision).slice(0, 300),
       missions: Array.isArray(profileData.missions) ? profileData.missions.slice(0, 10).map(m => {
-        let clean = this.sanitizeText(m).slice(0, 250);
+        let clean = this.sanitizeText(m).slice(0, 500);
         return clean.replace(/(\S{35})/g, '$1 ').trim();
       }) : this.data.profile.missions,
       logo: profileData.logo || this.data.profile.logo,

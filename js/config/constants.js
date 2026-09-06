@@ -43,19 +43,28 @@
       totalClasses: 6,
       description: 'SDN Ngeposari 2 adalah sekolah dasar negeri terakreditasi A di Mojo RT 01 / RW 13, Ngeposari, Semanu, Gunungkidul yang berkomitmen mencetak generasi cerdas, berkarakter, dan berbudaya lingkungan.',
       history: 'SDN Ngeposari 2 (NPSN: 20401876, NSS: 101040310002) didirikan untuk melayani kebutuhan pendidikan dasar masyarakat di Dusun Mojo, Kalurahan Ngeposari, Kapanewon Semanu, Kabupaten Gunungkidul. Berada di lingkungan yang asri dan kondusif, sekolah ini berstatus negeri dengan akreditasi A, membina 143 siswa dengan didukung oleh 1 Kepala Sekolah, 8 Guru, dan 2 Tenaga Kependidikan dalam 6 ruang kelas pembelajaran aktif.',
-      vision: '-',
+      vision: 'Terwujudnya insan yang bertaqwa, berprestasi, terampil, peduli lingkungan dan berkarakter',
+      visionYear: 'Tahun Ajaran 2026/2027',
+      visionIndicators: [
+        'Terwujudnya peserta didik yang taat beribadah kepada Tuhan Yang Maha Esa.',
+        'Terwujudnya peserta didik yang unggul dalam prestasi akademik dan non akademik.',
+        'Terwujudnya peserta didik yang terampil dalam berkarya dan berkreasi.',
+        'Terwujudnya peserta didik yang cinta alam dan memiliki budaya ramah lingkungan.',
+        'Terwujudnya peserta didik yang berkarakter, mengimplementasikan Dimensi Profil Lulusan.'
+      ],
       missions: [
-        'Melaksanakan pembelajaran yang aktif, kreatif, efektif, dan menyenangkan berpusat pada potensi siswa.',
-        'Menumbuhkan penghayatan dan pengamalan nilai-nilai keagamaan dan budi pekerti luhur.',
-        'Membentuk kepribadian siswa yang berkarakter Pancasila, tangguh, jujur, dan bergotong royong.',
-        'Mewujudkan lingkungan sekolah yang bersih, sehat, rindang, asri, dan ramah anak.',
-        'Mengembangkan minat, bakat, literasi digital, dan kreativitas siswa melalui program intrakurikuler dan ekstrakurikuler.'
+        'Melaksanakan pembinaan perilaku mulia dalam penghayatan dan pengamalan ajaran agamanya melalui kegiatan pembiasaan untuk penguatan kebiasaan Anak Indonesia Hebat (beribadah dan bermasyarakat). (Representasi visi Bertaqwa & Berkarakter, selaras dimensi Keimanan, Kewargaan, Kolaborasi, dan Komunikasi).',
+        'Melaksanakan kegiatan untuk menunjang keberhasilan akademik dengan pendekatan pembelajaran mendalam serta berpusat pada peserta didik. (Representasi visi Berprestasi, selaras dimensi Penalaran Kritis, Kreativitas, dan Kemandirian).',
+        'Melaksanakan pembinaan dalam bidang non akademik khususnya olahraga atletik dan seni tari. (Representasi visi Berprestasi & Terampil, selaras dimensi Kreativitas, Komunikasi, dan Kesehatan).',
+        'Melaksanakan kegiatan pembiasaan budaya positif dan pengembangan keterampilan berpikir tingkat tinggi (HOTS) melalui kegiatan kokurikuler. (Representasi visi Terampil, selaras dimensi Kreativitas, Kolaborasi, Komunikasi, dan Penalaran Kritis).',
+        'Menerapkan program sekolah yang mampu menumbuhkembangkan kesadaran, kepedulian dan cinta lingkungan pada warga sekolah akan pentingnya menjalin hubungan yang harmonis di antara warga sekolah, masyarakat dan alam sekitar. (Representasi visi Peduli Lingkungan, selaras dimensi Kolaborasi, Komunikasi, dan Kesehatan).'
       ],
       values: [
-        { title: 'Bertaqwa', desc: 'Mengedepankan nilai-nilai religius dan ketuhanan.' },
-        { title: 'Berkarakter', desc: 'Jujur, disiplin, bertanggung jawab, dan toleran.' },
-        { title: 'Berprestasi', desc: 'Semangat belajar tinggi untuk meraih hasil terbaik.' },
-        { title: 'Peduli Lingkungan', desc: 'Menjaga kebersihan dan kelestarian lingkungan sekolah.' }
+        { title: 'Bertaqwa', desc: 'Pembinaan perilaku mulia, taat beribadah kepada Tuhan YME, dan kebiasaan Anak Indonesia Hebat.' },
+        { title: 'Berprestasi', desc: 'Unggul dalam akademik lewat pembelajaran mendalam serta non-akademik atletik & seni tari.' },
+        { title: 'Terampil', desc: 'Kreatif berkarya dan berkreasi dengan pembiasaan berpikir tingkat tinggi (HOTS).' },
+        { title: 'Peduli Lingkungan', desc: 'Menumbuhkan kesadaran cinta lingkungan hidup yang harmonis dan asri.' },
+        { title: 'Berkarakter', desc: 'Menanamkan nilai-nilai luhur dan mengimplementasikan Dimensi Profil Lulusan.' }
       ],
       logo: 'images/logo.webp',
       hero: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&h=1000&fit=crop',

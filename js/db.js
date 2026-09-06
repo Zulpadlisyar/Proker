@@ -1396,6 +1396,10 @@ window.SchoolDB = {
     return this.data.academicCalendar;
   },
 
+  getCalendarEvents() {
+    return this.getCalendar();
+  },
+
   async addCalendarItem(item) {
     if (!Array.isArray(this.data.academicCalendar)) this.data.academicCalendar = [];
     const title = this.sanitizeText(item.title || 'Agenda Baru');

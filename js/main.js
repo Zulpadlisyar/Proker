@@ -247,6 +247,36 @@
       }
     }
 
+    // Dynamic Facilities Preview (Section 5)
+    const facilitiesContainer = document.getElementById('home-facilities-grid');
+    if (facilitiesContainer) {
+      const facilities = (window.SchoolDB ? window.SchoolDB.getFacilities() : []) || [];
+      if (facilities.length === 0) {
+        facilitiesContainer.innerHTML = window.SchoolEmptyState
+          ? window.SchoolEmptyState.createEmptyState({ title: 'Belum ada fasilitas', description: 'Belum ada fasilitas yang dimasukkan.' })
+          : `<div style="grid-column:1/-1; text-align:center; padding:2rem; color:var(--text-muted);">Belum ada fasilitas yang ditampilkan.</div>`;
+      } else {
+        const previewFacilities = facilities.slice(0, 3);
+        facilitiesContainer.innerHTML = previewFacilities.map(f => {
+          if (window.SchoolFacilityCard && typeof window.SchoolFacilityCard.createFacilityCard === 'function') {
+            return window.SchoolFacilityCard.createFacilityCard(f);
+          }
+          return `
+            <div class="facility-card">
+              <div class="facility-img-wrapper">
+                <img src="${f.image}" alt="${f.name}" class="facility-img" loading="lazy" decoding="async">
+              </div>
+              <div class="facility-info">
+                <span style="font-size: 11.5px; font-weight: 700; color: var(--primary); letter-spacing: 0.05em; text-transform: uppercase;">Fasilitas Sekolah</span>
+                <h3 style="font-size: 18px; font-weight: 700; color: var(--text); margin: 6px 0 10px;">${f.name}</h3>
+                <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 0;">${f.description || ''}</p>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
     // Editorial News Grid
     const newsContainer = document.getElementById('news-editorial-grid') || document.getElementById('news-grid-container');
     if (newsContainer) {
@@ -382,9 +412,10 @@
     if (homeGalleryContainer) {
       const cards = homeGalleryContainer.querySelectorAll('.gallery-card');
       const gallery = (window.SchoolDB ? window.SchoolDB.getGallery() : []) || [];
-      if (gallery.length > 0 && cards.length > 0) {
+      if (cards.length > 0) {
         cards.forEach((card, idx) => {
-          if (gallery[idx]) {
+          if (idx < gallery.length && gallery[idx]) {
+            card.style.display = '';
             const item = gallery[idx];
             if (item.image) {
               card.setAttribute('data-image', item.image);
@@ -396,6 +427,9 @@
               const title = card.querySelector('.gallery-card-title');
               if (title) title.textContent = item.caption;
             }
+          } else {
+            // Prune / hide cards that no longer exist in the gallery collection
+            card.style.display = 'none';
           }
         });
       }
@@ -1052,15 +1086,31 @@
     });
   });
 
-  // Listen to Cloud Sync / Backup Import updates
-  window.addEventListener('schooldb-synced', async () => {
-    console.info('[SchoolDB] Real-time synced event received. Refreshing page components...');
+  // Helper to re-render all active page components
+  async function refreshActivePageComponents() {
     await renderCommonUI();
     if (document.getElementById('teachers-grid')) renderAboutPage();
     if (document.getElementById('facility-grid')) renderFacilitiesPage();
     if (document.getElementById('activities-page-sec')) renderActivitiesPage();
-    if (document.getElementById('news-editorial-grid')) renderHomePage();
+    if (document.getElementById('news-editorial-grid') || document.getElementById('home-facilities-grid') || document.getElementById('home-gallery-grid')) renderHomePage();
     if (document.getElementById('article-title')) renderActivityDetailPage();
+  }
+
+  // Listen to Local DB changes and Cloud Sync / Backup Import updates
+  window.addEventListener('schooldb-synced', async () => {
+    console.info('[SchoolDB] Real-time synced event received. Refreshing page components...');
+    await refreshActivePageComponents();
+  });
+
+  // Cross-tab storage sync: updates across browser tabs (e.g. changes made in Admin CMS tab)
+  window.addEventListener('storage', async (e) => {
+    if (e.key === 'sdn2_db_sync_time' || e.key === 'sdn2_db_data_backup') {
+      console.info('[SchoolDB] Cross-tab storage change detected. Syncing...');
+      if (window.SchoolDB) {
+        await window.SchoolDB.init();
+      }
+      await refreshActivePageComponents();
+    }
   });
 
   // Export showToast, openDialog, and openGalleryLightbox for global scope compatibility

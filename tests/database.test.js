@@ -139,6 +139,27 @@ async function runDatabaseTests() {
   assert(!updatedMissions[0].includes('wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww'), 'Long unbroken words must be spaced');
   console.log('[PASS] Long unbroken words safely split to prevent layout blowout.');
 
+  // 6. Global Footage Deletion Cascade
+  console.log('6. Testing Global Footage Deletion Cascade across Collections...');
+  const testFootageUrl = 'images/school/test_cascading_footage.webp';
+  const testFacility = await window.SchoolDB.addFacility({
+    name: 'Ruang Uji Coba Kaskade',
+    description: 'Fasilitas untuk pengujian kaskade penghapusan footage.',
+    image: testFootageUrl
+  });
+  const testGallery = await window.SchoolDB.addGalleryItem({
+    caption: 'Foto dokumentasi fasilitas uji coba kaskade',
+    image: testFootageUrl
+  });
+
+  assert(window.SchoolDB.getFacilities().some(f => f.id === testFacility.id), 'Test facility must exist before deletion');
+  assert(window.SchoolDB.getGallery().some(g => g.id === testGallery.id), 'Test gallery item must exist before deletion');
+
+  await window.SchoolDB.deleteFacility(testFacility.id);
+  assert(!window.SchoolDB.getFacilities().some(f => f.id === testFacility.id), 'Deleted facility must be removed from facilities');
+  assert(!window.SchoolDB.getGallery().some(g => g.image === testFootageUrl), 'Gallery items using deleted footage must be purged automatically');
+  console.log('[PASS] Global footage deletion cascade: deleting facility purged matching footage from gallery.');
+
   console.log('\n>>> ALL DATABASE RUNTIME TESTS PASSED 100%! <<<\n');
 }
 

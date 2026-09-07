@@ -715,6 +715,22 @@ window.SchoolDB = {
           };
           this.data._officialReset2026V1 = true;
         }
+
+        // 2026-09-07: Synchronize deleted footage globally (purge any lingering references to deleted footage like fasilitas1.webp)
+        if (Array.isArray(this.data.facilities)) {
+          this.data.facilities = this.data.facilities.filter(f => {
+            const img = (f.image || '').toLowerCase();
+            const name = (f.name || '').toLowerCase();
+            return !img.includes('fasilitas1') && !name.includes('ruang kelas asri & bersih');
+          });
+        }
+        if (Array.isArray(this.data.gallery)) {
+          this.data.gallery = this.data.gallery.filter(g => {
+            const img = (g.image || '').toLowerCase();
+            const caption = (g.caption || '').toLowerCase();
+            return !img.includes('fasilitas1') && !caption.includes('ruang kelas ramah anak & bersih');
+          });
+        }
         
         await this.save();
       }
@@ -750,8 +766,14 @@ window.SchoolDB = {
           contact: this.data.contact
         }));
         localStorage.setItem('sdn2_db_loaded', 'true');
+        localStorage.setItem('sdn2_db_sync_time', String(Date.now()));
       } catch (e) {
         console.warn('LocalStorage backup quota exceeded or blocked.');
+      }
+
+      // Real-time component notification
+      if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+        window.dispatchEvent(new CustomEvent('schooldb-synced', { detail: this.data }));
       }
 
       // Automatically sync changes to Cloud Firestore if connected
@@ -1167,11 +1189,57 @@ window.SchoolDB = {
     const target = this.data[collectionKey].find(item => String(item.id) === String(id));
     if (!target) return false;
 
+    const deletedImage = target.image;
     this.data[collectionKey] = this.data[collectionKey].filter(item => String(item.id) !== String(id));
+
+    // Global Footage Deletion Cascade: If item has an authentic footage/image, purge across all other collections
+    if (deletedImage && typeof deletedImage === 'string' && !deletedImage.includes('logo.') && !deletedImage.startsWith('data:image/svg+xml')) {
+      this._purgeFootageEverywhere(deletedImage, collectionKey, target);
+    }
+
     await this.save();
     const label = target[labelField] || target.title || target.caption || id;
     await this.logAudit('HAPUS', auditModule, `Menghapus ${auditModule.toLowerCase()} "${label}"`);
     return true;
+  },
+
+  _purgeFootageEverywhere(imageUrl, sourceCollection, target = {}) {
+    if (!imageUrl || typeof imageUrl !== 'string') return;
+    const normUrl = imageUrl.trim().toLowerCase();
+    const targetLabel = (target.name || target.title || target.caption || '').trim().toLowerCase();
+
+    // 1. Purge from gallery if deleted from facilities, activities, or teachers
+    if (sourceCollection !== 'gallery' && Array.isArray(this.data.gallery)) {
+      this.data.gallery = this.data.gallery.filter(g => {
+        if (!g || !g.image) return true;
+        const gUrl = g.image.trim().toLowerCase();
+        if (gUrl === normUrl) return false;
+        if (targetLabel && g.caption && g.caption.toLowerCase().includes(targetLabel)) return false;
+        return true;
+      });
+    }
+
+    // 2. Purge from facilities if deleted from gallery
+    if (sourceCollection === 'gallery' && Array.isArray(this.data.facilities)) {
+      this.data.facilities = this.data.facilities.filter(f => {
+        if (!f || !f.image) return true;
+        const fUrl = f.image.trim().toLowerCase();
+        if (fUrl === normUrl) return false;
+        if (targetLabel && f.name && targetLabel.includes(f.name.toLowerCase())) return false;
+        return true;
+      });
+    }
+
+    // 3. Purge from activities if deleted from gallery
+    if (sourceCollection === 'gallery' && Array.isArray(this.data.activities)) {
+      this.data.activities = this.data.activities.filter(a => {
+        if (!a || !a.image) return true;
+        const aUrl = a.image.trim().toLowerCase();
+        if (aUrl === normUrl) return false;
+        if (targetLabel && a.title && targetLabel.includes(a.title.toLowerCase())) return false;
+        return true;
+      });
+    }
   },
 
   async _updateItem(collectionKey, id, updatedFields, auditModule, labelField = 'name') {

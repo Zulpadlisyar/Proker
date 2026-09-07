@@ -155,7 +155,7 @@
       { id: 'g3', caption: 'Latihan kepramukaan penggalang membentuk kedisiplinan', image: 'images/school/latihan_pramuka.webp' },
       { id: 'g4', caption: 'Upacara bendera & apel pembinaan karakter', image: 'images/school/upacara_bendera.webp' },
       { id: 'g5', caption: 'Latihan seni tari tradisional siswa di ruang kelas', image: 'images/school/latihan_tari.webp' },
-      { id: 'g6', caption: 'Fasilitas ruang kelas ramah anak & bersih', image: 'images/school/fasilitas1.webp' }
+      { id: 'g6', caption: 'Gedung dan lingkungan sekolah asri & teduh', image: 'images/school_hero_bg.webp' }
     ],
     contact: {
       address: 'Mojo RT 01/RW13, Ngeposari, Semanu, Gunungkidul, DI Yogyakarta, 55893',

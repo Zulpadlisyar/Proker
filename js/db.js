@@ -731,6 +731,17 @@ window.SchoolDB = {
             return !img.includes('fasilitas1') && !caption.includes('ruang kelas ramah anak & bersih');
           });
         }
+
+        // 2026-09-07: Ensure testimonials use polite male/female silhouette avatars
+        if (Array.isArray(this.data.testimonials)) {
+          this.data.testimonials.forEach(t => {
+            if (!t.avatar || t.avatar.includes('unsplash') || t.avatar.includes('photo-')) {
+              const lower = ((t.name || '') + ' ' + (t.role || '')).toLowerCase();
+              const isMale = lower.match(/\b(bapak|bpk|ayah|pak|pria|laki|sugiyanto)\b/);
+              t.avatar = isMale ? 'images/avatars/silhouette-male.svg' : 'images/avatars/silhouette-female.svg';
+            }
+          });
+        }
         
         await this.save();
       }
@@ -1291,7 +1302,7 @@ window.SchoolDB = {
       views: typeof activity.views === 'number' ? activity.views : 0,
       excerpt: this.sanitizeText(activity.excerpt || activity.summary || ''),
       content: this.sanitizeHTML(activity.content || ''),
-      image: activity.image || generateSVGPlaceholder('general', title)
+      image: activity.image || 'images/default_activity.webp'
     };
     this.data.activities.push(newActivity);
     await this.save();
@@ -1422,12 +1433,15 @@ window.SchoolDB = {
       throw new Error('Pesan kesan & apresiasi ini sudah ada di daftar. Pesan tidak boleh sama persis.');
     }
 
+    const isMale = (name + ' ' + role).toLowerCase().match(/\b(bapak|bpk|ayah|pak|pria|laki|sugiyanto)\b/);
+    const defaultAvatar = isMale ? 'images/avatars/silhouette-male.svg' : 'images/avatars/silhouette-female.svg';
+
     const newTesti = {
       id: 'testi_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
       name: name,
       role: role,
       quote: quote,
-      avatar: item.avatar || generateSVGPlaceholder('class', name)
+      avatar: item.avatar || defaultAvatar
     };
     this.data.testimonials.push(newTesti);
     await this.save();

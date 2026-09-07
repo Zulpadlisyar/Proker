@@ -950,7 +950,16 @@
             <textarea id="testi-quote" class="form-control" style="min-height: 90px;" placeholder="Tuliskan testimoni atau kesan di sini..." required></textarea>
           </div>
           <div class="form-group">
-            <label>Foto Profil (Opsional)</label>
+            <label for="testi-avatar-type">Pilihan Avatar / Siluet</label>
+            <select id="testi-avatar-type" class="form-control">
+              <option value="auto">Otomatis Berdasarkan Nama (Siluet Ibu/Bapak)</option>
+              <option value="female">Siluet Perempuan (Ibu / Wali Murid Perempuan)</option>
+              <option value="male">Siluet Laki-laki (Bapak / Wali Murid Laki-laki)</option>
+              <option value="custom">Unggah Foto Sendiri (Opsional)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Foto Profil (Opsional jika pilih unggah)</label>
             <div class="image-upload-area">
               <p id="label-testi-upload">Klik untuk pilih gambar</p>
               <input type="file" id="testi-file" accept="image/*">

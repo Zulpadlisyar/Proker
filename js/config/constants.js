@@ -189,21 +189,21 @@
         name: 'Ibu Purwanti',
         role: 'Orang Tua Wali Kelas IV',
         quote: 'Guru-guru di SDN Ngeposari 2 sangat sabar dan penuh perhatian. Anak saya jadi lebih percaya diri, sopan, dan bersemangat berangkat sekolah setiap pagi.',
-        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop'
+        avatar: 'images/avatars/silhouette-female.svg'
       },
       {
         id: 'testi-2',
         name: 'Bapak Sugiyanto',
         role: 'Orang Tua Wali Kelas VI',
         quote: 'Fasilitas perpustakaan dan lab komputer sangat membantu anak-anak belajar teknologi secara sehat. Pembiasaan Pramuka-nya juga melatih kemandirian.',
-        avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop'
+        avatar: 'images/avatars/silhouette-male.svg'
       },
       {
         id: 'testi-3',
         name: 'Ibu Maryati',
         role: 'Orang Tua Wali Kelas II',
         quote: 'Lingkungan sekolah yang bersih dan hijau membuat anak-anak merasa nyaman. Komunikasi sekolah dengan orang tua wali siswa juga terjalin sangat dekat.',
-        avatar: 'https://images.unsplash.com/photo-1580894732413-87b1c31274cf?w=100&h=100&fit=crop'
+        avatar: 'images/avatars/silhouette-female.svg'
       }
     ],
     academicCalendar: [

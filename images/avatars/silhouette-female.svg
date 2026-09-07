@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="bgGradFemale" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8F5E9"/>
+      <stop offset="100%" stop-color="#C8E6C9"/>
+    </linearGradient>
+    <linearGradient id="avatarGradFemale" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2E5C46"/>
+      <stop offset="100%" stop-color="#1B382B"/>
+    </linearGradient>
+  </defs>
+  <circle cx="60" cy="60" r="58" fill="url(#bgGradFemale)" stroke="#A5D6A7" stroke-width="2"/>
+  <!-- Hijab / Head Contour -->
+  <path d="M60 22 C46 22, 38 34, 38 48 C38 60, 44 68, 48 72 C40 76, 25 86, 25 104 C25 106, 27 108, 30 108 L90 108 C93 108, 95 106, 95 104 C95 86, 80 76, 72 72 C76 68, 82 60, 82 48 C82 34, 74 22, 60 22 Z" fill="url(#avatarGradFemale)"/>
+  <!-- Face Opening -->
+  <ellipse cx="60" cy="48" rx="13" ry="16" fill="#FFF9C4" opacity="0.95"/>
+</svg>

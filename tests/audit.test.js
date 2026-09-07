@@ -198,6 +198,22 @@ test('3.8: Admin.js and Main.js wire highlightError into form validation and err
   assert(mainJs.includes('SchoolGuards.highlightError'), 'main.js missing SchoolGuards.highlightError');
 });
 
+test('3.9: Testimonials section on index.html with silhouette avatars', () => {
+  const indexHtml = fs.readFileSync('index.html', 'utf8');
+  assert(indexHtml.includes('id="testimonials-section"'), 'index.html missing testimonials section');
+  assert(indexHtml.includes('id="testimonials-grid"'), 'index.html missing id="testimonials-grid"');
+  assert(indexHtml.includes('silhouette-female.svg'), 'index.html missing silhouette-female.svg');
+  assert(indexHtml.includes('silhouette-male.svg'), 'index.html missing silhouette-male.svg');
+  assert(fs.existsSync('images/avatars/silhouette-female.svg'), 'images/avatars/silhouette-female.svg not found on disk');
+  assert(fs.existsSync('images/avatars/silhouette-male.svg'), 'images/avatars/silhouette-male.svg not found on disk');
+});
+
+test('3.10: Neutral default activity image and authentic school photo exist and linked', () => {
+  const indexHtml = fs.readFileSync('index.html', 'utf8');
+  assert(indexHtml.includes('gedung_sdn2_ngeposari.webp'), 'index.html about section missing authentic school photo');
+  assert(fs.existsSync('images/school/gedung_sdn2_ngeposari.webp'), 'gedung_sdn2_ngeposari.webp not found on disk');
+  assert(fs.existsSync('images/default_activity.webp'), 'default_activity.webp not found on disk');
+});
 
 console.log('\n----------------------------------------------------');
 console.log(`TOTAL TESTS: ${passCount + failCount}`);

@@ -1885,7 +1885,7 @@ function renderTestimonialsTable() {
   listBody.innerHTML = testimonials.map(t => `
     <tr>
       <td style="width:60px;">
-        <img src="${t.avatar || 'images/logo.webp'}" alt="${t.name}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid var(--border);" onerror="this.src='images/logo.webp'">
+        <img src="${t.avatar || 'images/avatars/silhouette-female.svg'}" alt="${t.name}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid var(--border);" onerror="this.src='images/avatars/silhouette-female.svg'">
       </td>
       <td>
         <strong>${t.name}</strong><br>
@@ -1917,6 +1917,8 @@ function openTestimonialModal(id = null) {
   const prevContainer = document.getElementById('preview-testi-container');
   const prevImg = document.getElementById('preview-testi-img');
   const labelUpload = document.getElementById('label-testi-upload');
+  const avatarTypeSelect = document.getElementById('testi-avatar-type');
+  if (avatarTypeSelect) avatarTypeSelect.value = 'auto';
   if (prevContainer) prevContainer.style.display = 'none';
   if (prevImg) prevImg.src = '';
   if (labelUpload) labelUpload.textContent = 'Klik untuk pilih gambar';
@@ -1933,6 +1935,11 @@ function openTestimonialModal(id = null) {
       if (document.getElementById('testi-role')) document.getElementById('testi-role').value = item.role || '';
       if (document.getElementById('testi-quote')) document.getElementById('testi-quote').value = item.quote || '';
       if (item.avatar) {
+        if (avatarTypeSelect) {
+          if (item.avatar.includes('silhouette-female')) avatarTypeSelect.value = 'female';
+          else if (item.avatar.includes('silhouette-male')) avatarTypeSelect.value = 'male';
+          else avatarTypeSelect.value = 'custom';
+        }
         if (prevImg) prevImg.src = item.avatar;
         if (prevContainer) prevContainer.style.display = 'block';
         if (labelUpload) labelUpload.textContent = 'Foto saat ini (Klik untuk ganti)';
@@ -1979,13 +1986,26 @@ if (formTestimonial) {
       return;
     }
 
+    const avatarType = document.getElementById('testi-avatar-type')?.value || 'auto';
+    let finalAvatar = tempTestiBase64;
+    if (avatarType === 'female') {
+      finalAvatar = 'images/avatars/silhouette-female.svg';
+    } else if (avatarType === 'male') {
+      finalAvatar = 'images/avatars/silhouette-male.svg';
+    } else if (avatarType === 'auto' || !finalAvatar) {
+      const lower = ((name || '') + ' ' + (role || '')).toLowerCase();
+      finalAvatar = lower.match(/\b(bapak|bpk|ayah|pak|pria|laki|sugiyanto)\b/)
+        ? 'images/avatars/silhouette-male.svg'
+        : 'images/avatars/silhouette-female.svg';
+    }
+
     setButtonSubmitting(submitBtn, true, 'Menyimpan Testimoni...');
     try {
       if (id) {
-        await window.SchoolDB.updateTestimonial(id, { name, role, quote, avatar: tempTestiBase64 });
+        await window.SchoolDB.updateTestimonial(id, { name, role, quote, avatar: finalAvatar });
         showAdminToast('Testimoni berhasil diperbarui.', 'success', 'Testimoni Diperbarui');
       } else {
-        await window.SchoolDB.addTestimonial({ name, role, quote, avatar: tempTestiBase64 });
+        await window.SchoolDB.addTestimonial({ name, role, quote, avatar: finalAvatar });
         showAdminToast('Testimoni baru berhasil ditambahkan!', 'success', 'Testimoni Ditambahkan');
       }
       clearDirty();

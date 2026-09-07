@@ -378,11 +378,28 @@
           gridClass: 'testimonials-grid',
           itemClass: 'testimonial-slide',
           ariaLabel: 'Kesan dan Apresiasi Wali Murid',
+      const getTestiAvatar = (t) => {
+        if (t.avatar && (t.avatar.includes('silhouette-male') || t.avatar.includes('silhouette-female'))) {
+          return t.avatar;
+        }
+        const lower = ((t.name || '') + ' ' + (t.role || '')).toLowerCase();
+        const isMale = lower.match(/\b(bapak|bpk|ayah|pak|pria|laki|sugiyanto)\b/);
+        return isMale ? 'images/avatars/silhouette-male.svg' : 'images/avatars/silhouette-female.svg';
+      };
+
+      if (window.SchoolCarousel) {
+        window.SchoolCarousel.renderAdaptive({
+          containerId: testimonialsContainer,
+          items: testimonials,
+          threshold: 3,
+          gridClass: 'testimonials-grid',
+          itemClass: 'testimonial-slide',
+          ariaLabel: 'Kesan dan Apresiasi Wali Murid',
           renderItem: (t) => `
             <div class="testimonial-card">
               <p class="testimonial-quote">"${t.quote}"</p>
               <div class="testimonial-author">
-                <img src="${t.avatar || 'images/logo.png'}" alt="${t.name}" class="testimonial-avatar" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='images/logo.png';">
+                <img src="${getTestiAvatar(t)}" alt="${t.name}" class="testimonial-avatar" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='images/avatars/silhouette-female.svg';">
                 <div>
                   <div class="testimonial-name">${t.name}</div>
                   <div class="testimonial-role">${t.role || 'Orang Tua Wali'}</div>
@@ -396,7 +413,7 @@
           <div class="testimonial-card">
             <p class="testimonial-quote">"${t.quote}"</p>
             <div class="testimonial-author">
-              <img src="${t.avatar || 'images/logo.png'}" alt="${t.name}" class="testimonial-avatar" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='images/logo.png';">
+              <img src="${getTestiAvatar(t)}" alt="${t.name}" class="testimonial-avatar" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='images/avatars/silhouette-female.svg';">
               <div>
                 <div class="testimonial-name">${t.name}</div>
                 <div class="testimonial-role">${t.role || 'Orang Tua Wali'}</div>
@@ -778,12 +795,12 @@
       const viewsCount = typeof act.views === 'number' ? act.views : 0;
       catDateEl.innerHTML = `<span style="color:var(--primary); font-weight:700;">${category}</span> • ${formattedDate} • ${viewsCount} pembaca`;
     }
-    if (imgEl && act.image) {
-      imgEl.src = act.image;
+    if (imgEl) {
+      imgEl.src = act.image || 'images/default_activity.webp';
       imgEl.alt = act.title;
       imgEl.onload = () => imgEl.classList.add('img-loaded');
       imgEl.onerror = () => {
-        imgEl.src = 'images/logo.webp';
+        imgEl.src = 'images/default_activity.webp';
         imgEl.classList.add('img-loaded');
       };
       if (imgEl.complete) imgEl.classList.add('img-loaded');

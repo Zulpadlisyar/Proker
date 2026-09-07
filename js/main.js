@@ -815,39 +815,91 @@
 
     const contactForm = document.getElementById('contact-form');
     if (contactForm) {
+      if (window.SchoolGuards && typeof window.SchoolGuards.bindFormValidation === 'function') {
+        window.SchoolGuards.bindFormValidation(contactForm);
+      }
+
       contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const name = document.getElementById('form-name')?.value?.trim() || '';
-        const email = document.getElementById('form-email')?.value?.trim() || '';
-        const phone = document.getElementById('form-subject')?.value?.trim() || '';
-        const message = document.getElementById('form-message')?.value?.trim() || '';
+        const highlight = (target, msg) => {
+          if (window.SchoolGuards && typeof window.SchoolGuards.highlightError === 'function') {
+            window.SchoolGuards.highlightError(target, msg);
+          } else {
+            const el = typeof target === 'string' ? document.querySelector(target) : target;
+            if (el) el.focus();
+          }
+        };
 
-        if (name && email && phone && message) {
-          const submitBtn = contactForm.querySelector('button[type="submit"]');
+        if (window.SchoolGuards && typeof window.SchoolGuards.clearAllErrors === 'function') {
+          window.SchoolGuards.clearAllErrors(contactForm);
+        }
+
+        const nameInput = document.getElementById('form-name');
+        const emailInput = document.getElementById('form-email');
+        const phoneInput = document.getElementById('form-subject');
+        const messageInput = document.getElementById('form-message');
+
+        const name = nameInput?.value?.trim() || '';
+        const email = emailInput?.value?.trim() || '';
+        const phone = phoneInput?.value?.trim() || '';
+        const message = messageInput?.value?.trim() || '';
+
+        if (!name) {
+          highlight(nameInput, 'Nama lengkap wajib diisi.');
+          showToast('Mohon lengkapi nama Anda.', 'error');
+          return;
+        }
+
+        if (!email) {
+          highlight(emailInput, 'Alamat email wajib diisi.');
+          showToast('Mohon lengkapi alamat email Anda.', 'error');
+          return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          highlight(emailInput, 'Format alamat email tidak valid (contoh: nama@email.com).');
+          showToast('Format email tidak valid.', 'error');
+          return;
+        }
+
+        if (!phone) {
+          highlight(phoneInput, 'Nomor telepon / WhatsApp wajib diisi.');
+          showToast('Mohon lengkapi nomor telepon/WhatsApp Anda.', 'error');
+          return;
+        }
+
+        if (!message) {
+          highlight(messageInput, 'Pesan konsultasi tidak boleh kosong.');
+          showToast('Mohon tulis pesan Anda.', 'error');
+          return;
+        }
+
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Mengirim Pesan...';
+        }
+        try {
+          await window.SchoolDB.addInquiry({
+            name,
+            email,
+            phone,
+            subject: 'Layanan Konsultasi Publik',
+            message
+          });
+          showToast('Pesan konsultasi Anda berhasil dikirim ke Admin Sekolah! Terima kasih.', 'success');
+          contactForm.reset();
+          if (window.SchoolGuards && typeof window.SchoolGuards.clearAllErrors === 'function') {
+            window.SchoolGuards.clearAllErrors(contactForm);
+          }
+        } catch (err) {
+          showToast('Gagal mengirim pesan: ' + err.message, 'error');
+        } finally {
           if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Mengirim Pesan...';
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<span>Kirim Pesan Sekarang</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`;
           }
-          try {
-            await window.SchoolDB.addInquiry({
-              name,
-              email,
-              phone,
-              subject: 'Layanan Konsultasi Publik',
-              message
-            });
-            showToast('Pesan konsultasi Anda berhasil dikirim ke Admin Sekolah! Terima kasih.', 'success');
-            contactForm.reset();
-          } catch (err) {
-            showToast('Gagal mengirim pesan: ' + err.message, 'error');
-          } finally {
-            if (submitBtn) {
-              submitBtn.disabled = false;
-              submitBtn.innerHTML = `<span>Kirim Pesan Sekarang</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`;
-            }
-          }
-        } else {
-          showToast('Mohon lengkapi semua kolom bertanda bintang (*).', 'error');
         }
       });
     }
@@ -957,9 +1009,15 @@
         img.classList.add('img-loaded');
       } else {
         img.addEventListener('load', () => img.classList.add('img-loaded'), { once: true });
-        img.addEventListener('error', () => img.classList.add('img-loaded'), { once: true });
+        img.addEventListener('error', () => {
+          img.classList.add('img-loaded');
+          img.classList.add('img-error');
+        }, { once: true });
       }
     });
+    if (window.SchoolGuards && typeof window.SchoolGuards.initImageErrorTracking === 'function') {
+      window.SchoolGuards.initImageErrorTracking();
+    }
   }
 
   // 13. Page Initialization & Bootstrapping
@@ -985,6 +1043,13 @@
     initHeaderScrollBehavior();
     initGSAPAnimations();
     renderWhatsAppFloatingButton();
+
+    // Attach native form validation highlight to all forms on page
+    document.querySelectorAll('form').forEach(f => {
+      if (window.SchoolGuards && typeof window.SchoolGuards.bindFormValidation === 'function') {
+        window.SchoolGuards.bindFormValidation(f);
+      }
+    });
   });
 
   // Listen to Cloud Sync / Backup Import updates

@@ -156,6 +156,32 @@ function debounce(func, delay = 300) {
   };
 }
 
+// Error Highlighting & Red Border System ("Sorot Bagian yang Eror")
+function highlightAdminError(target, message = '', options = {}) {
+  if (window.SchoolGuards && typeof window.SchoolGuards.highlightError === 'function') {
+    return window.SchoolGuards.highlightError(target, message, options);
+  }
+  const el = typeof target === 'string' ? document.querySelector(target) : target;
+  if (el) {
+    el.classList.add('is-invalid');
+    try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+    try { el.focus(); } catch (e) {}
+  }
+  return el;
+}
+
+function clearAdminError(target) {
+  if (window.SchoolGuards && typeof window.SchoolGuards.clearError === 'function') {
+    window.SchoolGuards.clearError(target);
+  }
+}
+
+function clearAllAdminErrors(container = document) {
+  if (window.SchoolGuards && typeof window.SchoolGuards.clearAllErrors === 'function') {
+    window.SchoolGuards.clearAllErrors(container);
+  }
+}
+
 // Authentication & Session Management
 const SESSION_KEY = 'sdn2_admin_session';
 const SESSION_EXPIRY_MS = 2 * 60 * 60 * 1000; // 2 Hours
@@ -840,9 +866,16 @@ if (formEditProfile) {
     e.preventDefault();
     const submitBtn = formEditProfile.querySelector('button[type="submit"]');
     setButtonSubmitting(submitBtn, true, 'Menyimpan Profil...');
-    
     try {
-      const name = document.getElementById('profile-name').value;
+      clearAllAdminErrors(formEditProfile);
+      const nameInput = document.getElementById('profile-name');
+      const name = nameInput ? nameInput.value.trim() : '';
+      if (!name) {
+        highlightAdminError('#profile-name', 'Nama resmi sekolah wajib diisi.');
+        showAdminToast('Nama sekolah wajib diisi.', 'error', 'Validasi Profil');
+        setButtonSubmitting(submitBtn, false);
+        return;
+      }
       const npsn = document.getElementById('profile-npsn') ? document.getElementById('profile-npsn').value.trim() : '20401876';
       const nss = document.getElementById('profile-nss') ? document.getElementById('profile-nss').value.trim() : '101040310002';
       const akreditasi = document.getElementById('profile-akreditasi') ? document.getElementById('profile-akreditasi').value.trim() : 'A';
@@ -859,31 +892,43 @@ if (formEditProfile) {
       
       // Aturan Visi Sekolah: Maksimal 300 karakter dan tidak mengandung kata tanpa spasi abnormal
       if (vision.length > 300) {
+        highlightAdminError('#profile-vision', 'Visi sekolah maksimal 300 karakter agar tampilan tetap proporsional.');
         showAdminToast('Visi sekolah maksimal 300 karakter agar tampilan tetap proporsional.', 'error', 'Validasi Visi');
+        setButtonSubmitting(submitBtn, false);
         return;
       }
       if (/\S{36,}/.test(vision)) {
+        highlightAdminError('#profile-vision', 'Visi mengandung kata tanpa spasi yang terlalu panjang. Mohon gunakan susunan kata yang wajar.');
         showAdminToast('Visi mengandung kata tanpa spasi yang terlalu panjang. Mohon gunakan susunan kata yang wajar.', 'error', 'Format Visi Tidak Valid');
+        setButtonSubmitting(submitBtn, false);
         return;
       }
 
       // Aturan Misi Sekolah: Maksimal 10 butir, maksimal 250 karakter per butir, kata tanpa spasi tidak melebihi 35 karakter
       if (rawMissions.length === 0) {
+        highlightAdminError('#profile-missions', 'Mohon masukkan minimal 1 butir misi sekolah.');
         showAdminToast('Mohon masukkan minimal 1 butir misi sekolah.', 'error', 'Misi Kosong');
+        setButtonSubmitting(submitBtn, false);
         return;
       }
       if (rawMissions.length > 10) {
+        highlightAdminError('#profile-missions', 'Misi sekolah maksimal 10 butir agar tata letak halaman tetap seimbang dan proporsional.');
         showAdminToast('Misi sekolah maksimal 10 butir agar tata letak halaman tetap seimbang dan proporsional.', 'error', 'Misi Terlalu Banyak');
+        setButtonSubmitting(submitBtn, false);
         return;
       }
       for (let i = 0; i < rawMissions.length; i++) {
         const m = rawMissions[i];
         if (m.length > 250) {
+          highlightAdminError('#profile-missions', `Butir misi ke-${i + 1} terlalu panjang (maksimal 250 karakter per butir).`);
           showAdminToast(`Butir misi ke-${i + 1} terlalu panjang (maksimal 250 karakter per butir).`, 'error', 'Misi Terlalu Panjang');
+          setButtonSubmitting(submitBtn, false);
           return;
         }
         if (/\S{36,}/.test(m)) {
+          highlightAdminError('#profile-missions', `Butir misi ke-${i + 1} mengandung kata tanpa spasi yang tidak wajar.`);
           showAdminToast(`Butir misi ke-${i + 1} mengandung kata tanpa spasi yang tidak wajar. Mohon gunakan kata yang wajar.`, 'error', 'Format Misi Tidak Valid');
+          setButtonSubmitting(submitBtn, false);
           return;
         }
       }
@@ -1074,14 +1119,27 @@ if (formTeacher) {
     e.preventDefault();
     const submitBtn = formTeacher.querySelector('button[type="submit"]');
     
+    clearAllAdminErrors(formTeacher);
     const id = document.getElementById('teacher-id').value;
-    const name = document.getElementById('teacher-name').value;
-    const role = document.getElementById('teacher-role').value;
+    const name = (document.getElementById('teacher-name')?.value || '').trim();
+    const role = (document.getElementById('teacher-role')?.value || '').trim();
+
+    if (!name) {
+      highlightAdminError('#teacher-name', 'Nama guru/pendidik wajib diisi.');
+      showAdminToast('Nama guru wajib diisi.', 'error', 'Validasi Guru');
+      return;
+    }
+    if (!role) {
+      highlightAdminError('#teacher-role', 'Jabatan atau penugasan guru wajib diisi.');
+      showAdminToast('Jabatan guru wajib diisi.', 'error', 'Validasi Guru');
+      return;
+    }
 
     // Client-side duplicate check
     const normName = normalizeName(name);
     const isDuplicate = window.SchoolDB.getTeachers().some(t => String(t.id) !== String(id) && normalizeName(t.name) === normName);
     if (isDuplicate) {
+      highlightAdminError('#teacher-name', 'Guru dengan nama tersebut sudah terdaftar. Silakan gunakan nama yang berbeda.');
       showAdminToast('Guru dengan nama tersebut sudah terdaftar. Silakan gunakan nama yang berbeda.', 'error', 'Nama Guru Duplikat');
       return;
     }
@@ -1210,20 +1268,28 @@ if (formFacility) {
     e.preventDefault();
     const submitBtn = formFacility.querySelector('button[type="submit"]');
     
+    clearAllAdminErrors(formFacility);
     const id = document.getElementById('facility-id').value;
-    const name = document.getElementById('facility-name').value;
-    const description = document.getElementById('facility-desc').value;
+    const name = (document.getElementById('facility-name')?.value || '').trim();
+    const description = (document.getElementById('facility-desc')?.value || '').trim();
+
+    if (!name) {
+      highlightAdminError('#facility-name', 'Nama fasilitas sekolah wajib diisi.');
+      showAdminToast('Nama fasilitas wajib diisi.', 'error', 'Validasi Fasilitas');
+      return;
+    }
+    if (!description) {
+      highlightAdminError('#facility-desc', 'Deskripsi fasilitas sekolah wajib diisi.');
+      showAdminToast('Deskripsi fasilitas wajib diisi.', 'error', 'Validasi Fasilitas');
+      return;
+    }
 
     // Client-side duplicate check
     const normName = normalizeName(name);
     const isDuplicate = window.SchoolDB.getFacilities().some(f => String(f.id) !== String(id) && normalizeName(f.name) === normName);
     if (isDuplicate) {
+      highlightAdminError('#facility-name', 'Fasilitas dengan nama tersebut sudah tersedia. Silakan gunakan nama yang berbeda.');
       showAdminToast('Fasilitas dengan nama tersebut sudah tersedia. Silakan gunakan nama yang berbeda.', 'error', 'Nama Fasilitas Duplikat');
-      const nameInput = document.getElementById('facility-name');
-      if (nameInput) {
-        nameInput.focus();
-        nameInput.select();
-      }
       return;
     }
     
@@ -1373,18 +1439,36 @@ if (formActivity) {
     e.preventDefault();
     const submitBtn = formActivity.querySelector('button[type="submit"]');
     
+    clearAllAdminErrors(formActivity);
     const id = document.getElementById('activity-id').value;
-    const title = document.getElementById('activity-title').value;
-    const category = document.getElementById('activity-category').value;
-    const date = document.getElementById('activity-date').value;
+    const title = (document.getElementById('activity-title')?.value || '').trim();
+    const category = (document.getElementById('activity-category')?.value || '').trim();
+    const date = document.getElementById('activity-date')?.value || '';
     const excerptInput = document.getElementById('activity-excerpt') || document.getElementById('activity-summary');
-    const excerpt = excerptInput ? excerptInput.value : '';
-    const content = document.getElementById('activity-content').value;
+    const excerpt = excerptInput ? excerptInput.value.trim() : '';
+    const content = (document.getElementById('activity-content')?.value || '').trim();
+
+    if (!title) {
+      highlightAdminError('#activity-title', 'Judul kegiatan sekolah wajib diisi.');
+      showAdminToast('Judul kegiatan wajib diisi.', 'error', 'Validasi Kegiatan');
+      return;
+    }
+    if (!date) {
+      highlightAdminError('#activity-date', 'Tanggal pelaksanaan kegiatan wajib dipilih.');
+      showAdminToast('Tanggal kegiatan wajib dipilih.', 'error', 'Validasi Kegiatan');
+      return;
+    }
+    if (!content) {
+      highlightAdminError('#activity-content', 'Isi artikel kegiatan wajib ditulis.');
+      showAdminToast('Isi kegiatan wajib diisi.', 'error', 'Validasi Kegiatan');
+      return;
+    }
 
     const normTitle = normalizeName(title);
     const isDuplicate = window.SchoolDB.getActivities().some(a => String(a.id) !== String(id) && normalizeName(a.title) === normTitle);
 
     if (isDuplicate) {
+      highlightAdminError('#activity-title', `Kegiatan dengan judul "${title}" sudah ada di database.`);
       showAdminToast(`Kegiatan dengan judul "${title}" sudah ada di database.`, 'error', 'Judul Duplikat');
       return;
     }
@@ -1532,10 +1616,18 @@ if (formGallery) {
     e.preventDefault();
     const submitBtn = formGallery.querySelector('button[type="submit"]');
     
+    clearAllAdminErrors(formGallery);
     const id = document.getElementById('gallery-id').value;
-    const caption = document.getElementById('gallery-caption').value;
+    const caption = (document.getElementById('gallery-caption')?.value || '').trim();
+
+    if (!caption) {
+      highlightAdminError('#gallery-caption', 'Keterangan/caption foto dokumentasi wajib diisi.');
+      showAdminToast('Keterangan foto wajib diisi.', 'error', 'Validasi Galeri');
+      return;
+    }
     
     if (!tempGalleryBase64 && !id) {
+      highlightAdminError('#upload-gallery-file', 'Mohon pilih berkas gambar terlebih dahulu.');
       showAdminToast('Mohon pilih berkas gambar terlebih dahulu.', 'error', 'Peringatan');
       return;
     }
@@ -1596,14 +1688,34 @@ if (formEditContact) {
     const submitBtn = formEditContact.querySelector('button[type="submit"]');
     setButtonSubmitting(submitBtn, true, 'Menyimpan Kontak...');
     
+    clearAllAdminErrors(formEditContact);
     try {
-      const address = document.getElementById('contact-address').value;
-      const phone = document.getElementById('contact-phone').value;
-      const email = document.getElementById('contact-email').value;
-      const maps = document.getElementById('contact-maps').value;
-      const facebook = document.getElementById('contact-facebook').value;
-      const instagram = document.getElementById('contact-instagram').value;
-      const youtube = document.getElementById('contact-youtube').value;
+      const address = (document.getElementById('contact-address')?.value || '').trim();
+      const phone = (document.getElementById('contact-phone')?.value || '').trim();
+      const email = (document.getElementById('contact-email')?.value || '').trim();
+      const maps = (document.getElementById('contact-maps')?.value || '').trim();
+      const facebook = (document.getElementById('contact-facebook')?.value || '').trim();
+      const instagram = (document.getElementById('contact-instagram')?.value || '').trim();
+      const youtube = (document.getElementById('contact-youtube')?.value || '').trim();
+
+      if (!address) {
+        highlightAdminError('#contact-address', 'Alamat lengkap sekolah wajib diisi.');
+        showAdminToast('Alamat sekolah wajib diisi.', 'error', 'Validasi Kontak');
+        setButtonSubmitting(submitBtn, false);
+        return;
+      }
+      if (!phone) {
+        highlightAdminError('#contact-phone', 'Nomor telepon resmi sekolah wajib diisi.');
+        showAdminToast('Nomor telepon sekolah wajib diisi.', 'error', 'Validasi Kontak');
+        setButtonSubmitting(submitBtn, false);
+        return;
+      }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        highlightAdminError('#contact-email', 'Format alamat email tidak valid (contoh: sekolah@sdn2ngeposari.sch.id).');
+        showAdminToast('Format email tidak valid.', 'error', 'Validasi Kontak');
+        setButtonSubmitting(submitBtn, false);
+        return;
+      }
       
       await window.SchoolDB.updateContact({ address, phone, email, maps, facebook, instagram, youtube });
       
@@ -1841,15 +1953,28 @@ if (formTestimonial) {
   formTestimonial.addEventListener('submit', async (e) => {
     e.preventDefault();
     const submitBtn = formTestimonial.querySelector('button[type="submit"]');
+    clearAllAdminErrors(formTestimonial);
     const id = document.getElementById('testi-id').value;
-    const name = document.getElementById('testi-name').value;
-    const role = document.getElementById('testi-role').value;
-    const quote = document.getElementById('testi-quote').value;
+    const name = (document.getElementById('testi-name')?.value || '').trim();
+    const role = (document.getElementById('testi-role')?.value || '').trim();
+    const quote = (document.getElementById('testi-quote')?.value || '').trim();
+
+    if (!name) {
+      highlightAdminError('#testi-name', 'Nama pemberi kesan & apresiasi wajib diisi.');
+      showAdminToast('Nama wajib diisi.', 'error', 'Validasi Testimoni');
+      return;
+    }
+    if (!quote) {
+      highlightAdminError('#testi-quote', 'Pesan kesan & apresiasi wajib diisi.');
+      showAdminToast('Pesan wajib diisi.', 'error', 'Validasi Testimoni');
+      return;
+    }
 
     // Rule: Name and role can be the same, but quote/pesan must be unique
     const normQuote = quote.trim().toLowerCase();
     const isDup = window.SchoolDB.getTestimonials().some(t => String(t.id) !== String(id) && (t.quote || '').trim().toLowerCase() === normQuote);
     if (isDup) {
+      highlightAdminError('#testi-quote', 'Pesan kesan & apresiasi ini sudah ada di daftar. Pesan tidak boleh sama persis.');
       showAdminToast('Pesan kesan & apresiasi ini sudah ada di daftar. Pesan tidak boleh sama persis.', 'error', 'Pesan Duplikat');
       return;
     }
@@ -2013,12 +2138,19 @@ if (formCalendar) {
   formCalendar.addEventListener('submit', async (e) => {
     e.preventDefault();
     const submitBtn = formCalendar.querySelector('button[type="submit"]');
+    clearAllAdminErrors(formCalendar);
     const id = document.getElementById('calendar-id').value;
-    const title = document.getElementById('calendar-title').value;
+    const title = (document.getElementById('calendar-title')?.value || '').trim();
     const hiddenDate = document.getElementById('calendar-date');
     const hiddenMonth = document.getElementById('calendar-month');
     const daySelect = document.getElementById('calendar-day-select');
     const monthSelect = document.getElementById('calendar-month-select');
+    
+    if (!title) {
+      highlightAdminError('#calendar-title', 'Nama agenda akademik wajib diisi.');
+      showAdminToast('Nama agenda wajib diisi.', 'error', 'Validasi Agenda');
+      return;
+    }
     
     const date = (hiddenDate && hiddenDate.value) ? hiddenDate.value : (daySelect ? daySelect.value : '1');
     const month = (hiddenMonth && hiddenMonth.value) ? hiddenMonth.value : (monthSelect ? monthSelect.value : 'JUL');
@@ -2163,10 +2295,22 @@ if (formHabit) {
   formHabit.addEventListener('submit', async (e) => {
     e.preventDefault();
     const submitBtn = formHabit.querySelector('button[type="submit"]');
+    clearAllAdminErrors(formHabit);
     const id = document.getElementById('habit-id').value;
-    const title = document.getElementById('habit-title').value;
-    const category = document.getElementById('habit-category').value;
-    const desc = document.getElementById('habit-desc').value;
+    const title = (document.getElementById('habit-title')?.value || '').trim();
+    const category = (document.getElementById('habit-category')?.value || '').trim();
+    const desc = (document.getElementById('habit-desc')?.value || '').trim();
+
+    if (!title) {
+      highlightAdminError('#habit-title', 'Judul pembiasaan baik wajib diisi.');
+      showAdminToast('Judul pembiasaan wajib diisi.', 'error', 'Validasi Pembiasaan');
+      return;
+    }
+    if (!desc) {
+      highlightAdminError('#habit-desc', 'Deskripsi implementasi pembiasaan wajib diisi.');
+      showAdminToast('Deskripsi pembiasaan wajib diisi.', 'error', 'Validasi Pembiasaan');
+      return;
+    }
 
     setButtonSubmitting(submitBtn, true, 'Menyimpan Pembiasaan...');
     try {
@@ -2249,9 +2393,21 @@ if (formComfort) {
   formComfort.addEventListener('submit', async (e) => {
     e.preventDefault();
     const submitBtn = formComfort.querySelector('button[type="submit"]');
+    clearAllAdminErrors(formComfort);
     const id = document.getElementById('comfort-id').value;
-    const title = document.getElementById('comfort-title').value;
-    const desc = document.getElementById('comfort-desc').value;
+    const title = (document.getElementById('comfort-title')?.value || '').trim();
+    const desc = (document.getElementById('comfort-desc')?.value || '').trim();
+
+    if (!title) {
+      highlightAdminError('#comfort-title', 'Judul standar kenyamanan wajib diisi.');
+      showAdminToast('Judul kenyamanan wajib diisi.', 'error', 'Validasi Kenyamanan');
+      return;
+    }
+    if (!desc) {
+      highlightAdminError('#comfort-desc', 'Deskripsi standar kenyamanan wajib diisi.');
+      showAdminToast('Deskripsi kenyamanan wajib diisi.', 'error', 'Validasi Kenyamanan');
+      return;
+    }
 
     // Rule: Title and description must both be unique
     const normTitle = normalizeName(title);
@@ -2260,12 +2416,14 @@ if (formComfort) {
 
     const titleDup = allComfort.some(c => String(c.id) !== String(id) && normalizeName(c.title) === normTitle);
     if (titleDup) {
+      highlightAdminError('#comfort-title', `Standar kenyamanan dengan judul "${title}" sudah ada.`);
       showAdminToast(`Standar kenyamanan dengan judul "${title}" sudah ada.`, 'error', 'Judul Duplikat');
       return;
     }
 
     const descDup = allComfort.some(c => String(c.id) !== String(id) && (c.desc || c.description || '').trim().toLowerCase() === normDesc);
     if (descDup) {
+      highlightAdminError('#comfort-desc', 'Deskripsi standar kenyamanan tidak boleh sama dengan standar yang sudah ada.');
       showAdminToast('Deskripsi standar kenyamanan tidak boleh sama dengan standar yang sudah ada.', 'error', 'Deskripsi Duplikat');
       return;
     }
@@ -2506,7 +2664,14 @@ if (adminLoginForm) {
       return;
     }
 
-    const password = adminPasswordInput.value;
+    clearAllAdminErrors(adminLoginForm);
+    const password = adminPasswordInput ? adminPasswordInput.value : '';
+    if (!password) {
+      highlightAdminError(adminPasswordInput, 'Kata sandi wajib diisi.');
+      showAdminToast('Kata sandi wajib diisi.', 'error', 'Autentikasi Gagal');
+      return;
+    }
+
     setButtonSubmitting(adminLoginBtn, true, 'Memverifikasi...');
     
     try {
@@ -2528,12 +2693,7 @@ if (adminLoginForm) {
           void loginErrorAlert.offsetWidth; // Trigger reflow for animation restart
           loginErrorAlert.style.animation = 'shake 0.4s ease';
         }
-        if (adminPasswordInput) {
-          adminPasswordInput.style.borderColor = '#DC2626';
-          adminPasswordInput.style.boxShadow = '0 0 0 3px rgba(220, 38, 38, 0.15)';
-          adminPasswordInput.focus();
-          adminPasswordInput.select();
-        }
+        highlightAdminError(adminPasswordInput, 'Kata sandi salah. Silakan periksa kembali.');
         showAdminToast('Kata sandi salah. Silakan periksa kembali.', 'error', 'Autentikasi Gagal');
       }
     } finally {
@@ -2852,6 +3012,7 @@ function initCategoryManagementUI() {
     const handleSaveCategory = async () => {
       const catName = inputNew.value.trim();
       if (!catName) {
+        highlightAdminError(inputNew, 'Nama kategori tidak boleh kosong.');
         showAdminToast('Nama kategori tidak boleh kosong.', 'error');
         return;
       }
@@ -2862,6 +3023,7 @@ function initCategoryManagementUI() {
         renderCategoryTags();
         populateActivityCategoriesDropdown(catName);
       } catch (err) {
+        highlightAdminError(inputNew, err.message || 'Gagal menambahkan kategori.');
         showAdminToast(err.message || 'Gagal menambahkan kategori.', 'error');
       }
     };
@@ -2876,8 +3038,15 @@ function initCategoryManagementUI() {
   }
 }
 
-// Check initial auth and lockout state on boot
+// Check initial auth and lockout state on boot, and bind form validation
 window.addEventListener('DOMContentLoaded', () => {
   checkLoginRateLimit();
   checkAuth();
+
+  // Automatically attach error highlighting validation to all admin forms
+  document.querySelectorAll('form').forEach(f => {
+    if (window.SchoolGuards && typeof window.SchoolGuards.bindFormValidation === 'function') {
+      window.SchoolGuards.bindFormValidation(f);
+    }
+  });
 });

@@ -4527,4 +4527,80 @@ img.img-loaded {
   }
 }
 
+/* ==========================================================================
+   GLOBAL ERROR HIGHLIGHT & RED BORDER SYSTEM ("Sorot Bagian yang Eror")
+   ========================================================================== */
 
+/* 1. Red border, soft alert background & focus ring for inputs */
+.form-control.is-invalid,
+.consultation-input.is-invalid,
+.image-upload-area.is-invalid,
+input.is-invalid,
+textarea.is-invalid,
+select.is-invalid,
+.is-invalid,
+.input-error,
+.has-error,
+input:user-invalid,
+textarea:user-invalid,
+select:user-invalid {
+  border: 2px solid #DC2626 !important;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.2) !important;
+  background-color: #FEF2F2 !important;
+  outline: none !important;
+  animation: errorFieldShake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* 2. Micro-animation shake to draw immediate focus to the error */
+@keyframes errorFieldShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  20%, 60% {
+    transform: translateX(-6px);
+  }
+  40%, 80% {
+    transform: translateX(6px);
+  }
+}
+
+/* 3. Field error feedback text with SVG alert icon */
+.field-error-feedback {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #DC2626;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-top: 6px;
+  line-height: 1.4;
+  animation: errorFeedbackFadeIn 0.25s ease-out;
+}
+
+.field-error-feedback svg {
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  color: #DC2626;
+}
+
+@keyframes errorFeedbackFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 4. Broken image loading error highlight */
+img.img-error,
+.img-load-error {
+  border: 2px dashed #DC2626 !important;
+  background-color: #FEF2F2 !important;
+  border-radius: var(--radius-sm);
+  min-height: 80px;
+  display: block;
+}

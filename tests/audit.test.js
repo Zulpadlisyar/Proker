@@ -174,6 +174,31 @@ test('3.5: Main.js preserves Bento DOM during dynamic gallery sync', () => {
   assert(!mainJs.includes('homeGalleryContainer.innerHTML = displayGallery'), 'main.js overwrites bento innerHTML!');
 });
 
+test('3.6: CSS implements error highlighting with red border (#DC2626) and shake animation', () => {
+  const css = fs.readFileSync('css/styles.css', 'utf8');
+  assert(css.includes('.is-invalid'), 'Missing .is-invalid in styles.css');
+  assert(css.includes('#DC2626'), 'Missing red error color #DC2626 in styles.css');
+  assert(css.includes('errorFieldShake'), 'Missing errorFieldShake animation in styles.css');
+  assert(css.includes('.field-error-feedback'), 'Missing .field-error-feedback in styles.css');
+});
+
+test('3.7: SchoolGuards implements highlightError, clearError, clearAllErrors, and bindFormValidation', () => {
+  const guardsJs = fs.readFileSync('js/utils/guards.js', 'utf8');
+  assert(guardsJs.includes('function highlightError('), 'Missing highlightError in guards.js');
+  assert(guardsJs.includes('function clearError('), 'Missing clearError in guards.js');
+  assert(guardsJs.includes('function clearAllErrors('), 'Missing clearAllErrors in guards.js');
+  assert(guardsJs.includes('function bindFormValidation('), 'Missing bindFormValidation in guards.js');
+});
+
+test('3.8: Admin.js and Main.js wire highlightError into form validation and error spotlighting', () => {
+  const adminJs = fs.readFileSync('js/admin.js', 'utf8');
+  assert(adminJs.includes('highlightAdminError('), 'admin.js missing highlightAdminError');
+  assert(adminJs.includes('clearAllAdminErrors('), 'admin.js missing clearAllAdminErrors');
+  const mainJs = fs.readFileSync('js/main.js', 'utf8');
+  assert(mainJs.includes('SchoolGuards.highlightError'), 'main.js missing SchoolGuards.highlightError');
+});
+
+
 console.log('\n----------------------------------------------------');
 console.log(`TOTAL TESTS: ${passCount + failCount}`);
 console.log(`PASSED: ${passCount}`);

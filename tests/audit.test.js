@@ -215,6 +215,21 @@ test('3.10: Neutral default activity image and authentic school photo exist and 
   assert(fs.existsSync('images/default_activity.webp'), 'default_activity.webp not found on disk');
 });
 
+test('3.11: tentang.html history section does not include banner photo', () => {
+  const tentangHtml = fs.readFileSync('tentang.html', 'utf8');
+  const historySecMatch = tentangHtml.match(/<section[^>]*id="history-sec"[^>]*>([\s\S]*?)<\/section>/);
+  assert(historySecMatch, 'tentang.html missing id="history-sec"');
+  assert(!historySecMatch[1].includes('gedung_sdn2_ngeposari.webp'), 'tentang.html history section still has banner photo');
+});
+
+test('3.12: Unified container widths - Zero occurrences of legacy 1280px in styles.css', () => {
+  const css = fs.readFileSync('css/styles.css', 'utf8');
+  assert(!css.includes('1280px'), 'styles.css still contains legacy 1280px width');
+  assert(css.includes('.header-container {\n  max-width: 1240px;'), '.header-container not 1240px');
+  assert(css.includes('.footer-container {\n  max-width: 1240px;'), '.footer-container not 1240px');
+  assert(css.includes('.section-divider {\n  max-width: 1240px;'), '.section-divider not 1240px');
+});
+
 console.log('\n----------------------------------------------------');
 console.log(`TOTAL TESTS: ${passCount + failCount}`);
 console.log(`PASSED: ${passCount}`);

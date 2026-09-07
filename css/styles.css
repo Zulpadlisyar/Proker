@@ -145,13 +145,14 @@ body.hero-page header#main-header {
 }
 
 .header-container {
-  max-width: 1280px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 var(--space-5);
   height: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-sizing: border-box;
 }
 
 .logo-link {
@@ -598,13 +599,24 @@ body.hero-page header#main-header {
   }
 }
 
+/* Home Page Full-Width Section Wrappers */
+.activities-home-section,
+.testimonials-home-section {
+  width: 100%;
+  background-color: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-8) 0;
+  box-sizing: border-box;
+}
+
 /* Banner Highlight Section */
 .banner-highlight-section {
   background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
   border-radius: var(--radius-feature);
   border: 1px solid rgba(255, 255, 255, 0.15);
   padding: var(--space-6) var(--space-6) 0;
-  max-width: 1280px;
+  max-width: 1240px;
   margin: 0 auto;
   box-sizing: border-box;
   overflow: hidden;
@@ -643,10 +655,11 @@ body.hero-page header#main-header {
 
 /* Section Shared Headers & Divider */
 .section-divider {
-  max-width: 1280px;
+  max-width: 1240px;
   margin: 0 auto;
   height: 1px;
   background-color: var(--border);
+  box-sizing: border-box;
 }
 
 .section {
@@ -1066,18 +1079,20 @@ body.hero-page header#main-header {
   background-color: var(--surface-alt);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  padding: var(--space-7) 32px;
+  padding: var(--space-7) var(--space-5);
+  box-sizing: border-box;
 }
 
 .news-grid-container,
 .news-editorial-grid,
 .activities-grid {
-  max-width: 1280px;
+  max-width: 1240px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 28px;
   align-items: stretch;
+  box-sizing: border-box;
 }
 
 @media (max-width: 1024px) {
@@ -2695,23 +2710,26 @@ body.hero-page header#main-header {
 }
 
 /* Footer (Section 29: Dark Green #214B31) */
-footer, footer#main-footer {
+footer#main-footer,
+footer {
   background-color: var(--color-primary-dark);
   color: #FFFFFF;
   border-top: 1px solid rgba(255, 255, 255, 0.14);
-  padding: var(--space-8) 32px var(--space-6);
+  padding: var(--space-8) var(--space-5) var(--space-6);
   position: relative;
   z-index: 10;
+  box-sizing: border-box;
 }
 
 .footer-container {
-  max-width: 1280px;
+  max-width: 1240px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1.4fr 0.8fr 1.1fr;
   gap: var(--space-7);
   padding-bottom: var(--space-7);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-sizing: border-box;
 }
 
 .footer-brand h3 {
@@ -2815,7 +2833,7 @@ footer, footer#main-footer {
 }
 
 .footer-bottom {
-  max-width: 1280px;
+  max-width: 1240px;
   margin: 0 auto;
   padding-top: var(--space-5);
   display: flex;
@@ -2827,6 +2845,7 @@ footer, footer#main-footer {
   color: #FFFFFF !important;
   opacity: 1 !important;
   line-height: 1.7;
+  box-sizing: border-box;
 }
 
 .footer-bottom p {

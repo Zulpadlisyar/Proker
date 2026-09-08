@@ -84,19 +84,19 @@
         id: 'f2',
         name: 'Laboratorium Komputer',
         description: 'Ruang komputer modern dengan koneksi internet untuk menunjang literasi digital siswa.',
-        image: 'images/school/latihan_pramuka.webp'
+        image: 'images/school/lab_komputer.webp'
       },
       {
         id: 'f3',
         name: 'Lapangan Serbaguna',
         description: 'Area luas untuk kegiatan olahraga seperti senam, sepak bola, bulu tangkis, dan upacara bendera.',
-        image: 'images/school/upacara_bendera.webp'
+        image: 'images/school/lapangan.webp'
       },
       {
         id: 'f4',
         name: 'Unit Kesehatan Sekolah (UKS)',
         description: 'Ruang kesehatan darurat yang dilengkapi dengan obat-obatan dasar dan perlengkapan P3K.',
-        image: 'images/school/gedung_sdn2_ngeposari.webp'
+        image: 'images/school/ruang_uks.webp'
       }
     ],
     categories: [

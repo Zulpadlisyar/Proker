@@ -784,15 +784,17 @@ window.SchoolDB = {
               if (!f.image || f.image.includes('kegiatan1') || f.image.includes('unsplash') || f.image.includes('fasilitas1')) {
                 f.image = 'images/school/perpustakaan.webp';
               }
-            } else if (f.image && f.image.includes('unsplash')) {
-              if (f.id === 'f2' || lower.includes('komputer') || lower.includes('lab')) {
-                f.image = 'images/school/latihan_pramuka.webp';
-              } else if (f.id === 'f3' || lower.includes('lapangan') || lower.includes('olahraga')) {
-                f.image = 'images/school/upacara_bendera.webp';
-              } else if (f.id === 'f4' || lower.includes('uks') || lower.includes('kesehatan')) {
-                f.image = 'images/school/gedung_sdn2_ngeposari.webp';
-              } else {
-                f.image = 'images/school/gedung_sdn2_ngeposari.webp';
+            } else if (f.id === 'f2' || lower.includes('komputer') || lower.includes('lab')) {
+              if (!f.image || f.image.includes('pramuka') || f.image.includes('unsplash')) {
+                f.image = 'images/school/lab_komputer.webp';
+              }
+            } else if (f.id === 'f3' || lower.includes('lapangan') || lower.includes('olahraga')) {
+              if (!f.image || f.image.includes('upacara') || f.image.includes('unsplash')) {
+                f.image = 'images/school/lapangan.webp';
+              }
+            } else if (f.id === 'f4' || lower.includes('uks') || lower.includes('kesehatan')) {
+              if (!f.image || f.image.includes('gedung') || f.image.includes('unsplash')) {
+                f.image = 'images/school/ruang_uks.webp';
               }
             }
           });

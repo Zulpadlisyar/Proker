@@ -6,7 +6,7 @@
  * 3. Automatic Cache Purge for obsolete cache versions on activate
  */
 
-const CACHE_NAME = 'sdn2-cache-v6.5';
+const CACHE_NAME = 'sdn2-cache-v7.0';
 
 const PRECACHE_ASSETS = [
   './',
@@ -15,14 +15,17 @@ const PRECACHE_ASSETS = [
   './fasilitas.html',
   './kegiatan.html',
   './kontak.html',
-  './css/styles.css?v=6.5',
-  './js/config/constants.js?v=6.5',
-  './js/utils/formatters.js?v=6.5',
-  './js/utils/guards.js?v=6.5',
-  './js/components/layout/Navbar.js?v=6.5',
-  './js/components/layout/Footer.js?v=6.5',
-  './js/db.js?v=6.5',
-  './js/main.js?v=6.5',
+  './admin.html',
+  './css/styles.css?v=7.0',
+  './js/config/constants.js?v=7.0',
+  './js/utils/formatters.js?v=7.0',
+  './js/utils/guards.js?v=7.0',
+  './js/components/ui/ConfirmModal.js?v=7.0',
+  './js/components/layout/Navbar.js?v=7.0',
+  './js/components/layout/Footer.js?v=7.0',
+  './js/db.js?v=7.0',
+  './js/admin.js?v=7.0',
+  './js/main.js?v=7.0',
   './images/logo.webp',
   './images/favicon.png',
   './images/school_hero_bg.webp',

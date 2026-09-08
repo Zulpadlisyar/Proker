@@ -130,6 +130,10 @@ function showAdminToast(message, type = 'success', title = '') {
 
 // Modern Accessible Confirmation Modal System (Replaces Native confirm())
 function showConfirmModal(options = {}) {
+  if (window.ConfirmModal && typeof window.ConfirmModal.show === 'function') {
+    return window.ConfirmModal.show(options);
+  }
+
   return new Promise((resolve) => {
     const {
       title = 'Konfirmasi Hapus',
@@ -141,10 +145,39 @@ function showConfirmModal(options = {}) {
       icon = type === 'danger' ? 'trash' : (type === 'warning' ? 'warning' : 'info')
     } = options;
 
-    const overlay = document.getElementById('custom-confirm-overlay');
+    let overlay = document.getElementById('custom-confirm-overlay');
     if (!overlay) {
-      resolve(window.confirm(message));
-      return;
+      overlay = document.createElement('div');
+      overlay.id = 'custom-confirm-overlay';
+      overlay.className = 'custom-confirm-overlay';
+      overlay.setAttribute('role', 'alertdialog');
+      overlay.setAttribute('aria-modal', 'true');
+      overlay.setAttribute('aria-labelledby', 'custom-confirm-title');
+      overlay.setAttribute('aria-describedby', 'custom-confirm-desc');
+      overlay.innerHTML = `
+        <div class="custom-confirm-card">
+          <button type="button" id="custom-confirm-close-btn" class="custom-confirm-close" aria-label="Tutup dialog">&times;</button>
+          <div id="custom-confirm-icon-wrap" class="custom-confirm-icon-wrap icon-type-danger">
+            <svg id="custom-confirm-icon-trash" class="custom-confirm-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            <svg id="custom-confirm-icon-warn" class="custom-confirm-icon" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <svg id="custom-confirm-icon-info" class="custom-confirm-icon" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          </div>
+          <h3 id="custom-confirm-title" class="custom-confirm-title">Hapus Data?</h3>
+          <p id="custom-confirm-desc" class="custom-confirm-desc">Apakah Anda yakin ingin menghapus data ini? Tindakan tidak dapat dibatalkan.</p>
+          <div id="custom-confirm-item-badge" class="custom-confirm-item-badge" style="display:none;">
+            <span class="badge-label">Item:</span>
+            <span id="custom-confirm-item-text" class="badge-name"></span>
+          </div>
+          <div class="custom-confirm-actions">
+            <button type="button" id="custom-confirm-btn-cancel" class="btn confirm-action-cancel">Batal</button>
+            <button type="button" id="custom-confirm-btn-confirm" class="btn confirm-action-confirm btn-danger">
+              <svg id="custom-confirm-btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              <span id="custom-confirm-confirm-text">Ya, Hapus</span>
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
     }
 
     const titleEl = document.getElementById('custom-confirm-title');
@@ -253,6 +286,14 @@ function showConfirmModal(options = {}) {
   });
 }
 window.showConfirmModal = showConfirmModal;
+
+// Neutralize browser native confirm to prevent any accidental browser alerts
+try {
+  window.confirm = function (msg) {
+    console.warn('[AdminModal] Native confirm() suppressed:', msg);
+    return false;
+  };
+} catch (e) {}
 
 // Button Submitting State Manager (Anti-Spam / Anti-Duplicate Click)
 function setButtonSubmitting(btn, isSubmitting, text = 'Menyimpan...') {

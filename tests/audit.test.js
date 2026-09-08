@@ -297,6 +297,8 @@ test('3.18: Modern Confirmation Dialog - admin.html has custom-confirm-overlay a
   const adminHtml = fs.readFileSync('admin.html', 'utf8');
   const adminJs = fs.readFileSync('js/admin.js', 'utf8');
   const css = fs.readFileSync('css/styles.css', 'utf8');
+  assert(fs.existsSync('js/components/ui/ConfirmModal.js'), 'ConfirmModal.js component file missing');
+  assert(adminHtml.includes('js/components/ui/ConfirmModal.js'), 'admin.html missing ConfirmModal.js script link');
   assert(adminHtml.includes('id="custom-confirm-overlay"'), 'admin.html missing custom-confirm-overlay element');
   assert(adminHtml.includes('role="alertdialog"'), 'admin.html custom-confirm-overlay missing role="alertdialog"');
   assert(adminJs.includes('function showConfirmModal('), 'admin.js missing showConfirmModal implementation');

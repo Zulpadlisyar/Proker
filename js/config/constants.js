@@ -409,10 +409,13 @@
   // Used as the fallback across all domains (sdn2ngeposari.my.id, workers.dev, localhost)
   // Can be customized/overridden dynamically via Admin Panel (saved in localStorage).
   const DEFAULT_FIREBASE_CONFIG = {
-    apiKey: '',
-    projectId: '',
-    appId: '',
-    authDomain: ''
+    apiKey: 'AIzaSyBI5Yisy-nH3AnOxUw1prn960YfNRgBraU',
+    authDomain: 'sdn-ngeposari2.firebaseapp.com',
+    projectId: 'sdn-ngeposari2',
+    storageBucket: 'sdn-ngeposari2.firebasestorage.app',
+    messagingSenderId: '36824822537',
+    appId: '1:36824822537:web:ccfc16d88ef1ceccc999d8',
+    measurementId: 'G-C49JYZ08R2'
   };
 
   const SchoolConstants = {

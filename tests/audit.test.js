@@ -293,6 +293,17 @@ test('3.17: LCP & Core Web Vitals optimization - index.html implements responsiv
   assert(css.includes('content-visibility: auto'), 'styles.css missing content-visibility');
 });
 
+test('3.18: Modern Confirmation Dialog - admin.html has custom-confirm-overlay and admin.js implements showConfirmModal', () => {
+  const adminHtml = fs.readFileSync('admin.html', 'utf8');
+  const adminJs = fs.readFileSync('js/admin.js', 'utf8');
+  const css = fs.readFileSync('css/styles.css', 'utf8');
+  assert(adminHtml.includes('id="custom-confirm-overlay"'), 'admin.html missing custom-confirm-overlay element');
+  assert(adminHtml.includes('role="alertdialog"'), 'admin.html custom-confirm-overlay missing role="alertdialog"');
+  assert(adminJs.includes('function showConfirmModal('), 'admin.js missing showConfirmModal implementation');
+  assert(css.includes('.custom-confirm-overlay'), 'styles.css missing .custom-confirm-overlay styling');
+  assert(css.includes('.custom-confirm-card'), 'styles.css missing .custom-confirm-card styling');
+});
+
 console.log('\n----------------------------------------------------');
 console.log(`TOTAL TESTS: ${passCount + failCount}`);
 console.log(`PASSED: ${passCount}`);

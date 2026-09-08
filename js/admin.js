@@ -128,6 +128,132 @@ function showAdminToast(message, type = 'success', title = '') {
   setTimeout(removeToast, 3000);
 }
 
+// Modern Accessible Confirmation Modal System (Replaces Native confirm())
+function showConfirmModal(options = {}) {
+  return new Promise((resolve) => {
+    const {
+      title = 'Konfirmasi Hapus',
+      message = 'Apakah Anda yakin ingin menghapus data ini? Tindakan tidak dapat dibatalkan.',
+      itemName = '',
+      confirmText = 'Ya, Hapus',
+      cancelText = 'Batal',
+      type = 'danger',
+      icon = type === 'danger' ? 'trash' : (type === 'warning' ? 'warning' : 'info')
+    } = options;
+
+    const overlay = document.getElementById('custom-confirm-overlay');
+    if (!overlay) {
+      resolve(window.confirm(message));
+      return;
+    }
+
+    const titleEl = document.getElementById('custom-confirm-title');
+    const descEl = document.getElementById('custom-confirm-desc');
+    const badgeEl = document.getElementById('custom-confirm-item-badge');
+    const itemTextEl = document.getElementById('custom-confirm-item-text');
+    const iconWrap = document.getElementById('custom-confirm-icon-wrap');
+    const trashIcon = document.getElementById('custom-confirm-icon-trash');
+    const warnIcon = document.getElementById('custom-confirm-icon-warn');
+    const infoIcon = document.getElementById('custom-confirm-icon-info');
+    const btnCancel = document.getElementById('custom-confirm-btn-cancel');
+    const btnConfirm = document.getElementById('custom-confirm-btn-confirm');
+    const btnConfirmText = document.getElementById('custom-confirm-confirm-text');
+    const btnConfirmIcon = document.getElementById('custom-confirm-btn-icon');
+    const btnClose = document.getElementById('custom-confirm-close-btn');
+
+    if (titleEl) titleEl.textContent = title;
+    if (descEl) descEl.textContent = message;
+
+    if (badgeEl && itemTextEl) {
+      if (itemName) {
+        itemTextEl.textContent = itemName;
+        badgeEl.style.display = 'inline-flex';
+      } else {
+        badgeEl.style.display = 'none';
+      }
+    }
+
+    // Icon type & styling
+    if (iconWrap) {
+      iconWrap.className = 'custom-confirm-icon-wrap icon-type-' + type;
+    }
+    if (trashIcon) trashIcon.style.display = (icon === 'trash') ? 'block' : 'none';
+    if (warnIcon) warnIcon.style.display = (icon === 'warning') ? 'block' : 'none';
+    if (infoIcon) infoIcon.style.display = (icon === 'info') ? 'block' : 'none';
+
+    // Buttons
+    if (btnCancel) btnCancel.textContent = cancelText;
+    if (btnConfirmText) btnConfirmText.textContent = confirmText;
+
+    if (btnConfirm) {
+      btnConfirm.className = 'btn confirm-action-confirm ' + (type === 'danger' ? 'btn-danger' : (type === 'warning' ? 'btn-warning' : 'btn-primary'));
+      if (btnConfirmIcon) {
+        btnConfirmIcon.style.display = (icon === 'trash') ? 'inline-block' : 'none';
+      }
+    }
+
+    let settled = false;
+
+    function cleanup() {
+      overlay.classList.remove('open');
+      setTimeout(() => {
+        if (!overlay.classList.contains('open')) {
+          overlay.style.display = 'none';
+        }
+      }, 220);
+      window.removeEventListener('keydown', handleKey);
+      overlay.removeEventListener('click', handleBackdrop);
+      if (btnCancel) btnCancel.removeEventListener('click', handleCancel);
+      if (btnClose) btnClose.removeEventListener('click', handleCancel);
+      if (btnConfirm) btnConfirm.removeEventListener('click', handleConfirm);
+    }
+
+    function handleCancel(e) {
+      if (e) e.preventDefault();
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(false);
+    }
+
+    function handleConfirm(e) {
+      if (e) e.preventDefault();
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(true);
+    }
+
+    function handleBackdrop(e) {
+      if (e.target === overlay) {
+        handleCancel(e);
+      }
+    }
+
+    function handleKey(e) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        handleCancel(e);
+      }
+    }
+
+    if (btnCancel) btnCancel.addEventListener('click', handleCancel);
+    if (btnClose) btnClose.addEventListener('click', handleCancel);
+    if (btnConfirm) btnConfirm.addEventListener('click', handleConfirm);
+    overlay.addEventListener('click', handleBackdrop);
+    window.addEventListener('keydown', handleKey);
+
+    overlay.style.display = 'flex';
+    void overlay.offsetWidth;
+    overlay.classList.add('open');
+
+    if (btnCancel) {
+      setTimeout(() => btnCancel.focus(), 60);
+    }
+  });
+}
+window.showConfirmModal = showConfirmModal;
+
 // Button Submitting State Manager (Anti-Spam / Anti-Duplicate Click)
 function setButtonSubmitting(btn, isSubmitting, text = 'Menyimpan...') {
   if (window.SchoolGuards && typeof window.SchoolGuards.setButtonSubmitting === 'function') {
@@ -412,7 +538,15 @@ document.addEventListener('click', async (e) => {
     if (!targetId) return;
 
     if (isFormDirty) {
-      if (!confirm('Ada perubahan form yang belum disimpan. Tetap berpindah menu?')) {
+      const proceed = await showConfirmModal({
+        title: 'Perubahan Belum Disimpan',
+        message: 'Ada perubahan formulir yang belum disimpan. Tetap berpindah menu?',
+        confirmText: 'Pindah Menu',
+        cancelText: 'Tetap di Sini',
+        type: 'warning',
+        icon: 'warning'
+      });
+      if (!proceed) {
         return;
       }
       clearDirty();
@@ -506,21 +640,46 @@ document.addEventListener('click', async (e) => {
 
   // 5. Table Action Buttons: Delete
   const DELETE_ROW_TRIGGERS = [
-    { cls: '.btn-delete-teacher', msg: 'Hapus data guru ini? Tindakan tidak dapat dibatalkan.', fn: id => window.SchoolDB.deleteTeacher(id), toast: 'Data guru berhasil dihapus.', title: 'Guru Dihapus', refresh: () => { renderTeachersTable(); renderDashboard(); } },
-    { cls: '.btn-delete-facility', msg: 'Hapus data fasilitas ini? Tindakan tidak dapat dibatalkan.', fn: id => window.SchoolDB.deleteFacility(id), toast: 'Data fasilitas berhasil dihapus.', title: 'Fasilitas Dihapus', refresh: () => { renderFacilitiesTable(); renderDashboard(); } },
-    { cls: '.btn-delete-activity', msg: 'Hapus data kegiatan ini? Tindakan tidak dapat dibatalkan.', fn: id => window.SchoolDB.deleteActivity(id), toast: 'Data kegiatan berhasil dihapus.', title: 'Kegiatan Dihapus', refresh: () => { renderActivitiesTable(); renderDashboard(); } },
-    { cls: '.btn-delete-gallery', msg: 'Hapus foto dari galeri? Tindakan tidak dapat dibatalkan.', fn: id => (window.SchoolDB.deleteGalleryItem ? window.SchoolDB.deleteGalleryItem(id) : window.SchoolDB.deleteGallery(id)), toast: 'Foto galeri berhasil dihapus.', title: 'Foto Dihapus', refresh: () => { renderGalleryTable(); renderDashboard(); } },
-    { cls: '.btn-delete-testi', msg: 'Hapus testimoni ini?', fn: id => window.SchoolDB.deleteTestimonial(id), toast: 'Testimoni berhasil dihapus.', title: 'Testimoni Dihapus', refresh: () => renderTestimonialsTable() },
-    { cls: '.btn-delete-calendar', msg: 'Hapus agenda kalender ini?', fn: id => (window.SchoolDB.deleteCalendarItem ? window.SchoolDB.deleteCalendarItem(id) : window.SchoolDB.deleteCalendar(id)), toast: 'Agenda kalender berhasil dihapus.', title: 'Agenda Dihapus', refresh: () => renderCalendarTable() },
-    { cls: '.btn-delete-habit', msg: 'Hapus pembiasaan ini?', fn: id => window.SchoolDB.deleteHabit(id), toast: 'Pembiasaan berhasil dihapus.', title: 'Pembiasaan Dihapus', refresh: () => renderHabitsTable() },
-    { cls: '.btn-delete-comfort', msg: 'Hapus standar kenyamanan ini?', fn: id => window.SchoolDB.deleteComfortStandard(id), toast: 'Standar kenyamanan berhasil dihapus.', title: 'Standar Dihapus', refresh: () => renderComfortTable() }
+    { cls: '.btn-delete-teacher', type: 'Guru & Staf', msg: 'Hapus data guru ini? Tindakan tidak dapat dibatalkan.', fn: id => window.SchoolDB.deleteTeacher(id), toast: 'Data guru berhasil dihapus.', title: 'Guru Dihapus', refresh: () => { renderTeachersTable(); renderDashboard(); } },
+    { cls: '.btn-delete-facility', type: 'Fasilitas Sekolah', msg: 'Hapus data fasilitas ini? Tindakan tidak dapat dibatalkan.', fn: id => window.SchoolDB.deleteFacility(id), toast: 'Data fasilitas berhasil dihapus.', title: 'Fasilitas Dihapus', refresh: () => { renderFacilitiesTable(); renderDashboard(); } },
+    { cls: '.btn-delete-activity', type: 'Kegiatan Sekolah', msg: 'Hapus data kegiatan ini? Tindakan tidak dapat dibatalkan.', fn: id => window.SchoolDB.deleteActivity(id), toast: 'Data kegiatan berhasil dihapus.', title: 'Kegiatan Dihapus', refresh: () => { renderActivitiesTable(); renderDashboard(); } },
+    { cls: '.btn-delete-gallery', type: 'Foto Galeri', msg: 'Hapus foto dari galeri? Tindakan tidak dapat dibatalkan.', fn: id => (window.SchoolDB.deleteGalleryItem ? window.SchoolDB.deleteGalleryItem(id) : window.SchoolDB.deleteGallery(id)), toast: 'Foto galeri berhasil dihapus.', title: 'Foto Dihapus', refresh: () => { renderGalleryTable(); renderDashboard(); } },
+    { cls: '.btn-delete-testi', type: 'Testimoni', msg: 'Hapus testimoni ini? Tindakan tidak dapat dibatalkan.', fn: id => window.SchoolDB.deleteTestimonial(id), toast: 'Testimoni berhasil dihapus.', title: 'Testimoni Dihapus', refresh: () => renderTestimonialsTable() },
+    { cls: '.btn-delete-calendar', type: 'Agenda Kalender', msg: 'Hapus agenda kalender ini? Tindakan tidak dapat dibatalkan.', fn: id => (window.SchoolDB.deleteCalendarItem ? window.SchoolDB.deleteCalendarItem(id) : window.SchoolDB.deleteCalendar(id)), toast: 'Agenda kalender berhasil dihapus.', title: 'Agenda Dihapus', refresh: () => renderCalendarTable() },
+    { cls: '.btn-delete-habit', type: 'Pembiasaan & Budaya', msg: 'Hapus pembiasaan ini? Tindakan tidak dapat dibatalkan.', fn: id => window.SchoolDB.deleteHabit(id), toast: 'Pembiasaan berhasil dihapus.', title: 'Pembiasaan Dihapus', refresh: () => renderHabitsTable() },
+    { cls: '.btn-delete-comfort', type: 'Standar Kenyamanan', msg: 'Hapus standar kenyamanan ini? Tindakan tidak dapat dibatalkan.', fn: id => window.SchoolDB.deleteComfortStandard(id), toast: 'Standar kenyamanan berhasil dihapus.', title: 'Standar Dihapus', refresh: () => renderComfortTable() }
   ];
   for (const item of DELETE_ROW_TRIGGERS) {
     const btn = e.target.closest(item.cls);
     if (btn) {
       e.preventDefault();
       const id = btn.getAttribute('data-id');
-      if (confirm(item.msg)) {
+      
+      const row = btn.closest('tr');
+      let itemName = '';
+      if (row) {
+        const strong = row.querySelector('strong');
+        if (strong) {
+          itemName = strong.textContent.trim();
+        } else {
+          const cells = row.querySelectorAll('td');
+          if (cells.length > 1) {
+            itemName = cells[1].textContent.trim();
+          }
+        }
+      }
+
+      const confirmed = await showConfirmModal({
+        title: `Hapus Data ${item.type || 'Data'}?`,
+        message: item.msg,
+        itemName: itemName,
+        confirmText: 'Ya, Hapus',
+        cancelText: 'Batal',
+        type: 'danger',
+        icon: 'trash'
+      });
+
+      if (confirmed) {
         btn.disabled = true;
         try {
           await item.fn(id);
@@ -552,7 +711,15 @@ document.addEventListener('click', async (e) => {
   if (e.target.closest('#admin-logout-btn')) {
     e.preventDefault();
     if (isFormDirty) {
-      if (!confirm('Ada perubahan yang belum disimpan. Yakin ingin keluar?')) {
+      const proceed = await showConfirmModal({
+        title: 'Perubahan Belum Disimpan',
+        message: 'Ada perubahan yang belum disimpan. Yakin ingin keluar?',
+        confirmText: 'Keluar',
+        cancelText: 'Batal',
+        type: 'warning',
+        icon: 'warning'
+      });
+      if (!proceed) {
         return;
       }
     }
@@ -689,9 +856,17 @@ updateBaselineBtns.forEach(btn => {
   btn.addEventListener('click', async () => {
     const activities = window.SchoolDB.getActivities();
     const gallery = window.SchoolDB.getGallery();
-    const confirmMsg = `Konfirmasi Simpan Titik Reset:\n\nApakah Anda ingin menyimpan seluruh data saat ini (${activities.length} Kegiatan, ${gallery.length} Foto Dokumentasi, Profil, Fasilitas, Guru, dll.) sebagai Titik Reset Baru?\n\nSetelah disimpan, jika suatu saat dilakukan reset database, seluruh kegiatan dan aset yang telah Anda tambahkan TIDAK AKAN HILANG dan akan dipulihkan ke titik ini.`;
+    const confirmMsg = `Apakah Anda ingin menyimpan seluruh data saat ini (${activities.length} Kegiatan, ${gallery.length} Foto Dokumentasi, Profil, Fasilitas, Guru, dll.) sebagai Titik Reset Baru?\n\nSetelah disimpan, jika suatu saat dilakukan reset database, seluruh kegiatan dan aset yang telah Anda tambahkan tidak akan hilang dan akan dipulihkan ke titik ini.`;
 
-    if (!confirm(confirmMsg)) return;
+    const proceed = await showConfirmModal({
+      title: 'Simpan Titik Reset Baru?',
+      message: confirmMsg,
+      confirmText: 'Simpan Titik Reset',
+      cancelText: 'Batal',
+      type: 'info',
+      icon: 'info'
+    });
+    if (!proceed) return;
 
     setButtonSubmitting(btn, true, 'Menyimpan Titik Reset...');
     try {
@@ -724,10 +899,19 @@ resetDbBtns.forEach(btn => {
     const hasCustomBaseline = !!(info && info.timestamp);
 
     const confirmMsg = hasCustomBaseline
-      ? `Konfirmasi Pemulihan Data:\n\nApakah Anda yakin ingin memulihkan database ke Titik Reset Terakhir (${info.totalActivities || 0} Kegiatan, ${info.totalGallery || 0} Foto)?\n\nSemua aset dan kegiatan yang telah Anda simpan pada titik reset ini tetap aman dan akan dipulihkan.`
+      ? `Apakah Anda yakin ingin memulihkan database ke Titik Reset Terakhir (${info.totalActivities || 0} Kegiatan, ${info.totalGallery || 0} Foto)? Semua aset dan kegiatan yang telah Anda simpan pada titik reset ini tetap aman dan akan dipulihkan.`
       : 'PERINGATAN: Anda belum pernah memperbarui titik reset kustom. Database akan dikembalikan ke data awal bawaan sistem. Lanjutkan pemulihan?';
 
-    if (confirm(confirmMsg)) {
+    const proceed = await showConfirmModal({
+      title: 'Pulihkan Database?',
+      message: confirmMsg,
+      confirmText: 'Ya, Pulihkan Data',
+      cancelText: 'Batal',
+      type: 'warning',
+      icon: 'warning'
+    });
+
+    if (proceed) {
       setButtonSubmitting(btn, true, 'Memulihkan Data...');
       try {
         const result = await window.SchoolDB.reset(false);
@@ -756,8 +940,24 @@ const resetFactoryBtns = [
 resetFactoryBtns.forEach(btn => {
   if (!btn) return;
   btn.addEventListener('click', async () => {
-    if (confirm('PERINGATAN TINGGI: Anda akan mereset database ke BAWAAN PABRIK AWAL. Seluruh data kustom termasuk titik reset yang pernah disimpan akan dihapus. Lanjutkan?')) {
-      if (confirm('Konfirmasi Terakhir: Hapus seluruh data sekolah dan kembalikan ke setelan awal pabrik pertama kali?')) {
+    const firstConfirm = await showConfirmModal({
+      title: 'Reset Total ke Bawaan Pabrik?',
+      message: 'PERINGATAN TINGGI: Anda akan mereset database ke BAWAAN PABRIK AWAL. Seluruh data kustom termasuk titik reset yang pernah disimpan akan dihapus. Lanjutkan?',
+      confirmText: 'Lanjutkan',
+      cancelText: 'Batal',
+      type: 'danger',
+      icon: 'warning'
+    });
+    if (firstConfirm) {
+      const finalConfirm = await showConfirmModal({
+        title: 'Konfirmasi Terakhir Reset Pabrik',
+        message: 'Hapus seluruh data sekolah dan kembalikan ke setelan awal pabrik pertama kali? Tindakan ini permanen.',
+        confirmText: 'Ya, Reset Pabrik',
+        cancelText: 'Batalkan',
+        type: 'danger',
+        icon: 'trash'
+      });
+      if (finalConfirm) {
         setButtonSubmitting(btn, true, 'Mereset ke Pabrik...');
         try {
           await window.SchoolDB.reset(true);
@@ -1859,7 +2059,18 @@ function renderInboxList() {
   container.querySelectorAll('.btn-delete-inq').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       const id = e.currentTarget.getAttribute('data-id');
-      if (confirm('Hapus pesan konsultasi ini? Tindakan tidak dapat dibatalkan.')) {
+      const card = btn.closest('.inquiry-card');
+      const senderName = card ? card.querySelector('.inquiry-name')?.textContent.trim() : '';
+      const confirmed = await showConfirmModal({
+        title: 'Hapus Pesan Konsultasi?',
+        message: 'Hapus pesan konsultasi ini? Tindakan tidak dapat dibatalkan.',
+        itemName: senderName ? `Pesan dari ${senderName}` : '',
+        confirmText: 'Ya, Hapus',
+        cancelText: 'Batal',
+        type: 'danger',
+        icon: 'trash'
+      });
+      if (confirmed) {
         await window.SchoolDB.deleteInquiry(id);
         showAdminToast('Pesan konsultasi berhasil dihapus.', 'success', 'Pesan Dihapus');
         renderInboxList();
@@ -2725,9 +2936,17 @@ if (adminLoginForm) {
 // Logout Handler
 const logoutBtn = document.getElementById('admin-logout-btn');
 if (logoutBtn) {
-  logoutBtn.addEventListener('click', () => {
+  logoutBtn.addEventListener('click', async () => {
     if (isFormDirty) {
-      if (!confirm('Ada perubahan yang belum disimpan. Yakin ingin keluar?')) {
+      const proceed = await showConfirmModal({
+        title: 'Perubahan Belum Disimpan',
+        message: 'Ada perubahan formulir yang belum disimpan. Yakin ingin keluar?',
+        confirmText: 'Keluar',
+        cancelText: 'Batal',
+        type: 'warning',
+        icon: 'warning'
+      });
+      if (!proceed) {
         return;
       }
     }
@@ -2825,8 +3044,16 @@ function initCloudSyncUI() {
   // Reset Cloud Config Button
   const btnResetCloud = document.getElementById('btn-reset-cloud-config');
   if (btnResetCloud) {
-    btnResetCloud.addEventListener('click', () => {
-      if (confirm('Yakin ingin memutuskan koneksi Cloud? Data lokal Anda tetap aman.')) {
+    btnResetCloud.addEventListener('click', async () => {
+      const confirmed = await showConfirmModal({
+        title: 'Putuskan Koneksi Cloud?',
+        message: 'Yakin ingin memutuskan koneksi Cloud? Data lokal Anda tetap aman.',
+        confirmText: 'Putuskan Koneksi',
+        cancelText: 'Batal',
+        type: 'warning',
+        icon: 'warning'
+      });
+      if (confirmed) {
         if (window.CloudSyncManager) window.CloudSyncManager.saveConfig(null);
         if (document.getElementById('firebase-api-key')) document.getElementById('firebase-api-key').value = '';
         if (document.getElementById('firebase-project-id')) document.getElementById('firebase-project-id').value = '';
@@ -2936,7 +3163,16 @@ function initCloudSyncUI() {
       const reader = new FileReader();
       reader.onload = async (event) => {
         try {
-          if (!confirm(`Yakin ingin memulihkan database dari berkas "${file.name}"? Data saat ini akan diperbarui.`)) {
+          const confirmed = await showConfirmModal({
+            title: 'Pulihkan Database dari Berkas?',
+            message: `Yakin ingin memulihkan database dari berkas cadangan "${file.name}"? Data saat ini akan diperbarui.`,
+            itemName: file.name,
+            confirmText: 'Ya, Pulihkan',
+            cancelText: 'Batal',
+            type: 'warning',
+            icon: 'warning'
+          });
+          if (!confirmed) {
             importFileInput.value = '';
             return;
           }
@@ -2997,7 +3233,16 @@ function initCategoryManagementUI() {
     tagsList.querySelectorAll('.btn-delete-cat').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         const catName = e.currentTarget.getAttribute('data-name');
-        if (confirm(`Hapus kategori "${catName}"?`)) {
+        const confirmed = await showConfirmModal({
+          title: 'Hapus Kategori?',
+          message: `Apakah Anda yakin ingin menghapus kategori "${catName}"?`,
+          itemName: catName,
+          confirmText: 'Ya, Hapus',
+          cancelText: 'Batal',
+          type: 'danger',
+          icon: 'trash'
+        });
+        if (confirmed) {
           await window.SchoolDB.deleteCategory(catName);
           showAdminToast(`Kategori "${catName}" berhasil dihapus.`, 'success', 'Kategori Dihapus');
           renderCategoryTags();

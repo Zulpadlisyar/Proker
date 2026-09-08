@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
+const { execSync } = require('child_process');
 
 console.log('====================================================');
 console.log('   FULL AUDIT TEST SUITE: VISUAL, FUNC, LAYOUT');
@@ -228,6 +229,36 @@ test('3.12: Unified container widths - Zero occurrences of legacy 1280px in styl
   assert(css.includes('.header-container {\n  max-width: 1240px;'), '.header-container not 1240px');
   assert(css.includes('.footer-container {\n  max-width: 1240px;'), '.footer-container not 1240px');
   assert(css.includes('.section-divider {\n  max-width: 1240px;'), '.section-divider not 1240px');
+});
+
+test('3.13: JavaScript syntax integrity - node -c validates all JS files without syntax errors', () => {
+  const jsFiles = [];
+  function scan(dir) {
+    fs.readdirSync(dir).forEach(file => {
+      const full = path.join(dir, file);
+      if (fs.statSync(full).isDirectory()) scan(full);
+      else if (file.endsWith('.js')) jsFiles.push(full);
+    });
+  }
+  scan('js');
+  assert(jsFiles.length > 0, 'No JS files found in js directory');
+  jsFiles.forEach(file => {
+    try {
+      execSync(`node -c "${file}"`, { stdio: 'pipe' });
+    } catch (e) {
+      assert(false, `SyntaxError detected in ${file}: ${e.message}`);
+    }
+  });
+});
+
+test('3.14: Pure local image integrity - Public HTML pages contain zero external unsplash URLs', () => {
+  const htmlFiles = ['index.html', 'tentang.html', 'fasilitas.html', 'kegiatan.html', 'kontak.html', 'detail-kegiatan.html'];
+  htmlFiles.forEach(file => {
+    if (fs.existsSync(file)) {
+      const content = fs.readFileSync(file, 'utf8');
+      assert(!content.includes('unsplash.com'), `${file} still contains external unsplash.com image URL`);
+    }
+  });
 });
 
 console.log('\n----------------------------------------------------');

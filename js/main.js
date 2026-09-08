@@ -370,14 +370,6 @@
     const testimonialsContainer = document.getElementById('testimonials-grid');
     if (testimonialsContainer) {
       const testimonials = window.SchoolDB.getTestimonials() || [];
-      if (window.SchoolCarousel) {
-        window.SchoolCarousel.renderAdaptive({
-          containerId: testimonialsContainer,
-          items: testimonials,
-          threshold: 3,
-          gridClass: 'testimonials-grid',
-          itemClass: 'testimonial-slide',
-          ariaLabel: 'Kesan dan Apresiasi Wali Murid',
       const getTestiAvatar = (t) => {
         if (t.avatar && (t.avatar.includes('silhouette-male') || t.avatar.includes('silhouette-female'))) {
           return t.avatar;

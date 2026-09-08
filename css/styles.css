@@ -4168,7 +4168,7 @@ textarea.form-control {
 .editorial-card-img,
 .gallery-teaser-item img,
 .gallery-card img {
-  opacity: 0;
+  opacity: 1;
   transition: opacity 220ms ease, transform 400ms var(--ease);
 }
 

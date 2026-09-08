@@ -776,6 +776,26 @@ window.SchoolDB = {
           });
         }
 
+        // 2026-09-08: Ensure all facilities use authentic local school webp assets (no dead unsplash links)
+        if (Array.isArray(this.data.facilities)) {
+          this.data.facilities.forEach(f => {
+            if (f.image && f.image.includes('unsplash')) {
+              const lower = (f.name || '').toLowerCase();
+              if (f.id === 'f1' || lower.includes('perpustakaan')) {
+                f.image = 'images/school/kegiatan1.webp';
+              } else if (f.id === 'f2' || lower.includes('komputer') || lower.includes('lab')) {
+                f.image = 'images/school/latihan_pramuka.webp';
+              } else if (f.id === 'f3' || lower.includes('lapangan') || lower.includes('olahraga')) {
+                f.image = 'images/school/upacara_bendera.webp';
+              } else if (f.id === 'f4' || lower.includes('uks') || lower.includes('kesehatan')) {
+                f.image = 'images/school/gedung_sdn2_ngeposari.webp';
+              } else {
+                f.image = 'images/school/gedung_sdn2_ngeposari.webp';
+              }
+            }
+          });
+        }
+
         // 2026-09-07: Ensure testimonials use polite male/female silhouette avatars
         if (Array.isArray(this.data.testimonials)) {
           this.data.testimonials.forEach(t => {

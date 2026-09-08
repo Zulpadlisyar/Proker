@@ -67,7 +67,7 @@
         { title: 'Berkarakter', desc: 'Menanamkan nilai-nilai luhur dan mengimplementasikan Dimensi Profil Lulusan.' }
       ],
       logo: 'images/logo.webp',
-      hero: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&h=1000&fit=crop',
+      hero: 'images/school_hero_bg.webp',
       principalName: 'Sumarni, S.Pd.SD., M.Pd.',
       principalRole: 'Kepala Sekolah SD Negeri 2 Ngeposari',
       principalImage: 'images/teachers/sumarni.webp',
@@ -78,25 +78,25 @@
         id: 'f1',
         name: 'Perpustakaan Pintar',
         description: 'Koleksi buku lengkap mulai dari buku pelajaran, cerita anak, hingga ensiklopedia menarik.',
-        image: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&h=500&fit=crop'
+        image: 'images/school/kegiatan1.webp'
       },
       {
         id: 'f2',
         name: 'Laboratorium Komputer',
         description: 'Ruang komputer modern dengan koneksi internet untuk menunjang literasi digital siswa.',
-        image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=500&fit=crop'
+        image: 'images/school/latihan_pramuka.webp'
       },
       {
         id: 'f3',
         name: 'Lapangan Serbaguna',
         description: 'Area luas untuk kegiatan olahraga seperti senam, sepak bola, bulu tangkis, dan upacara bendera.',
-        image: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?w=800&h=500&fit=crop'
+        image: 'images/school/upacara_bendera.webp'
       },
       {
         id: 'f4',
         name: 'Unit Kesehatan Sekolah (UKS)',
         description: 'Ruang kesehatan darurat yang dilengkapi dengan obat-obatan dasar dan perlengkapan P3K.',
-        image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&h=500&fit=crop'
+        image: 'images/school/gedung_sdn2_ngeposari.webp'
       }
     ],
     categories: [

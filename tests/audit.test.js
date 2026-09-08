@@ -261,6 +261,38 @@ test('3.14: Pure local image integrity - Public HTML pages contain zero external
   });
 });
 
+test('3.15: Service Worker PWA integrity - sw.js exists, passes syntax check, and is registered in main.js', () => {
+  assert(fs.existsSync('sw.js'), 'sw.js does not exist');
+  assert.doesNotThrow(() => {
+    execSync('node -c sw.js', { stdio: 'pipe' });
+  }, 'sw.js has syntax error');
+  const mainJs = fs.readFileSync('js/main.js', 'utf8');
+  assert(mainJs.includes('navigator.serviceWorker.register'), 'main.js does not register service worker');
+});
+
+test('3.16: Non-blocking script loading - All script tags in public HTML pages have defer attribute', () => {
+  const publicPages = ['index.html', 'tentang.html', 'fasilitas.html', 'kegiatan.html', 'kontak.html', 'detail-kegiatan.html', '404.html'];
+  publicPages.forEach(file => {
+    if (fs.existsSync(file)) {
+      const html = fs.readFileSync(file, 'utf8');
+      const scriptTags = html.match(/<script\s+[^>]*src=["'][^"']+["'][^>]*>/gi) || [];
+      scriptTags.forEach(tag => {
+        assert(tag.includes('defer'), `Script tag in ${file} is missing 'defer' attribute: ${tag}`);
+      });
+    }
+  });
+});
+
+test('3.17: LCP & Core Web Vitals optimization - index.html implements responsive <picture> with fetchpriority="high"', () => {
+  const indexHtml = fs.readFileSync('index.html', 'utf8');
+  const css = fs.readFileSync('css/styles.css', 'utf8');
+  assert(indexHtml.includes('<picture>'), 'index.html hero missing <picture> element');
+  assert(indexHtml.includes('images/school_hero_bg-480.avif'), 'index.html missing responsive 480w AVIF source');
+  assert(indexHtml.includes('fetchpriority="high"'), 'index.html hero missing fetchpriority="high"');
+  assert(indexHtml.includes('dns-prefetch'), 'index.html missing dns-prefetch resource hints');
+  assert(css.includes('content-visibility: auto'), 'styles.css missing content-visibility');
+});
+
 console.log('\n----------------------------------------------------');
 console.log(`TOTAL TESTS: ${passCount + failCount}`);
 console.log(`PASSED: ${passCount}`);

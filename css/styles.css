@@ -3242,15 +3242,29 @@ footer {
   }
 }
 
-/* Production Rendering & Layout Stability Optimizations */
+/* Production Rendering & Layout Stability Optimizations (Core Web Vitals) */
 .info-card-item,
 .facility-card-item,
+.facility-card,
 .activity-card-item,
+.news-card-item,
+.testimonial-card,
+.teacher-card,
 .editorial-card-wrapper,
 .gallery-teaser-item,
 .gallery-card {
   content-visibility: auto;
   contain-intrinsic-size: 1px 320px;
+}
+
+/* Offscreen Deep Sections Containment */
+#home-gallery-section,
+#academic-calendar-section,
+#testimonials-section,
+.contact-cta-box,
+#main-footer {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 500px;
 }
 
 /* Accessibility & Hardware-Friendly Motion Preference */

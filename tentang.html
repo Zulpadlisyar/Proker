@@ -52,10 +52,16 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
+  <!-- Resource Hints & DNS Prefetch for Third-Party Endpoints -->
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+  <link rel="dns-prefetch" href="https://www.gstatic.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="css/styles.css?v=6.5">
+  <link rel="preload" as="image" href="images/logo.webp" type="image/webp">
 </head>
 <body class="sub-page">
 
@@ -381,25 +387,25 @@
   <!-- 7. FOOTER (Mounted dynamically via SchoolFooter) -->
   <footer id="main-footer"></footer>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <!-- Firebase SDK App & Firestore Compat -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <!-- Modular Architecture Bundles -->
-  <script src="js/config/constants.js?v=6.5"></script>
-  <script src="js/utils/formatters.js?v=6.5"></script>
-  <script src="js/utils/guards.js?v=6.5"></script>
-  <script src="js/components/common/EmptyState.js?v=6.5"></script>
-  <script src="js/components/common/Skeleton.js?v=6.5"></script>
-  <script src="js/components/layout/Navbar.js?v=6.5"></script>
-  <script src="js/components/layout/Footer.js?v=6.5"></script>
-  <script src="js/components/public/ActivityCard.js?v=6.5"></script>
-  <script src="js/components/public/FacilityCard.js?v=6.5"></script>
-  <script src="js/components/public/TeacherCard.js?v=6.5"></script>
-  <script src="js/components/public/GalleryCard.js?v=6.5"></script>
-  <script src="js/components/ui/Carousel.js?v=6.5"></script>
-  <script src="js/db.js?v=6.5"></script>
-  <script src="js/main.js?v=6.5"></script>
+  <script defer src="js/config/constants.js?v=6.5"></script>
+  <script defer src="js/utils/formatters.js?v=6.5"></script>
+  <script defer src="js/utils/guards.js?v=6.5"></script>
+  <script defer src="js/components/common/EmptyState.js?v=6.5"></script>
+  <script defer src="js/components/common/Skeleton.js?v=6.5"></script>
+  <script defer src="js/components/layout/Navbar.js?v=6.5"></script>
+  <script defer src="js/components/layout/Footer.js?v=6.5"></script>
+  <script defer src="js/components/public/ActivityCard.js?v=6.5"></script>
+  <script defer src="js/components/public/FacilityCard.js?v=6.5"></script>
+  <script defer src="js/components/public/TeacherCard.js?v=6.5"></script>
+  <script defer src="js/components/public/GalleryCard.js?v=6.5"></script>
+  <script defer src="js/components/ui/Carousel.js?v=6.5"></script>
+  <script defer src="js/db.js?v=6.5"></script>
+  <script defer src="js/main.js?v=6.5"></script>
 </body>
 </html>

@@ -1063,10 +1063,21 @@
     }
   }
 
+  // Helper to yield main thread to ensure 0ms INP / input responsiveness (Google CWV Guideline)
+  async function yieldToMain() {
+    if (typeof scheduler !== 'undefined' && typeof scheduler.yield === 'function') {
+      return await scheduler.yield();
+    }
+    return new Promise(resolve => setTimeout(resolve, 0));
+  }
+
   // 13. Page Initialization & Bootstrapping
   window.addEventListener('DOMContentLoaded', async () => {
     // 1. Immediately render navbar & common layout so header is never blank
     await renderCommonUI();
+
+    // Yield to main thread so browser can paint header immediately
+    await yieldToMain();
 
     // 2. Initialize SchoolDB & sync in background
     try {
@@ -1089,14 +1100,26 @@
 
     revealLoadedImages();
     initHeaderScrollBehavior();
-    initGSAPAnimations();
-    renderWhatsAppFloatingButton();
 
-    // Attach native form validation highlight to all forms on page
-    document.querySelectorAll('form').forEach(f => {
-      if (window.SchoolGuards && typeof window.SchoolGuards.bindFormValidation === 'function') {
-        window.SchoolGuards.bindFormValidation(f);
+    // Schedule non-critical visual animations & widgets during idle time to eliminate INP latency
+    const scheduleIdleTask = (fn) => {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(fn, { timeout: 1500 });
+      } else {
+        setTimeout(fn, 150);
       }
+    };
+
+    scheduleIdleTask(() => {
+      initGSAPAnimations();
+      renderWhatsAppFloatingButton();
+
+      // Attach native form validation highlight to all forms on page
+      document.querySelectorAll('form').forEach(f => {
+        if (window.SchoolGuards && typeof window.SchoolGuards.bindFormValidation === 'function') {
+          window.SchoolGuards.bindFormValidation(f);
+        }
+      });
     });
   });
 
@@ -1131,4 +1154,17 @@
   window.showToast = showToast;
   window.openDialog = openDialog;
   window.openGalleryLightbox = openGalleryLightbox;
+
+  // Register Progressive Web App Service Worker for Instant Caching & Offline Support
+  if (typeof window !== 'undefined' && 'serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js?v=6.5')
+        .then(reg => {
+          console.info('[PWA] Service Worker registered with scope:', reg.scope);
+        })
+        .catch(err => {
+          console.warn('[PWA] Service Worker registration failed (harmless):', err);
+        });
+    });
+  }
 })();

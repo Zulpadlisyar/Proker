@@ -158,7 +158,34 @@ async function runDatabaseTests() {
   await window.SchoolDB.deleteFacility(testFacility.id);
   assert(!window.SchoolDB.getFacilities().some(f => f.id === testFacility.id), 'Deleted facility must be removed from facilities');
   assert(!window.SchoolDB.getGallery().some(g => g.image === testFootageUrl), 'Gallery items using deleted footage must be purged automatically');
-  console.log('[PASS] Global footage deletion cascade: deleting facility purged matching footage from gallery.');
+  // 7. Cross-Origin Data Uniformity & Cloud Fallback
+  console.log('7. Testing Cross-Origin Data Uniformity & Cloud Sync Fallback...');
+  assert(window.SchoolConstants.DEFAULT_FIREBASE_CONFIG !== undefined, 'DEFAULT_FIREBASE_CONFIG must be defined in SchoolConstants');
+  
+  // Verify profile tagline and description are official
+  const profile = window.SchoolDB.getProfile();
+  assert.strictEqual(profile.name, 'SDN Ngeposari 2', 'Profile name must be official');
+  assert.strictEqual(profile.tagline, 'Unggul, Berkarakter, dan Berbudaya Lingkungan', 'Tagline must match official 2026/2027 identity');
+  assert(profile.description.includes('terakreditasi A'), 'Description must match official school description');
+
+  // Verify CloudSyncManager.getConfig() fallback works without error
+  const cloudConfig = window.CloudSyncManager.getConfig();
+  assert(cloudConfig === null || typeof cloudConfig === 'object', 'getConfig must return null or object config');
+
+  // Verify legacy cache auto-upgrade
+  localStorage.setItem('sdn2_db_data', JSON.stringify({
+    profile: {
+      name: 'SDN 2 Ngeposari',
+      tagline: 'Semanu, Gunungkidul',
+      description: 'Menghadirkan lingkungan belajar yang asri, hangat, dan ramah anak di Kapanewon Semanu, Gunungkidul...'
+    }
+  }));
+  window.SchoolDB.isInitialized = false;
+  await window.SchoolDB.init();
+  const upgradedProfile = window.SchoolDB.getProfile();
+  assert.strictEqual(upgradedProfile.tagline, 'Unggul, Berkarakter, dan Berbudaya Lingkungan', 'Legacy tagline must be auto-upgraded to official tagline');
+  assert(upgradedProfile.description.includes('terakreditasi A'), 'Legacy placeholder description must be auto-upgraded to official description');
+  console.log('[PASS] Cross-Origin identity uniformity & legacy cache auto-upgrade verified.');
 
   console.log('\n>>> ALL DATABASE RUNTIME TESTS PASSED 100%! <<<\n');
 }

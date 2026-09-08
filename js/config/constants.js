@@ -405,12 +405,23 @@
     ]
   };
 
+  // Default Centralized Firebase Firestore Configuration
+  // Used as the fallback across all domains (sdn2ngeposari.my.id, workers.dev, localhost)
+  // Can be customized/overridden dynamically via Admin Panel (saved in localStorage).
+  const DEFAULT_FIREBASE_CONFIG = {
+    apiKey: '',
+    projectId: '',
+    appId: '',
+    authDomain: ''
+  };
+
   const SchoolConstants = {
     NAV_ITEMS,
     ALLOWED_IMAGE_TYPES,
     MAX_IMAGE_BYTES,
     ITEMS_PER_PAGE,
     STORAGE_KEYS,
+    DEFAULT_FIREBASE_CONFIG,
     INITIAL_DATA
   };
 

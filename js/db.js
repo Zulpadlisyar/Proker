@@ -304,10 +304,20 @@ window.CloudSyncManager = {
   getConfig() {
     try {
       const raw = localStorage.getItem('sdn2_firebase_config');
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) {
-      return null;
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.projectId) return parsed;
+      }
+    } catch (e) {}
+
+    // Centralized fallback configuration from constants.js across all domains
+    if (typeof SchoolConstants !== 'undefined' && SchoolConstants.DEFAULT_FIREBASE_CONFIG && SchoolConstants.DEFAULT_FIREBASE_CONFIG.projectId) {
+      return SchoolConstants.DEFAULT_FIREBASE_CONFIG;
     }
+    if (typeof window !== 'undefined' && window.SchoolConstants && window.SchoolConstants.DEFAULT_FIREBASE_CONFIG && window.SchoolConstants.DEFAULT_FIREBASE_CONFIG.projectId) {
+      return window.SchoolConstants.DEFAULT_FIREBASE_CONFIG;
+    }
+    return null;
   },
 
   saveConfig(config) {
@@ -387,6 +397,7 @@ window.CloudSyncManager = {
         teachers: data.teachers || [],
         facilities: data.facilities || [],
         activities: data.activities || [],
+        categories: data.categories || [],
         gallery: data.gallery || [],
         testimonials: data.testimonials || [],
         academicCalendar: data.academicCalendar || [],
@@ -432,6 +443,33 @@ window.CloudSyncManager = {
       return null;
     } finally {
       this.isSyncing = false;
+    }
+  },
+
+  unsubscribeSnapshot: null,
+
+  listenToCloudUpdates(callback) {
+    if (!this.isConfigured() || typeof callback !== 'function') return null;
+    try {
+      if (this.unsubscribeSnapshot) {
+        this.unsubscribeSnapshot();
+        this.unsubscribeSnapshot = null;
+      }
+      this.unsubscribeSnapshot = this.firestore
+        .collection('school_data')
+        .doc('main_state')
+        .onSnapshot((doc) => {
+          if (doc.exists && !doc.metadata.hasPendingWrites) {
+            const freshData = doc.data();
+            callback(freshData);
+          }
+        }, (err) => {
+          console.warn('[CloudSync] Snapshot listener error:', err);
+        });
+      return this.unsubscribeSnapshot;
+    } catch (err) {
+      console.warn('[CloudSync] Failed to setup real-time listener:', err);
+      return null;
     }
   }
 };
@@ -519,7 +557,7 @@ window.SchoolDB = {
       let savedData = await idbStore.get('siteData');
       
       if (!savedData) {
-        const localRaw = localStorage.getItem('sdn2_db_data');
+        const localRaw = localStorage.getItem('sdn2_db_data') || localStorage.getItem('sdn2_db_data_backup');
         if (localRaw) {
           try {
             savedData = JSON.parse(localRaw);
@@ -553,6 +591,12 @@ window.SchoolDB = {
         }
         if (!this.data.profile.logo || this.data.profile.logo.startsWith('data:image/svg+xml') || this.data.profile.logo === 'images/logo.png') {
           this.data.profile.logo = 'images/logo.webp';
+        }
+        if (!this.data.profile.tagline || this.data.profile.tagline === 'Semanu, Gunungkidul') {
+          this.data.profile.tagline = INITIAL_DATA.profile.tagline;
+        }
+        if (!this.data.profile.description || this.data.profile.description.startsWith('Menghadirkan lingkungan belajar')) {
+          this.data.profile.description = INITIAL_DATA.profile.description;
         }
         this.data.profile.npsn = this.data.profile.npsn || '20401876';
         this.data.profile.nss = this.data.profile.nss || '101040310002';
@@ -749,11 +793,25 @@ window.SchoolDB = {
       this.isInitialized = true;
       console.log('Database initialized successfully with security rules.');
 
-      // Initialize Cloud Sync in background safely
+      // Initialize Cloud Sync & Real-time Cross-Domain Listener
       if (typeof window !== 'undefined' && window.CloudSyncManager) {
         window.CloudSyncManager.initFirebase();
         if (window.CloudSyncManager.isConfigured()) {
-          this.syncFromCloud().catch(e => console.warn('[SchoolDB] Background cloud sync deferred:', e));
+          // Fast cloud fetch with a 2.5s timeout race so offline/slow environments are never delayed
+          try {
+            await Promise.race([
+              this.syncFromCloud(),
+              new Promise((_, reject) => setTimeout(() => reject(new Error('Cloud sync timeout')), 2500))
+            ]);
+          } catch (e) {
+            console.warn('[SchoolDB] Initial fast cloud sync deferred/timed out (using local cached data):', e.message || e);
+          }
+
+          // Attach real-time Firestore listener for live cross-origin updates
+          window.CloudSyncManager.listenToCloudUpdates(async (freshCloudData) => {
+            console.info('[SchoolDB] Real-time cloud push received from Firestore.');
+            await this._applyCloudData(freshCloudData);
+          });
         }
       }
 
@@ -796,28 +854,73 @@ window.SchoolDB = {
     }
   },
 
-  async syncFromCloud() {
-    if (typeof window === 'undefined' || !window.CloudSyncManager) return;
-    const cloudData = await window.CloudSyncManager.syncFromCloud();
-    if (cloudData) {
-      if (cloudData.profile) this.data.profile = { ...this.data.profile, ...cloudData.profile };
-      if (Array.isArray(cloudData.teachers)) this.data.teachers = cloudData.teachers;
-      if (Array.isArray(cloudData.facilities)) this.data.facilities = cloudData.facilities;
-      if (Array.isArray(cloudData.activities)) this.data.activities = cloudData.activities;
-      if (Array.isArray(cloudData.categories)) this.data.categories = cloudData.categories;
-      if (Array.isArray(cloudData.gallery)) this.data.gallery = cloudData.gallery;
-      if (Array.isArray(cloudData.testimonials)) this.data.testimonials = cloudData.testimonials;
-      if (Array.isArray(cloudData.academicCalendar)) this.data.academicCalendar = cloudData.academicCalendar;
-      if (Array.isArray(cloudData.schoolHabits)) this.data.schoolHabits = cloudData.schoolHabits;
-      if (Array.isArray(cloudData.comfortStandards)) this.data.comfortStandards = cloudData.comfortStandards;
-      if (Array.isArray(cloudData.inquiries)) this.data.inquiries = cloudData.inquiries;
-      if (cloudData.contact) this.data.contact = { ...this.data.contact, ...cloudData.contact };
-      
+  async _applyCloudData(cloudData) {
+    if (!cloudData || !this.data) return false;
+    let changed = false;
+
+    if (cloudData.profile) {
+      this.data.profile = { ...this.data.profile, ...cloudData.profile };
+      changed = true;
+    }
+    if (Array.isArray(cloudData.teachers) && cloudData.teachers.length > 0) {
+      this.data.teachers = cloudData.teachers;
+      changed = true;
+    }
+    if (Array.isArray(cloudData.facilities)) {
+      this.data.facilities = cloudData.facilities;
+      changed = true;
+    }
+    if (Array.isArray(cloudData.activities)) {
+      this.data.activities = cloudData.activities;
+      changed = true;
+    }
+    if (Array.isArray(cloudData.categories) && cloudData.categories.length > 0) {
+      this.data.categories = cloudData.categories;
+      changed = true;
+    }
+    if (Array.isArray(cloudData.gallery)) {
+      this.data.gallery = cloudData.gallery;
+      changed = true;
+    }
+    if (Array.isArray(cloudData.testimonials)) {
+      this.data.testimonials = cloudData.testimonials;
+      changed = true;
+    }
+    if (Array.isArray(cloudData.academicCalendar)) {
+      this.data.academicCalendar = cloudData.academicCalendar;
+      changed = true;
+    }
+    if (Array.isArray(cloudData.schoolHabits)) {
+      this.data.schoolHabits = cloudData.schoolHabits;
+      changed = true;
+    }
+    if (Array.isArray(cloudData.comfortStandards)) {
+      this.data.comfortStandards = cloudData.comfortStandards;
+      changed = true;
+    }
+    if (Array.isArray(cloudData.inquiries)) {
+      this.data.inquiries = cloudData.inquiries;
+      changed = true;
+    }
+    if (cloudData.contact) {
+      this.data.contact = { ...this.data.contact, ...cloudData.contact };
+      changed = true;
+    }
+
+    if (changed) {
       await idbStore.set('siteData', this.data);
       if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
         window.dispatchEvent(new CustomEvent('schooldb-synced', { detail: this.data }));
       }
-      return true;
+    }
+    return changed;
+  },
+
+  async syncFromCloud() {
+    if (typeof window === 'undefined' || !window.CloudSyncManager) return false;
+    const cloudData = await window.CloudSyncManager.syncFromCloud();
+    if (cloudData) {
+      return await this._applyCloudData(cloudData);
     }
     return false;
   },
@@ -999,10 +1102,18 @@ window.SchoolDB = {
 
   // GETTERS
   getProfile() {
+    if (!this.data) {
+      return (typeof INITIAL_DATA !== 'undefined' && INITIAL_DATA.profile) 
+        ? INITIAL_DATA.profile 
+        : { name: 'SDN Ngeposari 2', tagline: 'Unggul, Berkarakter, dan Berbudaya Lingkungan', logo: 'images/logo.webp' };
+    }
     return this.data.profile;
   },
 
   getFacilities() {
+    if (!this.data) {
+      return (typeof INITIAL_DATA !== 'undefined' && Array.isArray(INITIAL_DATA.facilities)) ? INITIAL_DATA.facilities : [];
+    }
     return this.data.facilities;
   },
 
@@ -1109,10 +1220,18 @@ window.SchoolDB = {
   },
 
   getGallery() {
+    if (!this.data) {
+      return (typeof INITIAL_DATA !== 'undefined' && Array.isArray(INITIAL_DATA.gallery)) ? INITIAL_DATA.gallery : [];
+    }
     return this.data.gallery;
   },
 
   getContact() {
+    if (!this.data) {
+      return (typeof INITIAL_DATA !== 'undefined' && INITIAL_DATA.contact) 
+        ? INITIAL_DATA.contact 
+        : { address: 'Mojo RT 01 / RW 13, Ngeposari, Semanu, Gunungkidul, DIY 55893', phone: '0812-3456-7890', email: 'sdngeposari2semanu@gmail.com' };
+    }
     return this.data.contact;
   },
 

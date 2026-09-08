@@ -798,6 +798,23 @@
 
             <!-- Backup and Restore Section -->
             <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--primary); margin: 32px 0 16px; border-top: 1px solid var(--border); padding-top: 20px;">Arsip &amp; Pemulihan Data Cadangan (Backup / Restore)</h3>
+            
+            <!-- Cross-Origin Data Migration Guide Box -->
+            <div style="background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: var(--radius-card); padding: 18px 20px; margin-bottom: 20px;">
+              <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                <div style="font-size: 0.88rem; color: #1E3A8A; line-height: 1.5;">
+                  <strong style="display: block; font-size: 0.95rem; margin-bottom: 6px; color: #1E40AF;">Panduan Migrasi Cepat Lintas Domain (workers.dev ➔ sdn2ngeposari.my.id)</strong>
+                  Karena browser membatasi penyimpanan lokal per domain (<em>Same-Origin Policy</em>), data yang diisi di <code>workers.dev</code> tidak otomatis tampil di <code>my.id</code>. Ikuti 2 langkah cepat berikut:
+                  <ol style="margin: 8px 0 8px 20px; padding: 0;">
+                    <li><strong>Di workers.dev/admin:</strong> Klik tombol <em>"Unduh Cadangan Data (Backup JSON)"</em> di bawah ini untuk mengunduh file JSON lengkap.</li>
+                    <li><strong>Di sdn2ngeposari.my.id/admin:</strong> Klik tombol <em>"Pulihkan Data dari JSON (Restore)"</em> lalu pilih file JSON tersebut. Seluruh konten dan foto resmi sekolah akan langsung sama persis 100%!</li>
+                  </ol>
+                  <em>Tip: Hubungkan Firebase Firestore di atas agar perubahan selanjutnya otomatis tersinkronisasi antar-semua domain dan perangkat secara langsung.</em>
+                </div>
+              </div>
+            </div>
+
             <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center;">
               <button type="button" id="btn-export-backup" class="btn btn-secondary">Unduh Cadangan Data (Backup JSON)</button>
               <button type="button" id="btn-import-backup-trigger" class="btn btn-secondary">Pulihkan Data dari JSON (Restore)</button>

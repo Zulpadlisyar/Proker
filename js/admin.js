@@ -2947,8 +2947,11 @@ function initCloudSyncUI() {
           renderFacilitiesTable();
           renderActivitiesTable();
           renderGalleryTable();
-          loadContactForm();
-          showAdminToast('Data sekolah berhasil dipulihkan dari berkas cadangan JSON!', 'success', 'Pemulihan Berhasil');
+          let msg = 'Data sekolah berhasil dipulihkan dari berkas cadangan JSON!';
+          if (window.CloudSyncManager && window.CloudSyncManager.isConfigured()) {
+            msg += ' Dan tersinkronisasi ke Cloud Firestore.';
+          }
+          showAdminToast(msg, 'success', 'Pemulihan Berhasil');
         } catch (err) {
           showAdminToast(err.message || 'Berkas JSON tidak valid atau rusak.', 'error', 'Gagal Memulihkan');
         } finally {

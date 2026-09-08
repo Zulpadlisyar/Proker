@@ -63,12 +63,42 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="css/styles.css?v=6.2">
+  <link rel="stylesheet" href="css/styles.css?v=6.3">
 </head>
 <body class="sub-page">
 
-  <!-- 1. NAVBAR (Mounted dynamically via SchoolNavbar) -->
-  <header id="main-header"></header>
+  <!-- 1. NAVBAR (Pre-rendered for instantaneous 0ms display, hydrated by SchoolNavbar) -->
+  <header id="main-header">
+    <div class="header-container">
+      <a href="index.html" class="logo-link">
+        <img src="images/logo.webp" alt="Logo SDN Ngeposari 2" class="logo-img" width="40" height="46" onerror="this.onerror=null;this.src='images/logo.png';">
+        <div class="logo-text">
+          <span class="logo-title">SDN Ngeposari 2</span>
+          <p>Unggul, Berkarakter, dan Berbudaya Lingkungan</p>
+        </div>
+      </a>
+      
+      <div style="display: flex; align-items: center; gap: var(--space-4);">
+        <nav>
+          <ul class="nav-menu" id="nav-menu">
+            <li><a href="index.html" class="nav-link">Beranda</a></li>
+            <li><a href="tentang.html" class="nav-link">Tentang</a></li>
+            <li><a href="fasilitas.html" class="nav-link">Fasilitas</a></li>
+            <li><a href="kegiatan.html" class="nav-link">Kegiatan</a></li>
+            <li><a href="kontak.html" class="nav-link active">Kontak</a></li>
+          </ul>
+        </nav>
+
+        <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="12" x2="20" y2="12"></line>
+            <line x1="4" y1="6" x2="20" y2="6"></line>
+            <line x1="4" y1="18" x2="20" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
 
   <!-- 2. PAGE HEADER BANNER -->
   <section class="section" style="padding-top: var(--space-7); padding-bottom: var(--space-5);">
@@ -214,19 +244,19 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <!-- Modular Architecture Bundles -->
-  <script src="js/config/constants.js?v=6.2"></script>
-  <script src="js/utils/formatters.js?v=6.2"></script>
-  <script src="js/utils/guards.js?v=6.2"></script>
-  <script src="js/components/common/EmptyState.js?v=6.2"></script>
-  <script src="js/components/common/Skeleton.js?v=6.2"></script>
-  <script src="js/components/layout/Navbar.js?v=6.2"></script>
-  <script src="js/components/layout/Footer.js?v=6.2"></script>
-  <script src="js/components/public/ActivityCard.js?v=6.2"></script>
-  <script src="js/components/public/FacilityCard.js?v=6.2"></script>
-  <script src="js/components/public/TeacherCard.js?v=6.2"></script>
-  <script src="js/components/public/GalleryCard.js?v=6.2"></script>
-  <script src="js/components/ui/Carousel.js?v=6.2"></script>
-  <script src="js/db.js?v=6.2"></script>
-  <script src="js/main.js?v=6.2"></script>
+  <script src="js/config/constants.js?v=6.3"></script>
+  <script src="js/utils/formatters.js?v=6.3"></script>
+  <script src="js/utils/guards.js?v=6.3"></script>
+  <script src="js/components/common/EmptyState.js?v=6.3"></script>
+  <script src="js/components/common/Skeleton.js?v=6.3"></script>
+  <script src="js/components/layout/Navbar.js?v=6.3"></script>
+  <script src="js/components/layout/Footer.js?v=6.3"></script>
+  <script src="js/components/public/ActivityCard.js?v=6.3"></script>
+  <script src="js/components/public/FacilityCard.js?v=6.3"></script>
+  <script src="js/components/public/TeacherCard.js?v=6.3"></script>
+  <script src="js/components/public/GalleryCard.js?v=6.3"></script>
+  <script src="js/components/ui/Carousel.js?v=6.3"></script>
+  <script src="js/db.js?v=6.3"></script>
+  <script src="js/main.js?v=6.3"></script>
 </body>
 </html>

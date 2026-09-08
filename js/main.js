@@ -1073,6 +1073,10 @@
 
   // 13. Page Initialization & Bootstrapping
   window.addEventListener('DOMContentLoaded', async () => {
+    // 1. Immediately render navbar & common layout so header is never blank
+    await renderCommonUI();
+
+    // 2. Initialize SchoolDB & sync in background
     try {
       if (window.SchoolDB) {
         await window.SchoolDB.init();
@@ -1081,6 +1085,7 @@
       console.warn('SchoolDB init warning:', e);
     }
 
+    // 3. Re-sync common UI once SchoolDB has initialized with official/cloud profile
     await renderCommonUI();
 
     if (document.getElementById('hero-section')) renderHomePage();

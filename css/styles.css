@@ -94,6 +94,7 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
+  overflow-x: clip;
 }
 
 body {
@@ -102,7 +103,7 @@ body {
   color: var(--color-text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 a {
@@ -124,6 +125,7 @@ img {
 
 /* Header Navbar Base (Section 13: 72-78px height, #FAF9F5 bg, 1px #E2E5DF border) */
 header, header#main-header {
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
   left: 0;
@@ -133,15 +135,17 @@ header, header#main-header {
   border-bottom: 1px solid var(--color-border);
   height: 74px;
   z-index: 1000;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-  transition: background-color 200ms ease, border-color 200ms ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
 }
 
 body.hero-page header#main-header {
+  position: -webkit-sticky;
   position: sticky;
+  top: 0;
   background-color: var(--color-bg) !important;
   border-bottom: 1px solid var(--color-border) !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
 }
 
 .header-container {

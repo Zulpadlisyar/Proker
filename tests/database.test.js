@@ -55,7 +55,7 @@ async function runDatabaseTests() {
     date: '2026-09-15',
     excerpt: 'Siswa kelas V mengikuti ANBK dengan lancar dan tertib.',
     content: 'Uraian lengkap kegiatan Asesmen Nasional Berbasis Komputer.',
-    image: 'images/school/kegiatan1.webp'
+    image: 'images/school/lab_komputer.webp'
   });
   assert(newActivity.id, 'Activity must have an ID');
   assert.strictEqual(newActivity.excerpt, 'Siswa kelas V mengikuti ANBK dengan lancar dan tertib.');

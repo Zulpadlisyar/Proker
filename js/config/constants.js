@@ -146,16 +146,16 @@
         views: 0,
         excerpt: 'Aksi peduli lingkungan bersama guru dan siswa menjaga kebersihan serta menanam pohon di sekolah.',
         content: 'Sebagai sekolah yang berbudaya lingkungan, SDN Ngeposari 2 mengadakan kerja bakti bulanan. Siswa diajarkan memilah sampah organik dan non-organik, serta melakukan penanaman bibit tanaman hias dan apotek hidup di area taman sekolah.',
-        image: 'images/school/kegiatan1.webp'
+        image: 'images/school/apotek_hidup.webp'
       }
     ],
     gallery: [
-      { id: 'g1', caption: 'Suasana pembelajaran aktif & interaktif di kelas', image: 'images/school/kegiatan1.webp' },
-      { id: 'g2', caption: 'Gedung utama dan halaman asri SDN 2 Ngeposari', image: 'images/school/hero.webp' },
+      { id: 'g1', caption: 'Praktik komputer & literasi digital siswa di lab IT', image: 'images/school/lab_komputer.webp' },
+      { id: 'g2', caption: 'Gedung utama dan halaman asri SDN 2 Ngeposari', image: 'images/school/gedung_sdn2_ngeposari.webp' },
       { id: 'g3', caption: 'Latihan kepramukaan penggalang membentuk kedisiplinan', image: 'images/school/latihan_pramuka.webp' },
       { id: 'g4', caption: 'Upacara bendera & apel pembinaan karakter', image: 'images/school/upacara_bendera.webp' },
       { id: 'g5', caption: 'Latihan seni tari tradisional siswa di ruang kelas', image: 'images/school/latihan_tari.webp' },
-      { id: 'g6', caption: 'Gedung dan lingkungan sekolah asri & teduh', image: 'images/school_hero_bg.webp' }
+      { id: 'g6', caption: 'Kerja bakti pembersihan tanaman apotek hidup & sekolah hijau', image: 'images/school/apotek_hidup.webp' }
     ],
     contact: {
       address: 'Mojo RT 01/RW13, Ngeposari, Semanu, Gunungkidul, DI Yogyakarta, 55893',

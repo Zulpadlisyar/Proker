@@ -682,6 +682,10 @@ window.SchoolDB = {
               a3.image = 'images/school/latihan_tari.webp';
               a3.title = 'Latihan seni tari tradisional dan olah kreasi';
             }
+            const a4 = this.data.activities.find(a => a.id === 'a4');
+            if (a4 && (a4.image.includes('kegiatan1') || a4.image.includes('unsplash') || a4.image.includes('hero'))) {
+              a4.image = 'images/school/apotek_hidup.webp';
+            }
             if (!this.data.activities.some(a => a.id === 'a4')) {
               this.data.activities.push({
                 id: 'a4',
@@ -691,11 +695,21 @@ window.SchoolDB = {
                 views: 0,
                 excerpt: 'Aksi peduli lingkungan bersama guru dan siswa menjaga kebersihan serta menanam pohon di sekolah.',
                 content: 'Sebagai sekolah yang berbudaya lingkungan, SDN Ngeposari 2 mengadakan kerja bakti bulanan. Siswa diajarkan memilah sampah organik dan non-organik, serta melakukan penanaman bibit tanaman hias dan apotek hidup di area taman sekolah.',
-                image: 'images/school/kegiatan1.webp'
+                image: 'images/school/apotek_hidup.webp'
               });
             }
           }
           if (Array.isArray(this.data.gallery)) {
+            const g1 = this.data.gallery.find(g => g.id === 'g1');
+            if (g1 && (g1.image.includes('kegiatan1') || g1.image.includes('unsplash'))) {
+              g1.image = 'images/school/lab_komputer.webp';
+              g1.caption = 'Praktik komputer & literasi digital siswa di lab IT';
+            }
+            const g2 = this.data.gallery.find(g => g.id === 'g2');
+            if (g2 && (g2.image.includes('hero') || g2.image.includes('unsplash'))) {
+              g2.image = 'images/school/gedung_sdn2_ngeposari.webp';
+              g2.caption = 'Gedung utama dan halaman asri SDN 2 Ngeposari';
+            }
             const g3 = this.data.gallery.find(g => g.id === 'g3');
             if (g3 && (g3.image.includes('fasilitas1') || g3.image.includes('unsplash'))) {
               g3.image = 'images/school/latihan_pramuka.webp';
@@ -710,6 +724,11 @@ window.SchoolDB = {
             if (g5 && (g5.image.includes('unsplash') || g5.image.includes('photo-1521587760476'))) {
               g5.image = 'images/school/latihan_tari.webp';
               g5.caption = 'Latihan seni tari tradisional siswa di ruang kelas';
+            }
+            const g6 = this.data.gallery.find(g => g.id === 'g6');
+            if (g6 && (g6.image.includes('hero') || g6.image.includes('unsplash') || g6.image.includes('school_hero_bg'))) {
+              g6.image = 'images/school/apotek_hidup.webp';
+              g6.caption = 'Kerja bakti pembersihan tanaman apotek hidup & sekolah hijau';
             }
           }
           this.data._authenticActivitiesV1 = true;
@@ -796,6 +815,25 @@ window.SchoolDB = {
               if (!f.image || f.image.includes('gedung') || f.image.includes('unsplash')) {
                 f.image = 'images/school/ruang_uks.webp';
               }
+            }
+          });
+        }
+
+        // 2026-09-08: Ensure activities and gallery do not contain deleted assets (kegiatan1, hero.webp)
+        if (Array.isArray(this.data.activities)) {
+          this.data.activities.forEach(a => {
+            if (a.image && (a.image.includes('kegiatan1') || a.image.includes('hero.webp'))) {
+              a.image = 'images/school/apotek_hidup.webp';
+            }
+          });
+        }
+        if (Array.isArray(this.data.gallery)) {
+          this.data.gallery.forEach(g => {
+            if (g.image && g.image.includes('kegiatan1')) {
+              g.image = 'images/school/lab_komputer.webp';
+            }
+            if (g.image && g.image.includes('hero.webp')) {
+              g.image = 'images/school/gedung_sdn2_ngeposari.webp';
             }
           });
         }

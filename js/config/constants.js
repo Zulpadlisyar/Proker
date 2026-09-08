@@ -78,7 +78,7 @@
         id: 'f1',
         name: 'Perpustakaan Pintar',
         description: 'Koleksi buku lengkap mulai dari buku pelajaran, cerita anak, hingga ensiklopedia menarik.',
-        image: 'images/school/kegiatan1.webp'
+        image: 'images/school/perpustakaan.webp'
       },
       {
         id: 'f2',

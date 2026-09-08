@@ -779,11 +779,13 @@ window.SchoolDB = {
         // 2026-09-08: Ensure all facilities use authentic local school webp assets (no dead unsplash links)
         if (Array.isArray(this.data.facilities)) {
           this.data.facilities.forEach(f => {
-            if (f.image && f.image.includes('unsplash')) {
-              const lower = (f.name || '').toLowerCase();
-              if (f.id === 'f1' || lower.includes('perpustakaan')) {
-                f.image = 'images/school/kegiatan1.webp';
-              } else if (f.id === 'f2' || lower.includes('komputer') || lower.includes('lab')) {
+            const lower = (f.name || '').toLowerCase();
+            if (f.id === 'f1' || lower.includes('perpustakaan')) {
+              if (!f.image || f.image.includes('kegiatan1') || f.image.includes('unsplash') || f.image.includes('fasilitas1')) {
+                f.image = 'images/school/perpustakaan.webp';
+              }
+            } else if (f.image && f.image.includes('unsplash')) {
+              if (f.id === 'f2' || lower.includes('komputer') || lower.includes('lab')) {
                 f.image = 'images/school/latihan_pramuka.webp';
               } else if (f.id === 'f3' || lower.includes('lapangan') || lower.includes('olahraga')) {
                 f.image = 'images/school/upacara_bendera.webp';

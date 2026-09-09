@@ -1,10 +1,23 @@
-# Robots.txt for SDN Ngeposari 2 (sdn2ngeposari.sch.id)
+# Robots.txt for SDN Ngeposari 2 (https://sdn2ngeposari.my.id)
 User-agent: *
 Allow: /
+Allow: /favicon.ico
+Allow: /favicon*.png
+Allow: /apple-touch-icon.png
+Allow: /images/
+Allow: /site.webmanifest
 
 # Protect Private Admin Portal from Indexing
 Disallow: /admin.html
 Disallow: /admin
 
-# Sitemap Location
-Sitemap: https://sdn2ngeposari.sch.id/sitemap.xml
+# Googlebot-Image & Favicon Crawler Optimization
+User-agent: Googlebot-Image
+Allow: /
+Allow: /favicon.ico
+Allow: /favicon*.png
+Allow: /apple-touch-icon.png
+Allow: /images/
+
+# Sitemap Location for Google & Bing Search Engines
+Sitemap: https://sdn2ngeposari.my.id/sitemap.xml

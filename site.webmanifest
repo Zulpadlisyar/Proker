@@ -1,11 +1,12 @@
 {
-  "name": "SDN Ngeposari 2 Semanu",
-  "short_name": "SDN Ngeposari 2",
-  "description": "Website Resmi SDN Ngeposari 2 - Semanu, Gunungkidul. Sekolah Dasar Negeri Berprestasi, Berkarakter, dan Berwawasan Lingkungan.",
-  "start_url": "/index.html",
+  "name": "SD Negeri 2 Ngeposari",
+  "short_name": "SDN 2 Ngeposari",
+  "description": "Website Resmi SD Negeri 2 Ngeposari - Semanu, Gunungkidul. Sekolah Dasar Negeri Berprestasi, Berkarakter, dan Berwawasan Lingkungan.",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#0B192C",
-  "theme_color": "#0B192C",
+  "background_color": "#2F6B45",
+  "theme_color": "#2F6B45",
   "icons": [
     {
       "src": "/images/logo-192.png",

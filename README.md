@@ -15,6 +15,7 @@ Portal web informasi resmi dan sistem manajemen konten (CMS) **SD Negeri 2 Ngepo
 | **Kepala Sekolah** | Sumarni, S.Pd.SD., M.Pd. |
 | **Alamat Lengkap** | Mojo RT 01 / RW 13, Kalurahan Ngeposari, Kapanewon Semanu, Kabupaten Gunungkidul, D.I. Yogyakarta 55893 |
 | **Email Resmi** | sdn2ngeposari@gmail.com |
+| **Domain Resmi** | [sdn2ngeposari.my.id](https://sdn2ngeposari.my.id) |
 
 ---
 

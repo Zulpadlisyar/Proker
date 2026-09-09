@@ -4,74 +4,82 @@
   
   <!-- 1. Halaman Beranda / Home -->
   <url>
-    <loc>https://sdn2ngeposari.sch.id/</loc>
-    <lastmod>2026-08-26</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://sdn2ngeposari.my.id/</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://sdn2ngeposari.sch.id/images/school_hero_bg.webp</image:loc>
-      <image:title>Lingkungan Asri dan Belajar Penuh Inspirasi SDN Ngeposari 2</image:title>
+      <image:loc>https://sdn2ngeposari.my.id/images/school_hero_bg.webp</image:loc>
+      <image:title>Lingkungan Asri dan Belajar Penuh Inspirasi SDN 2 Ngeposari Semanu</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://sdn2ngeposari.my.id/images/logo-512.png</image:loc>
+      <image:title>Logo Resmi SD Negeri 2 Ngeposari</image:title>
     </image:image>
   </url>
 
   <!-- 2. Profil Sekolah / Tentang -->
   <url>
-    <loc>https://sdn2ngeposari.sch.id/tentang.html</loc>
-    <lastmod>2026-08-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://sdn2ngeposari.my.id/tentang.html</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://sdn2ngeposari.my.id/images/school/gedung_sdn2_ngeposari.webp</image:loc>
+      <image:title>Gedung Utama SD Negeri 2 Ngeposari</image:title>
+    </image:image>
   </url>
 
   <!-- 3. Fasilitas Sekolah -->
   <url>
-    <loc>https://sdn2ngeposari.sch.id/fasilitas.html</loc>
-    <lastmod>2026-08-26</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://sdn2ngeposari.my.id/fasilitas.html</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- 4. Kegiatan & Berita Siswa -->
   <url>
-    <loc>https://sdn2ngeposari.sch.id/kegiatan.html</loc>
-    <lastmod>2026-08-26</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://sdn2ngeposari.my.id/kegiatan.html</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- 5. Kontak & Lokasi Sekolah -->
   <url>
-    <loc>https://sdn2ngeposari.sch.id/kontak.html</loc>
-    <lastmod>2026-08-26</lastmod>
+    <loc>https://sdn2ngeposari.my.id/kontak.html</loc>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- 6. Berita & Artikel Kegiatan Sekolah -->
   <url>
-    <loc>https://sdn2ngeposari.sch.id/detail-kegiatan.html?id=a1</loc>
-    <lastmod>2026-08-17</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://sdn2ngeposari.my.id/detail-kegiatan.html?id=a1</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://sdn2ngeposari.sch.id/detail-kegiatan.html?id=a2</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://sdn2ngeposari.my.id/detail-kegiatan.html?id=a2</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://sdn2ngeposari.sch.id/detail-kegiatan.html?id=a3</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://sdn2ngeposari.my.id/detail-kegiatan.html?id=a3</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://sdn2ngeposari.sch.id/detail-kegiatan.html?id=a4</loc>
-    <lastmod>2026-08-05</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://sdn2ngeposari.my.id/detail-kegiatan.html?id=a4</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 

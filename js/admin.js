@@ -1998,7 +1998,7 @@ if (formEditContact) {
         return;
       }
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        highlightAdminError('#contact-email', 'Format alamat email tidak valid (contoh: sekolah@sdn2ngeposari.sch.id).');
+        highlightAdminError('#contact-email', 'Format alamat email tidak valid (contoh: sekolah@sdn2ngeposari.my.id).');
         showAdminToast('Format email tidak valid.', 'error', 'Validasi Kontak');
         setButtonSubmitting(submitBtn, false);
         return;

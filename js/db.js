@@ -405,7 +405,7 @@ window.CloudSyncManager = {
         comfortStandards: data.comfortStandards || [],
         inquiries: data.inquiries || [],
         contact: data.contact || {},
-        adminPassword: data.adminPassword || (typeof localStorage !== 'undefined' ? localStorage.getItem('sdn2_admin_custom_password') : null) || 'admin123',
+        adminPassword: data.adminPassword || (typeof localStorage !== 'undefined' ? localStorage.getItem('sdn2_admin_custom_password') : null) || 'asdd',
         updatedAt: new Date().toISOString(),
         syncedBy: 'Admin Web CMS'
       };
@@ -652,7 +652,7 @@ window.SchoolDB = {
         if (!Array.isArray(this.data.auditLogs)) this.data.auditLogs = [];
         if (!this.data.adminPassword) {
           const savedPwd = (typeof localStorage !== 'undefined') ? localStorage.getItem('sdn2_admin_custom_password') : null;
-          this.data.adminPassword = savedPwd || 'admin123';
+          this.data.adminPassword = savedPwd || 'asdd';
         }
         
         // Ensure activities views start cleanly at 0 if not yet reset
@@ -1904,7 +1904,7 @@ window.SchoolDB = {
       if (localPwd) return localPwd;
       if (this.data && this.data.adminPassword) return this.data.adminPassword;
     } catch (e) {}
-    return 'admin123';
+    return 'asdd';
   },
 
   verifyAdminPassword(inputPwd) {

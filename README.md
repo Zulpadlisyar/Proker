@@ -88,6 +88,16 @@ Proker/
 
 ---
 
+## 🔐 Akses CMS Administrator & Keamanan
+
+Untuk mengelola seluruh konten sekolah (berita, kegiatan, fasilitas, galeri bento, data guru, testimoni, dan pesan masuk):
+- **Halaman Login Admin**: `/admin.html`
+- **Kata Sandi Bawaan (Default)**: `admin123`
+- **Penggantian Kata Sandi**: Administrator dapat memperbarui kata sandi sewaktu-waktu melalui tombol **"Ganti Kata Sandi"** di bagian *header* atas panel admin atau menu **Pengaturan**.
+- **Lokasi Penyimpanan & Sinkronisasi**: Kata sandi dikelola oleh `SchoolDB` ([`js/db.js`](js/db.js)), disimpan di `localStorage ('sdn2_admin_custom_password')`, `IndexedDB`, serta otomatis disinkronkan dengan aman ke Cloud Firestore jika terhubung.
+
+---
+
 ## 🛠️ Panduan Penggunaan & Perintah CLI
 
 Pastikan [Node.js](https://nodejs.org/) (versi 18 ke atas) telah terpasang di sistem Anda.

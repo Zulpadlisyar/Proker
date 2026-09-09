@@ -185,7 +185,110 @@ async function runDatabaseTests() {
   const upgradedProfile = window.SchoolDB.getProfile();
   assert.strictEqual(upgradedProfile.tagline, 'Unggul, Berkarakter, dan Berbudaya Lingkungan', 'Legacy tagline must be auto-upgraded to official tagline');
   assert(upgradedProfile.description.includes('terakreditasi A'), 'Legacy placeholder description must be auto-upgraded to official description');
-  console.log('[PASS] Cross-Origin identity uniformity & legacy cache auto-upgrade verified.');
+  // 8. Inquiries Reliability, Robust Date Sorting, and Cloud Sync Merging
+  console.log('8. Testing Inquiries Reliability, Robust Date Sorting, and Cloud Sync Merging...');
+  const newInq = await window.SchoolDB.addInquiry({
+    name: 'Ibu Ratna',
+    email: 'ratna@example.com',
+    phone: '08123456789',
+    subject: 'Konsultasi Belajar',
+    message: 'Bagaimana program bimbingan belajar anak?'
+  });
+  assert(newInq && newInq.id, 'New inquiry must have valid id');
+  assert.strictEqual(newInq.isRead, false, 'New inquiry must be unread by default');
+  
+  let inquiries = window.SchoolDB.getInquiries();
+  assert(inquiries.length > 0, 'Inquiries list must contain at least 1 item');
+  assert.strictEqual(inquiries[0].id, newInq.id, 'Newest inquiry must be sorted at the top');
+
+  // Mark as read test
+  const markSuccess = await window.SchoolDB.markInquiryRead(newInq.id, true);
+  assert.strictEqual(markSuccess, true, 'markInquiryRead should succeed');
+  inquiries = window.SchoolDB.getInquiries();
+  const updatedInq = inquiries.find(i => i.id === newInq.id);
+  assert.strictEqual(updatedInq.isRead, true, 'Inquiry must be marked as read');
+
+  // Robustness test: Inject null entry and non-standard date format
+  window.SchoolDB.data.inquiries.push(null);
+  window.SchoolDB.data.inquiries.push({
+    id: 'legacy-date-inq',
+    name: 'Bapak Joko',
+    email: 'joko@test.com',
+    date: '2026-01-15 08:30', // Space separator format without T
+    message: 'Tes tanggal spasi legacy'
+  });
+  const safeSorted = window.SchoolDB.getInquiries();
+  assert(!safeSorted.includes(null), 'getInquiries must filter out null/undefined entries safely');
+  assert(safeSorted.some(i => i.id === 'legacy-date-inq'), 'getInquiries must correctly include legacy date entries');
+
+  // Cloud sync merging test: cloud push must not wipe out local inquiries
+  const localCountBefore = window.SchoolDB.getInquiries().length;
+  await window.SchoolDB._applyCloudData({
+    inquiries: [
+      {
+        id: 'cloud-inq-100',
+        name: 'Cloud Sender',
+        email: 'cloud@sdn2.id',
+        date: '2026-09-05 14:00',
+        message: 'Pesan dari cloud firestore'
+      }
+    ]
+  });
+  const mergedInquiries = window.SchoolDB.getInquiries();
+  assert(mergedInquiries.some(i => i.id === newInq.id), 'Local inquiry must be preserved during cloud sync');
+  assert(mergedInquiries.some(i => i.id === 'cloud-inq-100'), 'Cloud inquiry must be added during cloud sync');
+  assert(mergedInquiries.length >= localCountBefore, 'Cloud sync must not decrease inquiries count via wipeout');
+
+  // Cleanup test inquiry
+  await window.SchoolDB.deleteInquiry(newInq.id);
+  await window.SchoolDB.deleteInquiry('legacy-date-inq');
+  // 9. Admin Password Security, Verification, and Update Flow
+  console.log('9. Testing Admin Password Security, Verification, and Update Flow...');
+  assert.strictEqual(window.SchoolDB.getAdminPassword(), 'admin123', 'Default admin password must be admin123');
+  assert.strictEqual(window.SchoolDB.verifyAdminPassword('wrongpass'), false, 'verifyAdminPassword must reject incorrect password');
+  assert.strictEqual(window.SchoolDB.verifyAdminPassword('admin123'), true, 'verifyAdminPassword must accept correct password');
+
+  // Test update with wrong current password
+  let wrongOldThrew = false;
+  try {
+    await window.SchoolDB.updateAdminPassword('wrongold', 'newpass123');
+  } catch (e) {
+    wrongOldThrew = true;
+    assert.strictEqual(e.message, 'Kata sandi saat ini tidak sesuai.');
+  }
+  assert(wrongOldThrew, 'updateAdminPassword must reject incorrect current password');
+
+  // Test update with short password (< 6 chars)
+  let shortThrew = false;
+  try {
+    await window.SchoolDB.updateAdminPassword('admin123', '12345');
+  } catch (e) {
+    shortThrew = true;
+    assert.strictEqual(e.message, 'Kata sandi baru minimal harus 6 karakter.');
+  }
+  assert(shortThrew, 'updateAdminPassword must reject passwords under 6 characters');
+
+  // Test update with identical password
+  let sameThrew = false;
+  try {
+    await window.SchoolDB.updateAdminPassword('admin123', 'admin123');
+  } catch (e) {
+    sameThrew = true;
+    assert.strictEqual(e.message, 'Kata sandi baru tidak boleh sama dengan kata sandi saat ini.');
+  }
+  assert(sameThrew, 'updateAdminPassword must reject new password identical to current');
+
+  // Test successful update
+  const updateSuccess = await window.SchoolDB.updateAdminPassword('admin123', 'rahasia2026');
+  assert.strictEqual(updateSuccess, true, 'updateAdminPassword must return true on success');
+  assert.strictEqual(window.SchoolDB.getAdminPassword(), 'rahasia2026', 'getAdminPassword must return new password');
+  assert.strictEqual(window.SchoolDB.verifyAdminPassword('rahasia2026'), true, 'verifyAdminPassword must succeed with new password');
+  assert.strictEqual(window.SchoolDB.verifyAdminPassword('admin123'), false, 'verifyAdminPassword must reject old password');
+
+  // Reset back to admin123 for test environment idempotency
+  await window.SchoolDB.updateAdminPassword('rahasia2026', 'admin123');
+  assert.strictEqual(window.SchoolDB.getAdminPassword(), 'admin123', 'Password safely reset back to admin123');
+  console.log('[PASS] Admin password security, validation rules, and update flow verified.');
 
   console.log('\n>>> ALL DATABASE RUNTIME TESTS PASSED 100%! <<<\n');
 }

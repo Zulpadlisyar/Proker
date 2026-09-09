@@ -405,6 +405,7 @@ window.CloudSyncManager = {
         comfortStandards: data.comfortStandards || [],
         inquiries: data.inquiries || [],
         contact: data.contact || {},
+        adminPassword: data.adminPassword || (typeof localStorage !== 'undefined' ? localStorage.getItem('sdn2_admin_custom_password') : null) || 'admin123',
         updatedAt: new Date().toISOString(),
         syncedBy: 'Admin Web CMS'
       };
@@ -649,6 +650,10 @@ window.SchoolDB = {
         if (!Array.isArray(this.data.inquiries)) this.data.inquiries = JSON.parse(JSON.stringify(INITIAL_DATA.inquiries || []));
         if (!Array.isArray(this.data.categories)) this.data.categories = (INITIAL_DATA.categories ? [...INITIAL_DATA.categories] : ['Akademik', 'Kepramukaan', 'Ekstrakurikuler', 'Prestasi', 'Sosial & Lingkungan', 'Umum']);
         if (!Array.isArray(this.data.auditLogs)) this.data.auditLogs = [];
+        if (!this.data.adminPassword) {
+          const savedPwd = (typeof localStorage !== 'undefined') ? localStorage.getItem('sdn2_admin_custom_password') : null;
+          this.data.adminPassword = savedPwd || 'admin123';
+        }
         
         // Ensure activities views start cleanly at 0 if not yet reset
         if (!this.data._viewsResetV6) {
@@ -961,11 +966,31 @@ window.SchoolDB = {
       changed = true;
     }
     if (Array.isArray(cloudData.inquiries)) {
-      this.data.inquiries = cloudData.inquiries;
+      const localInquiries = Array.isArray(this.data.inquiries) ? this.data.inquiries.filter(Boolean) : [];
+      const inqMap = new Map();
+      localInquiries.forEach(inq => {
+        if (inq && inq.id) inqMap.set(String(inq.id), inq);
+      });
+      cloudData.inquiries.filter(Boolean).forEach(inq => {
+        if (inq && inq.id) {
+          const existing = inqMap.get(String(inq.id));
+          inqMap.set(String(inq.id), { ...(existing || {}), ...inq });
+        }
+      });
+      this.data.inquiries = Array.from(inqMap.values());
       changed = true;
     }
     if (cloudData.contact) {
       this.data.contact = { ...this.data.contact, ...cloudData.contact };
+      changed = true;
+    }
+    if (cloudData.adminPassword && typeof cloudData.adminPassword === 'string') {
+      this.data.adminPassword = cloudData.adminPassword;
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('sdn2_admin_custom_password', cloudData.adminPassword);
+        }
+      } catch (e) {}
       changed = true;
     }
 
@@ -1378,11 +1403,11 @@ window.SchoolDB = {
   // --- Generic Collection Helpers (Compact & Reusable) ---
   async _deleteItem(collectionKey, id, auditModule, labelField = 'name') {
     if (!Array.isArray(this.data[collectionKey])) return false;
-    const target = this.data[collectionKey].find(item => String(item.id) === String(id));
+    const target = this.data[collectionKey].find(item => item && String(item.id) === String(id));
     if (!target) return false;
 
     const deletedImage = target.image;
-    this.data[collectionKey] = this.data[collectionKey].filter(item => String(item.id) !== String(id));
+    this.data[collectionKey] = this.data[collectionKey].filter(item => item && String(item.id) !== String(id));
 
     // Global Footage Deletion Cascade: If item has an authentic footage/image, purge across all other collections
     if (deletedImage && typeof deletedImage === 'string' && !deletedImage.includes('logo.') && !deletedImage.startsWith('data:image/svg+xml')) {
@@ -1805,20 +1830,34 @@ window.SchoolDB = {
     return this._deleteItem('comfortStandards', id, 'Standar Kenyamanan', 'title');
   },
 
+  // Robust Date Parser for Cross-Browser ISO & Local Strings
+  _parseDateSafe(d) {
+    if (!d) return 0;
+    if (typeof d === 'number') return d;
+    const str = String(d).trim();
+    // Normalize format like "2026-08-30 09:15" into ISO "2026-08-30T09:15" for Safari/WebKit compatibility
+    const iso = str.includes('T') ? str : str.replace(' ', 'T');
+    const t = new Date(iso).getTime();
+    return isNaN(t) ? 0 : t;
+  },
+
   // Inquiries CRUD
   getInquiries() {
     if (!this.data) return (INITIAL_DATA && INITIAL_DATA.inquiries) ? [...INITIAL_DATA.inquiries] : [];
     if (!Array.isArray(this.data.inquiries)) {
       this.data.inquiries = (INITIAL_DATA && INITIAL_DATA.inquiries) ? JSON.parse(JSON.stringify(INITIAL_DATA.inquiries)) : [];
     }
-    return [...this.data.inquiries].sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+    return [...this.data.inquiries]
+      .filter(item => item && typeof item === 'object')
+      .sort((a, b) => this._parseDateSafe(b.date) - this._parseDateSafe(a.date));
   },
 
   getUnreadInquiriesCount() {
-    return this.getInquiries().filter(i => !i.isRead).length;
+    return this.getInquiries().filter(i => i && !i.isRead).length;
   },
 
   async addInquiry(item) {
+    if (!this.data) this.data = {};
     if (!Array.isArray(this.data.inquiries)) this.data.inquiries = [];
     const name = this.sanitizeText(item.name || 'Pengunjung');
     const email = this.sanitizeText(item.email || '');
@@ -1844,10 +1883,10 @@ window.SchoolDB = {
   },
 
   async markInquiryRead(id, isRead = true) {
-    if (!Array.isArray(this.data.inquiries)) return false;
-    const index = this.data.inquiries.findIndex(i => String(i.id) === String(id));
+    if (!this.data || !Array.isArray(this.data.inquiries)) return false;
+    const index = this.data.inquiries.findIndex(i => i && String(i.id) === String(id));
     if (index !== -1) {
-      this.data.inquiries[index].isRead = isRead;
+      this.data.inquiries[index].isRead = !!isRead;
       await this.save();
       return true;
     }
@@ -1856,5 +1895,45 @@ window.SchoolDB = {
 
   async deleteInquiry(id) {
     return this._deleteItem('inquiries', id, 'Layanan Konsultasi', 'name');
+  },
+
+  // Admin Authentication & Password Management
+  getAdminPassword() {
+    try {
+      const localPwd = (typeof localStorage !== 'undefined') ? localStorage.getItem('sdn2_admin_custom_password') : null;
+      if (localPwd) return localPwd;
+      if (this.data && this.data.adminPassword) return this.data.adminPassword;
+    } catch (e) {}
+    return 'admin123';
+  },
+
+  verifyAdminPassword(inputPwd) {
+    if (!inputPwd || typeof inputPwd !== 'string') return false;
+    return inputPwd.trim() === this.getAdminPassword().trim();
+  },
+
+  async updateAdminPassword(currentPassword, newPassword) {
+    if (!this.verifyAdminPassword(currentPassword)) {
+      throw new Error('Kata sandi saat ini tidak sesuai.');
+    }
+    if (!newPassword || typeof newPassword !== 'string' || newPassword.trim().length < 6) {
+      throw new Error('Kata sandi baru minimal harus 6 karakter.');
+    }
+    const cleanNewPwd = newPassword.trim();
+    if (cleanNewPwd === this.getAdminPassword()) {
+      throw new Error('Kata sandi baru tidak boleh sama dengan kata sandi saat ini.');
+    }
+
+    if (!this.data) this.data = {};
+    this.data.adminPassword = cleanNewPwd;
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('sdn2_admin_custom_password', cleanNewPwd);
+      }
+    } catch (e) {}
+
+    await this.save();
+    await this.logAudit('UBAH', 'Keamanan', 'Memperbarui kata sandi administrator CMS');
+    return true;
   }
 };

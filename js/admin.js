@@ -390,7 +390,7 @@ function checkAuth() {
     mainInterface.style.display = 'block';
     initAdminPanel();
   } else {
-    loginScreen.style.display = 'block';
+    loginScreen.style.display = 'flex';
     mainInterface.style.display = 'none';
   }
 }
@@ -482,6 +482,7 @@ async function initAdminPanel() {
     ['Facilities Table', renderFacilitiesTable],
     ['Activities Table', renderActivitiesTable],
     ['Gallery Table', renderGalleryTable],
+    ['Inbox UI', initInboxUI],
     ['Inbox List', renderInboxList],
     ['Testimonials Table', renderTestimonialsTable],
     ['Calendar Table', renderCalendarTable],
@@ -490,7 +491,7 @@ async function initAdminPanel() {
     ['Contact Form', loadContactForm],
     ['Cloud Sync UI', initCloudSyncUI],
     ['Category Management UI', initCategoryManagementUI],
-    ['Inbox UI', initInboxUI],
+    ['Change Password UI', initChangePasswordUI],
     ['Search & Pagination', initSearchAndPagination]
   ];
 
@@ -541,7 +542,10 @@ function switchAdminTab(targetId, updateHistory = true) {
   // Safely refresh specific pane content
   try {
     if (targetId === 'pane-dashboard') renderDashboard();
-    else if (targetId === 'pane-inbox') renderInboxList();
+    else if (targetId === 'pane-inbox') {
+      if (typeof syncInboxUIState === 'function') syncInboxUIState();
+      renderInboxList();
+    }
     else if (targetId === 'pane-testimonials') renderTestimonialsTable();
     else if (targetId === 'pane-calendar') renderCalendarTable();
     else if (targetId === 'pane-habits') renderHabitsTable();
@@ -564,6 +568,40 @@ window.addEventListener('hashchange', () => {
   const hashTab = (window.location.hash || '').replace('#', '').trim();
   if (hashTab && document.getElementById(hashTab)) {
     switchAdminTab(hashTab, false);
+  }
+});
+
+// Real-time listener for incoming inquiries and cloud/local database sync
+window.addEventListener('schooldb-synced', () => {
+  if (typeof updateInboxBadge === 'function') updateInboxBadge();
+  if (typeof renderDashboard === 'function') renderDashboard();
+  const activePane = document.querySelector('.admin-tab-pane.active');
+  if (activePane && activePane.id === 'pane-inbox') {
+    if (typeof renderInboxList === 'function') renderInboxList();
+  }
+});
+
+window.addEventListener('inquiry-received', () => {
+  if (typeof updateInboxBadge === 'function') updateInboxBadge();
+  if (typeof renderDashboard === 'function') renderDashboard();
+  const activePane = document.querySelector('.admin-tab-pane.active');
+  if (activePane && activePane.id === 'pane-inbox') {
+    if (typeof renderInboxList === 'function') renderInboxList();
+  }
+});
+
+window.addEventListener('storage', (e) => {
+  if (e.key === 'sdn2_db_sync_time' || e.key === 'sdn2_db_data_backup') {
+    if (window.SchoolDB && typeof window.SchoolDB.init === 'function') {
+      window.SchoolDB.init().then(() => {
+        if (typeof updateInboxBadge === 'function') updateInboxBadge();
+        if (typeof renderDashboard === 'function') renderDashboard();
+        const activePane = document.querySelector('.admin-tab-pane.active');
+        if (activePane && activePane.id === 'pane-inbox') {
+          if (typeof renderInboxList === 'function') renderInboxList();
+        }
+      }).catch(console.warn);
+    }
   }
 });
 
@@ -593,6 +631,10 @@ document.addEventListener('click', async (e) => {
       clearDirty();
     }
     
+    if (targetId === 'pane-inbox') {
+      inboxFilter = 'all';
+      inboxSearchQuery = '';
+    }
     switchAdminTab(targetId);
     return;
   }
@@ -605,7 +647,11 @@ document.addEventListener('click', async (e) => {
     else if (label === 'Fasilitas') switchAdminTab('pane-facilities');
     else if (label === 'Kegiatan') switchAdminTab('pane-activities');
     else if (label === 'Dokumentasi') switchAdminTab('pane-gallery');
-    else if (label === 'Pesan Masuk') switchAdminTab('pane-inbox');
+    else if (label === 'Pesan Masuk') {
+      inboxFilter = 'all';
+      inboxSearchQuery = '';
+      switchAdminTab('pane-inbox');
+    }
     else if (label === 'Total Pembaca') switchAdminTab('pane-activities');
     return;
   }
@@ -1973,6 +2019,34 @@ if (formEditContact) {
 // ----------------------------------------------------
 // INBOX / LAYANAN KONSULTASI MANAGEMENT
 // ----------------------------------------------------
+// Safe HTML escaping helper for admin UI templates
+function escapeHTML(str) {
+  if (typeof str !== 'string') return str == null ? '' : String(str);
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function syncInboxUIState() {
+  const filterBtns = document.querySelectorAll('.filter-inbox-btn');
+  filterBtns.forEach(btn => {
+    const f = btn.getAttribute('data-filter') || 'all';
+    if (f === inboxFilter) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+
+  const searchInput = document.getElementById('inbox-search-input');
+  if (searchInput && searchInput.value !== (inboxSearchQuery || '')) {
+    searchInput.value = inboxSearchQuery || '';
+  }
+}
+
 function initInboxUI() {
   const filterBtns = document.querySelectorAll('.filter-inbox-btn');
   filterBtns.forEach(btn => {
@@ -1987,9 +2061,9 @@ function initInboxUI() {
   const searchInput = document.getElementById('inbox-search-input');
   if (searchInput) {
     searchInput.addEventListener('input', debounce((e) => {
-      inboxSearchQuery = e.target.value.toLowerCase().trim();
+      inboxSearchQuery = String(e.target.value || '').toLowerCase().trim();
       renderInboxList();
-    }, 300));
+    }, 250));
   }
 }
 
@@ -1997,128 +2071,230 @@ function renderInboxList() {
   const container = document.getElementById('admin-inbox-list');
   if (!container) return;
 
-  const allInquiries = window.SchoolDB.getInquiries ? window.SchoolDB.getInquiries() : [];
-  updateInboxBadge();
+  try {
+    const allInquiries = (window.SchoolDB && typeof window.SchoolDB.getInquiries === 'function')
+      ? window.SchoolDB.getInquiries()
+      : [];
+    
+    updateInboxBadge();
 
-  let filtered = allInquiries;
-  if (inboxFilter === 'unread') {
-    filtered = filtered.filter(i => !i.isRead);
-  } else if (inboxFilter === 'read') {
-    filtered = filtered.filter(i => i.isRead);
-  }
+    // Ensure all entries are valid objects
+    const safeInquiries = Array.isArray(allInquiries)
+      ? allInquiries.filter(item => item && typeof item === 'object')
+      : [];
 
-  if (inboxSearchQuery) {
-    filtered = filtered.filter(i => {
-      const q = inboxSearchQuery;
-      return (i.name && i.name.toLowerCase().includes(q)) ||
-             (i.email && i.email.toLowerCase().includes(q)) ||
-             (i.phone && i.phone.toLowerCase().includes(q)) ||
-             (i.subject && i.subject.toLowerCase().includes(q)) ||
-             (i.message && i.message.toLowerCase().includes(q));
-    });
-  }
+    let filtered = safeInquiries;
+    if (inboxFilter === 'unread') {
+      filtered = filtered.filter(i => !i.isRead);
+    } else if (inboxFilter === 'read') {
+      filtered = filtered.filter(i => !!i.isRead);
+    }
 
-  if (filtered.length === 0) {
-    container.innerHTML = `
-      <div style="text-align: center; padding: 40px 20px; background: var(--surface-alt); border-radius: var(--radius-card); border: 1px dashed var(--border);">
-        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); margin-bottom: 10px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        <p style="margin: 0; color: var(--text-muted); font-size: 14px; font-weight: 500;">Tidak ada pesan konsultasi masuk yang sesuai.</p>
-      </div>
-    `;
-    return;
-  }
+    if (inboxSearchQuery) {
+      const q = String(inboxSearchQuery).toLowerCase().trim();
+      filtered = filtered.filter(i => {
+        const name = String(i.name || '').toLowerCase();
+        const email = String(i.email || '').toLowerCase();
+        const phone = String(i.phone || '').toLowerCase();
+        const subject = String(i.subject || '').toLowerCase();
+        const message = String(i.message || '').toLowerCase();
+        return name.includes(q) || email.includes(q) || phone.includes(q) || subject.includes(q) || message.includes(q);
+      });
+    }
 
-  container.innerHTML = filtered.map(inq => {
-    const isUnread = !inq.isRead;
-    const phoneClean = (inq.phone || '').replace(/[^0-9]/g, '');
-    const waPhone = phoneClean.startsWith('0') ? '62' + phoneClean.slice(1) : phoneClean;
-    const waUrl = phoneClean
-      ? `https://wa.me/${waPhone}?text=Halo%20${encodeURIComponent(inq.name)},%20terima%20kasih%20telah%20menghubungi%20SDN%202%20Ngeposari.%20Mengenai%20pesan%20konsultasi%20Anda:%20%22${encodeURIComponent(inq.subject || 'Konsultasi')}%22`
-      : null;
-    const mailUrl = inq.email
-      ? `mailto:${inq.email}?subject=${encodeURIComponent('Tanggapan SDN 2 Ngeposari: ' + (inq.subject || 'Layanan Konsultasi'))}`
-      : null;
-
-    return `
-      <div class="inquiry-item-card" style="background: var(--surface); border: 1px solid ${isUnread ? '#BFDBFE' : 'var(--border)'}; border-left: 4px solid ${isUnread ? 'var(--primary)' : '#94A3B8'}; border-radius: var(--radius-sm); padding: 18px 20px; box-shadow: ${isUnread ? '0 4px 14px rgba(30,58,138,0.06)' : 'none'};">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
-          <div>
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-              <strong style="font-size: 15px; color: var(--text);">${inq.name}</strong>
-              <span style="font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 9999px; background: ${isUnread ? '#EFF6FF' : '#F1F5F9'}; color: ${isUnread ? '#1D4ED8' : '#64748B'}; border: 1px solid ${isUnread ? '#BFDBFE' : '#E2E8F0'};">
-                ${isUnread ? 'Belum Dibaca' : 'Sudah Dibaca'}
-              </span>
+    if (filtered.length === 0) {
+      if (safeInquiries.length === 0) {
+        // Genuinely empty inbox
+        container.innerHTML = `
+          <div style="text-align: center; padding: 48px 20px; background: var(--surface-alt); border-radius: var(--radius-card); border: 1px dashed var(--border);">
+            <div style="width: 52px; height: 52px; margin: 0 auto 14px; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
             </div>
-            <div style="font-size: 12.5px; color: var(--text-muted); display: flex; gap: 14px; flex-wrap: wrap;">
-              ${inq.email ? `<span>Email: ${inq.email}</span>` : ''}
-              ${inq.phone ? `<span>Telp: ${inq.phone}</span>` : ''}
-              ${inq.subject ? `<span>Subjek: ${inq.subject}</span>` : ''}
+            <h4 style="margin: 0 0 6px; font-size: 15px; font-weight: 600; color: var(--text);">Belum Ada Pesan Masuk</h4>
+            <p style="margin: 0 0 16px; color: var(--text-muted); font-size: 13.5px; max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+              Pesan konsultasi yang dikirim oleh wali murid atau masyarakat melalui formulir halaman kontak akan otomatis tampil di sini secara real-time.
+            </p>
+            <div style="display: inline-flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+              <button type="button" class="btn btn-secondary" id="btn-refresh-inbox-data" style="font-size: 12.5px; padding: 6px 14px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                Segarkan Data
+              </button>
+              <button type="button" class="btn btn-primary" id="btn-seed-sample-inquiry" style="font-size: 12.5px; padding: 6px 14px;">
+                + Muat Pesan Contoh
+              </button>
             </div>
           </div>
-          <span style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">${inq.date || ''}</span>
-        </div>
+        `;
+        const btnRefresh = container.querySelector('#btn-refresh-inbox-data');
+        if (btnRefresh) {
+          btnRefresh.addEventListener('click', () => {
+            renderInboxList();
+            showAdminToast('Data pesan berhasil diperbarui.', 'info', 'Pesan Masuk');
+          });
+        }
+        const btnSeed = container.querySelector('#btn-seed-sample-inquiry');
+        if (btnSeed) {
+          btnSeed.addEventListener('click', async () => {
+            const seedInquiry = {
+              name: 'Bapak Ahmad Fauzi',
+              email: 'ahmad.fauzi@gmail.com',
+              phone: '081298765432',
+              subject: 'Informasi Pendaftaran Siswa Baru (PPDB)',
+              message: 'Selamat pagi, saya ingin menanyakan jadwal resmi pembukaan PPDB untuk tahun ajaran baru dan persyaratan dokumen yang harus disiapkan. Terima kasih.'
+            };
+            if (window.SchoolDB && typeof window.SchoolDB.addInquiry === 'function') {
+              await window.SchoolDB.addInquiry(seedInquiry);
+              showAdminToast('Pesan contoh berhasil dimuat.', 'success', 'Pesan Contoh');
+              renderInboxList();
+              renderDashboard();
+            }
+          });
+        }
+        return;
+      }
 
-        <div style="background: var(--surface-alt); padding: 12px 14px; border-radius: var(--radius-sm); font-size: 13.5px; line-height: 1.6; color: var(--text); margin-bottom: 14px; border: 1px solid var(--border); white-space: pre-wrap;">${inq.message}</div>
-
-        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-          ${waUrl ? `
-            <a href="${waUrl}" target="_blank" rel="noopener" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px; background-color: #16A34A; border-color: #16A34A; color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.705 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
-              Balas WhatsApp
-            </a>
-          ` : ''}
-
-          ${mailUrl ? `
-            <a href="${mailUrl}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-              Balas Email
-            </a>
-          ` : ''}
-
-          <button type="button" class="btn btn-secondary btn-toggle-read-inq" data-id="${inq.id}" data-read="${inq.isRead ? 'true' : 'false'}" style="padding: 6px 12px; font-size: 12px;">
-            ${inq.isRead ? 'Tandai Belum Dibaca' : 'Tandai Sudah Dibaca'}
+      // Filtered or search empty state
+      container.innerHTML = `
+        <div style="text-align: center; padding: 40px 20px; background: var(--surface-alt); border-radius: var(--radius-card); border: 1px dashed var(--border);">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); margin-bottom: 10px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <p style="margin: 0 0 12px; color: var(--text-muted); font-size: 13.5px; font-weight: 500;">Tidak ada pesan yang sesuai dengan filter atau kata kunci pencarian saat ini.</p>
+          <button type="button" class="btn btn-secondary" id="btn-reset-inbox-filter" style="font-size: 12.5px; padding: 6px 14px;">
+            Tampilkan Semua Pesan
           </button>
-
-          <button type="button" class="btn btn-danger-outline btn-delete-inq" data-id="${inq.id}" style="padding: 6px 12px; font-size: 12px; margin-left: auto;">
-            Hapus
-          </button>
         </div>
+      `;
+      const btnResetFilter = container.querySelector('#btn-reset-inbox-filter');
+      if (btnResetFilter) {
+        btnResetFilter.addEventListener('click', () => {
+          inboxFilter = 'all';
+          inboxSearchQuery = '';
+          syncInboxUIState();
+          renderInboxList();
+        });
+      }
+      return;
+    }
+
+    container.innerHTML = filtered.map(inq => {
+      const isUnread = !inq.isRead;
+      const rawName = String(inq.name || 'Pengirim Anonim').trim();
+      const rawEmail = inq.email ? String(inq.email).trim() : '';
+      const rawPhone = inq.phone ? String(inq.phone).trim() : '';
+      const rawSubject = String(inq.subject || 'Layanan Konsultasi Publik').trim();
+      const rawMessage = String(inq.message || '').trim();
+      const rawDate = inq.date ? String(inq.date).trim() : '';
+      const inqId = inq.id ? String(inq.id) : '';
+
+      const phoneClean = rawPhone.replace(/[^0-9]/g, '');
+      const waPhone = phoneClean.startsWith('0') ? '62' + phoneClean.slice(1) : phoneClean;
+      const waUrl = phoneClean
+        ? `https://wa.me/${waPhone}?text=${encodeURIComponent(`Halo ${rawName}, terima kasih telah menghubungi SDN 2 Ngeposari. Mengenai pesan konsultasi Anda: "${rawSubject}"`)}`
+        : null;
+      const mailUrl = rawEmail
+        ? `mailto:${rawEmail}?subject=${encodeURIComponent('Tanggapan SDN 2 Ngeposari: ' + rawSubject)}`
+        : null;
+
+      const safeName = escapeHTML(rawName);
+      const safeEmail = escapeHTML(rawEmail);
+      const safePhone = escapeHTML(rawPhone);
+      const safeSubject = escapeHTML(rawSubject);
+      const safeMessage = escapeHTML(rawMessage);
+      const safeDate = escapeHTML(rawDate);
+
+      return `
+        <div class="inquiry-item-card inquiry-card" style="background: var(--surface); border: 1px solid ${isUnread ? '#BFDBFE' : 'var(--border)'}; border-left: 4px solid ${isUnread ? 'var(--primary)' : '#94A3B8'}; border-radius: var(--radius-sm); padding: 18px 20px; box-shadow: ${isUnread ? '0 4px 14px rgba(30,58,138,0.06)' : 'none'};">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <strong class="inquiry-name" style="font-size: 15px; color: var(--text);">${safeName}</strong>
+                <span style="font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 9999px; background: ${isUnread ? '#EFF6FF' : '#F1F5F9'}; color: ${isUnread ? '#1D4ED8' : '#64748B'}; border: 1px solid ${isUnread ? '#BFDBFE' : '#E2E8F0'};">
+                  ${isUnread ? 'Belum Dibaca' : 'Sudah Dibaca'}
+                </span>
+              </div>
+              <div style="font-size: 12.5px; color: var(--text-muted); display: flex; gap: 14px; flex-wrap: wrap;">
+                ${safeEmail ? `<span>Email: ${safeEmail}</span>` : ''}
+                ${safePhone ? `<span>Telp: ${safePhone}</span>` : ''}
+                ${safeSubject ? `<span>Subjek: ${safeSubject}</span>` : ''}
+              </div>
+            </div>
+            <span style="font-size: 12px; color: var(--text-muted); white-space: nowrap;">${safeDate}</span>
+          </div>
+
+          <div style="background: var(--surface-alt); padding: 12px 14px; border-radius: var(--radius-sm); font-size: 13.5px; line-height: 1.6; color: var(--text); margin-bottom: 14px; border: 1px solid var(--border); white-space: pre-wrap;">${safeMessage}</div>
+
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+            ${waUrl ? `
+              <a href="${waUrl}" target="_blank" rel="noopener" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px; background-color: #16A34A; border-color: #16A34A; color: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.705 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+                Balas WhatsApp
+              </a>
+            ` : ''}
+
+            ${mailUrl ? `
+              <a href="${mailUrl}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                Balas Email
+              </a>
+            ` : ''}
+
+            <button type="button" class="btn btn-secondary btn-toggle-read-inq" data-id="${inqId}" data-read="${inq.isRead ? 'true' : 'false'}" style="padding: 6px 12px; font-size: 12px;">
+              ${inq.isRead ? 'Tandai Belum Dibaca' : 'Tandai Sudah Dibaca'}
+            </button>
+
+            <button type="button" class="btn btn-danger-outline btn-delete-inq" data-id="${inqId}" style="padding: 6px 12px; font-size: 12px; margin-left: auto;">
+              Hapus
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    container.querySelectorAll('.btn-toggle-read-inq').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const id = e.currentTarget.getAttribute('data-id');
+        const isCurrentlyRead = e.currentTarget.getAttribute('data-read') === 'true';
+        if (window.SchoolDB && typeof window.SchoolDB.markInquiryRead === 'function') {
+          await window.SchoolDB.markInquiryRead(id, !isCurrentlyRead);
+          renderInboxList();
+          renderDashboard();
+        }
+      });
+    });
+
+    container.querySelectorAll('.btn-delete-inq').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const id = e.currentTarget.getAttribute('data-id');
+        const card = btn.closest('.inquiry-card') || btn.closest('.inquiry-item-card');
+        const senderName = card ? card.querySelector('.inquiry-name')?.textContent.trim() : '';
+        const confirmed = await showConfirmModal({
+          title: 'Hapus Pesan Konsultasi?',
+          message: 'Hapus pesan konsultasi ini? Tindakan tidak dapat dibatalkan.',
+          itemName: senderName ? `Pesan dari ${senderName}` : '',
+          confirmText: 'Ya, Hapus',
+          cancelText: 'Batal',
+          type: 'danger',
+          icon: 'trash'
+        });
+        if (confirmed) {
+          if (window.SchoolDB && typeof window.SchoolDB.deleteInquiry === 'function') {
+            await window.SchoolDB.deleteInquiry(id);
+            showAdminToast('Pesan konsultasi berhasil dihapus.', 'success', 'Pesan Dihapus');
+            renderInboxList();
+            renderDashboard();
+          }
+        }
+      });
+    });
+  } catch (err) {
+    console.error('Error rendering inbox list:', err);
+    container.innerHTML = `
+      <div style="text-align: center; padding: 30px; background: #FEF2F2; border-radius: var(--radius-card); border: 1px solid #FECACA;">
+        <p style="color: #991B1B; font-size: 14px; font-weight: 600; margin-bottom: 8px;">Gagal memuat daftar pesan masuk.</p>
+        <p style="color: #B91C1C; font-size: 12.5px; margin-bottom: 14px;">${escapeHTML(err.message || String(err))}</p>
+        <button type="button" class="btn btn-secondary" onclick="renderInboxList()" style="font-size: 12px;">Coba Muat Ulang</button>
       </div>
     `;
-  }).join('');
-
-  container.querySelectorAll('.btn-toggle-read-inq').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      const id = e.currentTarget.getAttribute('data-id');
-      const isCurrentlyRead = e.currentTarget.getAttribute('data-read') === 'true';
-      await window.SchoolDB.markInquiryRead(id, !isCurrentlyRead);
-      renderInboxList();
-      renderDashboard();
-    });
-  });
-
-  container.querySelectorAll('.btn-delete-inq').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      const id = e.currentTarget.getAttribute('data-id');
-      const card = btn.closest('.inquiry-card');
-      const senderName = card ? card.querySelector('.inquiry-name')?.textContent.trim() : '';
-      const confirmed = await showConfirmModal({
-        title: 'Hapus Pesan Konsultasi?',
-        message: 'Hapus pesan konsultasi ini? Tindakan tidak dapat dibatalkan.',
-        itemName: senderName ? `Pesan dari ${senderName}` : '',
-        confirmText: 'Ya, Hapus',
-        cancelText: 'Batal',
-        type: 'danger',
-        icon: 'trash'
-      });
-      if (confirmed) {
-        await window.SchoolDB.deleteInquiry(id);
-        showAdminToast('Pesan konsultasi berhasil dihapus.', 'success', 'Pesan Dihapus');
-        renderInboxList();
-        renderDashboard();
-      }
-    });
-  });
+  }
 }
 
 // ----------------------------------------------------
@@ -2919,6 +3095,21 @@ const adminPasswordInput = document.getElementById('admin-password');
 const loginErrorAlert = document.getElementById('login-error-alert');
 const adminLoginBtn = document.getElementById('admin-login-btn');
 
+// Password visibility toggle on login form
+const btnToggleLoginPwd = document.getElementById('btn-toggle-login-password');
+if (btnToggleLoginPwd && adminPasswordInput) {
+  btnToggleLoginPwd.addEventListener('click', () => {
+    const isCurrentlyPassword = adminPasswordInput.getAttribute('type') === 'password';
+    adminPasswordInput.setAttribute('type', isCurrentlyPassword ? 'text' : 'password');
+    const showSvg = btnToggleLoginPwd.querySelector('.eye-icon-show');
+    const hideSvg = btnToggleLoginPwd.querySelector('.eye-icon-hide');
+    if (showSvg && hideSvg) {
+      showSvg.style.display = isCurrentlyPassword ? 'none' : 'block';
+      hideSvg.style.display = isCurrentlyPassword ? 'block' : 'none';
+    }
+  });
+}
+
 if (adminPasswordInput && loginErrorAlert) {
   adminPasswordInput.addEventListener('input', () => {
     loginErrorAlert.style.display = 'none';
@@ -2947,8 +3138,12 @@ if (adminLoginForm) {
     setButtonSubmitting(adminLoginBtn, true, 'Memverifikasi...');
     
     try {
-      // Compare password
-      if (password === 'admin123') {
+      // Dynamic password check against SchoolDB or localStorage with fallback
+      const expectedPassword = (window.SchoolDB && typeof window.SchoolDB.getAdminPassword === 'function')
+        ? window.SchoolDB.getAdminPassword()
+        : (localStorage.getItem('sdn2_admin_custom_password') || 'admin123');
+
+      if (password === expectedPassword) {
         loginAttempts = 0;
         localStorage.removeItem('sdn2_admin_lockout_until');
         if (loginErrorAlert) loginErrorAlert.style.display = 'none';
@@ -3342,6 +3537,137 @@ function initCategoryManagementUI() {
       if (e.key === 'Enter') {
         e.preventDefault();
         handleSaveCategory();
+      }
+    });
+  }
+}
+
+// ----------------------------------------------------
+// CHANGE ADMIN PASSWORD CONTROLLER
+// ----------------------------------------------------
+function initChangePasswordUI() {
+  const modalOverlay = document.getElementById('password-modal-overlay');
+  const openHeaderBtn = document.getElementById('btn-open-change-password');
+  const openSettingsBtn = document.getElementById('btn-open-change-password-settings');
+  const closeBtn = document.getElementById('password-modal-close');
+  const cancelBtn = document.getElementById('btn-cancel-change-password');
+  const changePwdForm = document.getElementById('form-change-password');
+  const errorAlert = document.getElementById('pwd-change-error-alert');
+  const errorText = document.getElementById('pwd-change-error-text');
+
+  const inputCurrent = document.getElementById('input-current-password');
+  const inputNew = document.getElementById('input-new-password');
+  const inputConfirm = document.getElementById('input-confirm-password');
+
+  function openPasswordModal() {
+    if (!modalOverlay) return;
+    if (changePwdForm) changePwdForm.reset();
+    if (errorAlert) errorAlert.style.display = 'none';
+    if (window.SchoolGuards && typeof window.SchoolGuards.clearAllErrors === 'function') {
+      window.SchoolGuards.clearAllErrors(changePwdForm);
+    }
+    // Reset any revealed passwords back to 'password'
+    modalOverlay.querySelectorAll('input[type="text"]').forEach(inp => {
+      inp.setAttribute('type', 'password');
+    });
+    modalOverlay.querySelectorAll('.btn-toggle-pwd-visibility').forEach(btn => {
+      const showSvg = btn.querySelector('.eye-icon-show');
+      const hideSvg = btn.querySelector('.eye-icon-hide');
+      if (showSvg && hideSvg) {
+        showSvg.style.display = 'block';
+        hideSvg.style.display = 'none';
+      }
+    });
+    modalOverlay.classList.add('open');
+    if (inputCurrent) setTimeout(() => inputCurrent.focus(), 150);
+  }
+
+  function closePasswordModal() {
+    if (!modalOverlay) return;
+    modalOverlay.classList.remove('open');
+    if (changePwdForm) changePwdForm.reset();
+    if (errorAlert) errorAlert.style.display = 'none';
+  }
+
+  if (openHeaderBtn) openHeaderBtn.addEventListener('click', openPasswordModal);
+  if (openSettingsBtn) openSettingsBtn.addEventListener('click', openPasswordModal);
+  if (closeBtn) closeBtn.addEventListener('click', closePasswordModal);
+  if (cancelBtn) cancelBtn.addEventListener('click', closePasswordModal);
+
+  if (modalOverlay) {
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) closePasswordModal();
+    });
+  }
+
+  // Bind visibility toggles for inputs inside the modal
+  const toggleBtns = modalOverlay ? modalOverlay.querySelectorAll('.btn-toggle-pwd-visibility') : [];
+  toggleBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.getAttribute('data-target');
+      const targetInput = document.getElementById(targetId);
+      if (!targetInput) return;
+      const isPwd = targetInput.getAttribute('type') === 'password';
+      targetInput.setAttribute('type', isPwd ? 'text' : 'password');
+      const showSvg = btn.querySelector('.eye-icon-show');
+      const hideSvg = btn.querySelector('.eye-icon-hide');
+      if (showSvg && hideSvg) {
+        showSvg.style.display = isPwd ? 'none' : 'block';
+        hideSvg.style.display = isPwd ? 'block' : 'none';
+      }
+    });
+  });
+
+  if (changePwdForm) {
+    changePwdForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (errorAlert) errorAlert.style.display = 'none';
+      if (window.SchoolGuards && typeof window.SchoolGuards.clearAllErrors === 'function') {
+        window.SchoolGuards.clearAllErrors(changePwdForm);
+      }
+
+      const currentVal = inputCurrent ? inputCurrent.value : '';
+      const newVal = inputNew ? inputNew.value : '';
+      const confirmVal = inputConfirm ? inputConfirm.value : '';
+
+      if (!currentVal) {
+        highlightAdminError(inputCurrent, 'Kata sandi saat ini wajib diisi.');
+        return;
+      }
+      if (!newVal || newVal.length < 6) {
+        highlightAdminError(inputNew, 'Kata sandi baru minimal harus 6 karakter.');
+        if (errorAlert && errorText) {
+          errorText.textContent = 'Kata sandi baru minimal harus 6 karakter.';
+          errorAlert.style.display = 'block';
+        }
+        return;
+      }
+      if (newVal !== confirmVal) {
+        highlightAdminError(inputConfirm, 'Konfirmasi kata sandi baru tidak cocok.');
+        if (errorAlert && errorText) {
+          errorText.textContent = 'Ulangi kata sandi baru tidak cocok dengan kata sandi baru.';
+          errorAlert.style.display = 'block';
+        }
+        return;
+      }
+
+      const submitBtn = document.getElementById('btn-submit-change-password');
+      if (submitBtn) setButtonSubmitting(submitBtn, true, 'Menyimpan...');
+
+      try {
+        await window.SchoolDB.updateAdminPassword(currentVal, newVal);
+        showAdminToast('Kata sandi administrator berhasil diperbarui.', 'success', 'Kata Sandi Diubah');
+        closePasswordModal();
+      } catch (err) {
+        console.warn('Gagal mengubah kata sandi:', err);
+        if (errorAlert && errorText) {
+          errorText.textContent = err.message || 'Gagal mengubah kata sandi.';
+          errorAlert.style.display = 'block';
+        }
+        highlightAdminError(inputCurrent, err.message || 'Kata sandi tidak sesuai.');
+        showAdminToast(err.message || 'Gagal mengubah kata sandi.', 'error', 'Perubahan Gagal');
+      } finally {
+        if (submitBtn) setButtonSubmitting(submitBtn, false);
       }
     });
   }

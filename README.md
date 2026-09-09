@@ -122,6 +122,16 @@ Kirimkan pembaruan langsung ke edge CDN Cloudflare:
 npm run deploy
 ```
 
+### 4. Auto-Push Git (Otomatis Tes & Sinkronisasi GitHub)
+Jalankan pengujian otomatis, staging, auto-commit, dan push langsung ke GitHub:
+```bash
+npm run push
+# Atau sertakan pesan commit kustom:
+npm run push "pesan pembaruan"
+# Atau jalankan file executable langsung:
+./autopush.sh
+```
+
 ---
 
 ## ✨ Fitur Unggulan Sistem

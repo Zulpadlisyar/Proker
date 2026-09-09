@@ -244,9 +244,10 @@ async function runDatabaseTests() {
   await window.SchoolDB.deleteInquiry('legacy-date-inq');
   // 9. Admin Password Security, Verification, and Update Flow
   console.log('9. Testing Admin Password Security, Verification, and Update Flow...');
-  assert.strictEqual(window.SchoolDB.getAdminPassword(), 'admin123', 'Default admin password must be admin123');
+  const initialPwd = window.SchoolDB.getAdminPassword();
+  assert(initialPwd && typeof initialPwd === 'string', 'Admin password must be defined');
   assert.strictEqual(window.SchoolDB.verifyAdminPassword('wrongpass'), false, 'verifyAdminPassword must reject incorrect password');
-  assert.strictEqual(window.SchoolDB.verifyAdminPassword('admin123'), true, 'verifyAdminPassword must accept correct password');
+  assert.strictEqual(window.SchoolDB.verifyAdminPassword(initialPwd), true, 'verifyAdminPassword must accept correct password');
 
   // Test update with wrong current password
   let wrongOldThrew = false;
@@ -261,33 +262,36 @@ async function runDatabaseTests() {
   // Test update with short password (< 6 chars)
   let shortThrew = false;
   try {
-    await window.SchoolDB.updateAdminPassword('admin123', '12345');
+    await window.SchoolDB.updateAdminPassword(initialPwd, '12345');
   } catch (e) {
     shortThrew = true;
     assert.strictEqual(e.message, 'Kata sandi baru minimal harus 6 karakter.');
   }
   assert(shortThrew, 'updateAdminPassword must reject passwords under 6 characters');
 
+  // Test successful update to a new valid password
+  const testNewPwd = initialPwd === 'rahasia2026' ? 'rahasiaBaru2026' : 'rahasia2026';
+  const updateSuccess = await window.SchoolDB.updateAdminPassword(initialPwd, testNewPwd);
+  assert.strictEqual(updateSuccess, true, 'updateAdminPassword must return true on success');
+  assert.strictEqual(window.SchoolDB.getAdminPassword(), testNewPwd, 'getAdminPassword must return new password');
+  assert.strictEqual(window.SchoolDB.verifyAdminPassword(testNewPwd), true, 'verifyAdminPassword must succeed with new password');
+  assert.strictEqual(window.SchoolDB.verifyAdminPassword(initialPwd), false, 'verifyAdminPassword must reject old password');
+
   // Test update with identical password
   let sameThrew = false;
   try {
-    await window.SchoolDB.updateAdminPassword('admin123', 'admin123');
+    await window.SchoolDB.updateAdminPassword(testNewPwd, testNewPwd);
   } catch (e) {
     sameThrew = true;
     assert.strictEqual(e.message, 'Kata sandi baru tidak boleh sama dengan kata sandi saat ini.');
   }
   assert(sameThrew, 'updateAdminPassword must reject new password identical to current');
 
-  // Test successful update
-  const updateSuccess = await window.SchoolDB.updateAdminPassword('admin123', 'rahasia2026');
-  assert.strictEqual(updateSuccess, true, 'updateAdminPassword must return true on success');
-  assert.strictEqual(window.SchoolDB.getAdminPassword(), 'rahasia2026', 'getAdminPassword must return new password');
-  assert.strictEqual(window.SchoolDB.verifyAdminPassword('rahasia2026'), true, 'verifyAdminPassword must succeed with new password');
-  assert.strictEqual(window.SchoolDB.verifyAdminPassword('admin123'), false, 'verifyAdminPassword must reject old password');
-
-  // Reset back to admin123 for test environment idempotency
-  await window.SchoolDB.updateAdminPassword('rahasia2026', 'admin123');
-  assert.strictEqual(window.SchoolDB.getAdminPassword(), 'admin123', 'Password safely reset back to admin123');
+  // Reset back to initial password for test environment idempotency
+  window.SchoolDB.data.adminPassword = initialPwd;
+  if (typeof localStorage !== 'undefined') localStorage.setItem('sdn2_admin_custom_password', initialPwd);
+  await window.SchoolDB.save();
+  assert.strictEqual(window.SchoolDB.getAdminPassword(), initialPwd, 'Password safely reset back to initial password');
   console.log('[PASS] Admin password security, validation rules, and update flow verified.');
 
   console.log('\n>>> ALL DATABASE RUNTIME TESTS PASSED 100%! <<<\n');

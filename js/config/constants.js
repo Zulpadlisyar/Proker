@@ -25,11 +25,13 @@
     BACKUP_LOCAL: 'sdn2_db_data_backup',
     SESSION: 'sdn2_admin_session',
     LOCKOUT_UNTIL: 'sdn2_admin_lockout_until',
+    CUSTOM_PASSWORD: 'sdn2_admin_custom_password',
     FIREBASE_CONFIG: 'sdn2_firebase_config',
     LAST_CLOUD_SYNC: 'sdn2_last_cloud_sync'
   };
 
   const INITIAL_DATA = {
+    adminPassword: 'admin123',
     profile: {
       name: 'SDN Ngeposari 2',
       tagline: 'Unggul, Berkarakter, dan Berbudaya Lingkungan',

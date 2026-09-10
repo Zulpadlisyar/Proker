@@ -1935,5 +1935,20 @@ window.SchoolDB = {
     await this.save();
     await this.logAudit('UBAH', 'Keamanan', 'Memperbarui kata sandi administrator CMS');
     return true;
+  },
+
+  async resetAdminPassword(targetPassword = 'admin123') {
+    if (!this.data) this.data = {};
+    const cleanPwd = (targetPassword && typeof targetPassword === 'string') ? targetPassword.trim() : 'admin123';
+    this.data.adminPassword = cleanPwd;
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('sdn2_admin_custom_password');
+        localStorage.removeItem('sdn2_admin_lockout_until');
+      }
+    } catch (e) {}
+    await this.save();
+    await this.logAudit('RESET', 'Keamanan', `Mereset kata sandi administrator CMS ke bawaan (${cleanPwd})`);
+    return true;
   }
 };

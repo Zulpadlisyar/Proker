@@ -3671,12 +3671,76 @@ function initChangePasswordUI() {
       }
     });
   }
+
+  const resetBtnModal = document.getElementById('btn-reset-modal-to-default');
+  if (resetBtnModal) {
+    resetBtnModal.addEventListener('click', () => handleResetAdminPassword());
+  }
+
+  const resetBtnSettings = document.getElementById('btn-reset-password-settings');
+  if (resetBtnSettings) {
+    resetBtnSettings.addEventListener('click', () => handleResetAdminPassword());
+  }
 }
+
+// Global handler to reset admin password to official default (admin123)
+async function handleResetAdminPassword() {
+  const proceed = await showConfirmModal({
+    title: 'Reset Kata Sandi ke Bawaan?',
+    message: 'Kata sandi administrator CMS akan dikembalikan ke nilai bawaan resmi: admin123. Apakah Anda yakin ingin melanjutkan?',
+    confirmText: 'Ya, Reset ke admin123',
+    cancelText: 'Batal',
+    type: 'warning',
+    icon: 'warning'
+  });
+
+  if (!proceed) return;
+
+  try {
+    if (window.SchoolDB && typeof window.SchoolDB.resetAdminPassword === 'function') {
+      await window.SchoolDB.resetAdminPassword('admin123');
+    } else {
+      try {
+        localStorage.removeItem('sdn2_admin_custom_password');
+      } catch (e) {}
+    }
+
+    try {
+      localStorage.removeItem('sdn2_admin_lockout_until');
+    } catch (e) {}
+    loginAttempts = 0;
+
+    const lockoutAlert = document.getElementById('login-lockout-alert');
+    if (lockoutAlert) lockoutAlert.style.display = 'none';
+    const loginErrorAlert = document.getElementById('login-error-alert');
+    if (loginErrorAlert) loginErrorAlert.style.display = 'none';
+
+    const pwdInput = document.getElementById('admin-password');
+    if (pwdInput) {
+      pwdInput.value = 'admin123';
+      pwdInput.focus();
+    }
+
+    const pwdOverlay = document.getElementById('password-modal-overlay');
+    if (pwdOverlay) pwdOverlay.style.display = 'none';
+
+    showAdminToast('Kata sandi administrator berhasil direset ke bawaan: admin123', 'success', 'Reset Berhasil');
+  } catch (err) {
+    console.error('Gagal mereset kata sandi:', err);
+    showAdminToast('Gagal mereset kata sandi: ' + (err.message || 'Terjadi kesalahan'), 'error', 'Reset Gagal');
+  }
+}
+window.handleResetAdminPassword = handleResetAdminPassword;
 
 // Check initial auth and lockout state on boot, and bind form validation
 window.addEventListener('DOMContentLoaded', () => {
   checkLoginRateLimit();
   checkAuth();
+
+  const resetLoginBtn = document.getElementById('btn-reset-login-password');
+  if (resetLoginBtn) {
+    resetLoginBtn.addEventListener('click', () => handleResetAdminPassword());
+  }
 
   // Automatically attach error highlighting validation to all admin forms
   document.querySelectorAll('form').forEach(f => {

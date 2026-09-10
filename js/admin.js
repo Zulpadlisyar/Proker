@@ -492,6 +492,8 @@ async function initAdminPanel() {
     ['Cloud Sync UI', initCloudSyncUI],
     ['Category Management UI', initCategoryManagementUI],
     ['Change Password UI', initChangePasswordUI],
+    ['Security Contacts UI', initSecurityContactsUI],
+    ['Password Broadcast Alert UI', initPasswordBroadcastAlertUI],
     ['Search & Pagination', initSearchAndPagination]
   ];
 
@@ -554,7 +556,10 @@ function switchAdminTab(targetId, updateHistory = true) {
     else if (targetId === 'pane-facilities') renderFacilitiesTable();
     else if (targetId === 'pane-activities') renderActivitiesTable();
     else if (targetId === 'pane-gallery') renderGalleryTable();
-    else if (targetId === 'pane-settings') updateBaselineStatusUI();
+    else if (targetId === 'pane-settings') {
+      updateBaselineStatusUI();
+      if (typeof renderSecurityContactsUI === 'function') renderSecurityContactsUI();
+    }
   } catch (err) {
     console.error(`Gagal memuat pane ${targetId}:`, err);
   }
@@ -575,6 +580,7 @@ window.addEventListener('hashchange', () => {
 window.addEventListener('schooldb-synced', () => {
   if (typeof updateInboxBadge === 'function') updateInboxBadge();
   if (typeof renderDashboard === 'function') renderDashboard();
+  if (typeof renderSecurityContactsUI === 'function') renderSecurityContactsUI();
   const activePane = document.querySelector('.admin-tab-pane.active');
   if (activePane && activePane.id === 'pane-inbox') {
     if (typeof renderInboxList === 'function') renderInboxList();
@@ -3654,10 +3660,14 @@ function initChangePasswordUI() {
       const submitBtn = document.getElementById('btn-submit-change-password');
       if (submitBtn) setButtonSubmitting(submitBtn, true, 'Menyimpan...');
 
+      const actorSelect = document.getElementById('select-change-pwd-actor');
+      const changedBy = actorSelect ? actorSelect.value : 'Pihak Pengembang (Zulpadli)';
+
       try {
-        await window.SchoolDB.updateAdminPassword(currentVal, newVal);
-        showAdminToast('Kata sandi administrator berhasil diperbarui.', 'success', 'Kata Sandi Diubah');
+        await window.SchoolDB.updateAdminPassword(currentVal, newVal, changedBy);
+        showAdminToast('Kata sandi administrator berhasil diperbarui & otomatis dikirimkan ke kedua belah pihak.', 'success', 'Kata Sandi Diubah');
         closePasswordModal();
+        if (typeof renderSecurityContactsUI === 'function') renderSecurityContactsUI();
       } catch (err) {
         console.warn('Gagal mengubah kata sandi:', err);
         if (errorAlert && errorText) {
@@ -3687,7 +3697,7 @@ function initChangePasswordUI() {
 async function handleResetAdminPassword() {
   const proceed = await showConfirmModal({
     title: 'Reset Kata Sandi ke Bawaan?',
-    message: 'Kata sandi administrator CMS akan dikembalikan ke nilai bawaan resmi: admin123. Apakah Anda yakin ingin melanjutkan?',
+    message: 'Kata sandi administrator CMS akan dikembalikan ke nilai bawaan resmi: admin123. Pemberitahuan otomatis akan dikirimkan ke kedua belah pihak. Apakah Anda yakin ingin melanjutkan?',
     confirmText: 'Ya, Reset ke admin123',
     cancelText: 'Batal',
     type: 'warning',
@@ -3696,9 +3706,12 @@ async function handleResetAdminPassword() {
 
   if (!proceed) return;
 
+  const actorSelect = document.getElementById('select-change-pwd-actor');
+  const changedBy = actorSelect ? actorSelect.value : 'Pihak Pengembang (Zulpadli)';
+
   try {
     if (window.SchoolDB && typeof window.SchoolDB.resetAdminPassword === 'function') {
-      await window.SchoolDB.resetAdminPassword('admin123');
+      await window.SchoolDB.resetAdminPassword('admin123', changedBy);
     } else {
       try {
         localStorage.removeItem('sdn2_admin_custom_password');
@@ -3724,13 +3737,204 @@ async function handleResetAdminPassword() {
     const pwdOverlay = document.getElementById('password-modal-overlay');
     if (pwdOverlay) pwdOverlay.style.display = 'none';
 
-    showAdminToast('Kata sandi administrator berhasil direset ke bawaan: admin123', 'success', 'Reset Berhasil');
+    if (typeof renderSecurityContactsUI === 'function') renderSecurityContactsUI();
+    showAdminToast('Kata sandi administrator berhasil direset ke admin123 & dikirim ke kedua belah pihak.', 'success', 'Reset Berhasil');
   } catch (err) {
     console.error('Gagal mereset kata sandi:', err);
     showAdminToast('Gagal mereset kata sandi: ' + (err.message || 'Terjadi kesalahan'), 'error', 'Reset Gagal');
   }
 }
 window.handleResetAdminPassword = handleResetAdminPassword;
+
+// ----------------------------------------------------
+// DUAL-PARTY SECURITY CONTACTS & NOTIFICATIONS CONTROLLER
+// ----------------------------------------------------
+function renderSecurityContactsUI() {
+  if (!window.SchoolDB || typeof window.SchoolDB.getSecurityContacts !== 'function') return;
+  const contacts = window.SchoolDB.getSecurityContacts();
+  const p1 = contacts.party1 || {};
+  const p2 = contacts.party2 || {};
+
+  const p1Name = document.getElementById('input-security-p1-name');
+  const p1Email = document.getElementById('input-security-p1-email');
+  const p2Name = document.getElementById('input-security-p2-name');
+  const p2Email = document.getElementById('input-security-p2-email');
+  const autoToggle = document.getElementById('toggle-security-autonotify');
+
+  if (p1Name && !p1Name.matches(':focus')) p1Name.value = p1.name || 'Pihak Sekolah (SDN 2 Ngeposari)';
+  if (p1Email && !p1Email.matches(':focus')) p1Email.value = p1.email || 'sdn2ngeposari@gmail.com';
+  if (p2Name && !p2Name.matches(':focus')) p2Name.value = p2.name || 'Pihak Pengembang (Zulpadli)';
+  if (p2Email && !p2Email.matches(':focus')) p2Email.value = p2.email || 'zulpadlisyarifhrp@gmail.com';
+  if (autoToggle) autoToggle.checked = contacts.autoNotify !== false;
+
+  const statusText = document.getElementById('security-broadcast-status-text');
+  const statusTime = document.getElementById('security-broadcast-status-time');
+  const lastBc = (typeof window.SchoolDB.getLastPasswordBroadcast === 'function') 
+    ? window.SchoolDB.getLastPasswordBroadcast() 
+    : null;
+
+  if (statusText && statusTime) {
+    if (lastBc && lastBc.timestamp) {
+      const d = new Date(lastBc.timestamp);
+      const timeStr = isNaN(d.getTime()) ? lastBc.timestamp : d.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+      statusText.innerHTML = `Pemberitahuan Terakhir: <strong>${escapeHTML(lastBc.actionType || 'UBAH')}</strong> oleh <strong>${escapeHTML(lastBc.changedBy || 'Administrator')}</strong> (Status: <span style="color: #059669; font-weight: 600;">${escapeHTML(lastBc.deliveryStatus || 'TERKIRIM')}</span>)`;
+      statusTime.textContent = timeStr;
+    } else {
+      statusText.textContent = 'Status: Sistem notifikasi aktif. Kata sandi baru akan otomatis dikirim ke kedua email terdaftar.';
+      statusTime.textContent = 'Siap';
+    }
+  }
+}
+
+function initSecurityContactsUI() {
+  renderSecurityContactsUI();
+
+  const saveBtn = document.getElementById('btn-save-security-contacts');
+  if (saveBtn) {
+    saveBtn.addEventListener('click', async () => {
+      const p1Name = (document.getElementById('input-security-p1-name')?.value || '').trim();
+      const p1Email = (document.getElementById('input-security-p1-email')?.value || '').trim();
+      const p2Name = (document.getElementById('input-security-p2-name')?.value || '').trim();
+      const p2Email = (document.getElementById('input-security-p2-email')?.value || '').trim();
+      const autoNotify = !!document.getElementById('toggle-security-autonotify')?.checked;
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!p1Email || !emailRegex.test(p1Email)) {
+        highlightAdminError('#input-security-p1-email', 'Format email Pihak Sekolah tidak valid.');
+        showAdminToast('Format email Pihak Sekolah tidak valid.', 'error', 'Validasi Kontak');
+        return;
+      }
+      if (!p2Email || !emailRegex.test(p2Email)) {
+        highlightAdminError('#input-security-p2-email', 'Format email Pihak Pengembang tidak valid.');
+        showAdminToast('Format email Pihak Pengembang tidak valid.', 'error', 'Validasi Kontak');
+        return;
+      }
+
+      setButtonSubmitting(saveBtn, true, 'Menyimpan...');
+      try {
+        await window.SchoolDB.updateSecurityContacts({
+          party1: { name: p1Name, email: p1Email, role: 'Administrator Sekolah', enabled: true },
+          party2: { name: p2Name, email: p2Email, role: 'Pengembang Web / Webmaster', enabled: true },
+          autoNotify
+        });
+        showAdminToast('Konfigurasi kontak notifikasi kedua belah pihak berhasil disimpan.', 'success', 'Kontak Disimpan');
+        renderSecurityContactsUI();
+      } catch (err) {
+        showAdminToast(err.message || 'Gagal menyimpan kontak.', 'error', 'Penyimpanan Gagal');
+      } finally {
+        setButtonSubmitting(saveBtn, false);
+      }
+    });
+  }
+
+  const testBtn = document.getElementById('btn-test-security-notification');
+  if (testBtn) {
+    testBtn.addEventListener('click', async () => {
+      setButtonSubmitting(testBtn, true, 'Mengirim Uji Coba...');
+      try {
+        const pwd = (window.SchoolDB && typeof window.SchoolDB.getAdminPassword === 'function') 
+          ? window.SchoolDB.getAdminPassword() 
+          : 'admin123';
+        await window.SchoolDB.dispatchPasswordNotification(pwd, 'UJI_COBA', 'Uji Coba Pengaturan');
+        showAdminToast('Uji coba notifikasi berhasil diproses ke kedua alamat email!', 'success', 'Uji Coba Terkirim');
+        renderSecurityContactsUI();
+      } catch (err) {
+        showAdminToast('Gagal mengirim uji coba: ' + err.message, 'error', 'Uji Coba Gagal');
+      } finally {
+        setButtonSubmitting(testBtn, false);
+      }
+    });
+  }
+}
+
+// ----------------------------------------------------
+// REAL-TIME IN-APP PASSWORD BROADCAST ALERT CONTROLLER
+// ----------------------------------------------------
+function initPasswordBroadcastAlertUI() {
+  const alertModal = document.getElementById('password-broadcast-alert-overlay');
+  if (!alertModal) return;
+
+  const actorHeader = document.getElementById('pwd-bc-actor-header');
+  const timeHeader = document.getElementById('pwd-bc-time-header');
+  const newPwdVal = document.getElementById('pwd-bc-new-value');
+  const copyBtn = document.getElementById('pwd-bc-copy-btn');
+  const ackBtn = document.getElementById('pwd-bc-ack-btn');
+  const closeBtn = document.getElementById('pwd-bc-close-btn');
+
+  let currentBroadcast = null;
+
+  function showBroadcastModal(bc) {
+    if (!bc || !bc.newPassword) return;
+    const lastAck = (typeof localStorage !== 'undefined') ? localStorage.getItem('sdn2_ack_pwd_broadcast') : null;
+    if (lastAck && lastAck === bc.id) return; // Already acknowledged
+
+    currentBroadcast = bc;
+    if (actorHeader) {
+      actorHeader.textContent = bc.actionType === 'RESET' 
+        ? `Kata Sandi Direset oleh ${bc.changedBy || 'Administrator'}` 
+        : `Kata Sandi Diperbarui oleh ${bc.changedBy || 'Administrator'}`;
+    }
+    if (timeHeader && bc.timestamp) {
+      const d = new Date(bc.timestamp);
+      timeHeader.textContent = `Waktu: ${isNaN(d.getTime()) ? bc.timestamp : d.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}`;
+    }
+    if (newPwdVal) {
+      newPwdVal.textContent = bc.newPassword;
+    }
+
+    alertModal.classList.add('open');
+    alertModal.style.display = 'flex';
+  }
+
+  function dismissBroadcastModal() {
+    if (currentBroadcast && currentBroadcast.id) {
+      try {
+        localStorage.setItem('sdn2_ack_pwd_broadcast', currentBroadcast.id);
+      } catch (e) {}
+    }
+    alertModal.classList.remove('open');
+    alertModal.style.display = 'none';
+  }
+
+  if (ackBtn) ackBtn.addEventListener('click', dismissBroadcastModal);
+  if (closeBtn) closeBtn.addEventListener('click', dismissBroadcastModal);
+
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async () => {
+      const pwd = newPwdVal ? newPwdVal.textContent : '';
+      if (pwd && navigator.clipboard) {
+        try {
+          await navigator.clipboard.writeText(pwd);
+          const originalText = copyBtn.innerHTML;
+          copyBtn.innerHTML = '<span>Tersalin!</span>';
+          setTimeout(() => { copyBtn.innerHTML = originalText; }, 2000);
+          showAdminToast('Kata sandi berhasil disalin ke papan klip.', 'info', 'Papan Klip');
+        } catch (e) {
+          showAdminToast('Gagal menyalin kata sandi: ' + e.message, 'error');
+        }
+      }
+    });
+  }
+
+  // Listen to real-time events dispatched when cloud update arrives
+  window.addEventListener('password-broadcast-received', (e) => {
+    if (e.detail) showBroadcastModal(e.detail);
+  });
+
+  // On boot, check if there is an unacknowledged broadcast within last 24 hours
+  if (window.SchoolDB && typeof window.SchoolDB.getLastPasswordBroadcast === 'function') {
+    const initialBc = window.SchoolDB.getLastPasswordBroadcast();
+    if (initialBc && initialBc.id) {
+      const lastAck = (typeof localStorage !== 'undefined') ? localStorage.getItem('sdn2_ack_pwd_broadcast') : null;
+      if (lastAck !== initialBc.id) {
+        const bcAge = Date.now() - new Date(initialBc.timestamp).getTime();
+        if (!isNaN(bcAge) && bcAge < 24 * 60 * 60 * 1000) {
+          showBroadcastModal(initialBc);
+        }
+      }
+    }
+  }
+}
 
 // Check initial auth and lockout state on boot, and bind form validation
 window.addEventListener('DOMContentLoaded', () => {

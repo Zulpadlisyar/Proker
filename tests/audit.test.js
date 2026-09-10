@@ -306,6 +306,26 @@ test('3.18: Modern Confirmation Dialog - admin.html has custom-confirm-overlay a
   assert(css.includes('.custom-confirm-card'), 'styles.css missing .custom-confirm-card styling');
 });
 
+test('3.19: Dual-Party Password Notification & Security Contacts System in admin.html & js/admin.js', () => {
+  const adminHtml = fs.readFileSync('admin.html', 'utf8');
+  const adminJs = fs.readFileSync('js/admin.js', 'utf8');
+  
+  // Verify configuration cards & form elements
+  assert(adminHtml.includes('id="input-security-p1-email"'), 'admin.html missing input-security-p1-email');
+  assert(adminHtml.includes('id="input-security-p2-email"'), 'admin.html missing input-security-p2-email');
+  assert(adminHtml.includes('id="toggle-security-autonotify"'), 'admin.html missing toggle-security-autonotify');
+  assert(adminHtml.includes('id="btn-save-security-contacts"'), 'admin.html missing btn-save-security-contacts');
+  assert(adminHtml.includes('id="btn-test-security-notification"'), 'admin.html missing btn-test-security-notification');
+  assert(adminHtml.includes('id="select-change-pwd-actor"'), 'admin.html missing select-change-pwd-actor');
+  assert(adminHtml.includes('id="password-broadcast-alert-overlay"'), 'admin.html missing password-broadcast-alert-overlay');
+
+  // Verify JS controllers
+  assert(adminJs.includes('function renderSecurityContactsUI('), 'admin.js missing renderSecurityContactsUI');
+  assert(adminJs.includes('function initSecurityContactsUI('), 'admin.js missing initSecurityContactsUI');
+  assert(adminJs.includes('function initPasswordBroadcastAlertUI('), 'admin.js missing initPasswordBroadcastAlertUI');
+  assert(adminJs.includes('password-broadcast-received'), 'admin.js missing password-broadcast-received listener');
+});
+
 console.log('\n----------------------------------------------------');
 console.log(`TOTAL TESTS: ${passCount + failCount}`);
 console.log(`PASSED: ${passCount}`);

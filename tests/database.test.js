@@ -294,6 +294,55 @@ async function runDatabaseTests() {
   assert.strictEqual(window.SchoolDB.getAdminPassword(), initialPwd, 'Password safely reset back to initial password');
   console.log('[PASS] Admin password security, validation rules, and update flow verified.');
 
+  // 10. Dual-Party Password Notification & Security Contacts System
+  console.log('10. Testing Dual-Party Password Change Notification & Security Contacts...');
+  const contacts = window.SchoolDB.getSecurityContacts();
+  assert(contacts && contacts.party1 && contacts.party2, 'Security contacts must contain both party1 and party2');
+  assert.strictEqual(contacts.party1.email, 'sdn2ngeposari@gmail.com', 'Party 1 default email must be sdn2ngeposari@gmail.com');
+  assert.strictEqual(contacts.party2.email, 'zulpadlisyarifhrp@gmail.com', 'Party 2 default email must be zulpadlisyarifhrp@gmail.com');
+  assert.strictEqual(contacts.autoNotify, true, 'autoNotify must be enabled by default');
+
+  // Test updating contacts with invalid email
+  let invalidEmailThrew = false;
+  try {
+    await window.SchoolDB.updateSecurityContacts({
+      party1: { email: 'not-an-email' }
+    });
+  } catch (err) {
+    invalidEmailThrew = true;
+    assert.strictEqual(err.message, 'Format email Pihak Sekolah tidak valid.');
+  }
+  assert(invalidEmailThrew, 'updateSecurityContacts must reject invalid email format');
+
+  // Test dispatching password notification
+  const dispatchRes = await window.SchoolDB.dispatchPasswordNotification('sandiBaru2026', 'UBAH', 'Pihak Pengembang');
+  assert.strictEqual(dispatchRes.success, true, 'dispatchPasswordNotification must succeed');
+  assert(dispatchRes.payload, 'dispatch result must contain payload');
+  assert.strictEqual(dispatchRes.payload.newPassword, 'sandiBaru2026');
+  assert.strictEqual(dispatchRes.payload.actionType, 'UBAH');
+  assert.strictEqual(dispatchRes.payload.changedBy, 'Pihak Pengembang');
+  assert.strictEqual(dispatchRes.payload.recipients.length, 2, 'Must notify both parties');
+
+  const latestBroadcast = window.SchoolDB.getLastPasswordBroadcast();
+  assert(latestBroadcast, 'getLastPasswordBroadcast must return the active broadcast');
+  assert.strictEqual(latestBroadcast.newPassword, 'sandiBaru2026');
+
+  // Test updateAdminPassword automatically dispatches notification
+  await window.SchoolDB.updateAdminPassword('admin123', 'sandiOtomatis2026', 'Pihak Sekolah');
+  const updateBc = window.SchoolDB.getLastPasswordBroadcast();
+  assert.strictEqual(updateBc.newPassword, 'sandiOtomatis2026');
+  assert.strictEqual(updateBc.actionType, 'UBAH');
+  assert.strictEqual(updateBc.changedBy, 'Pihak Sekolah');
+
+  // Test resetAdminPassword automatically dispatches reset notification
+  await window.SchoolDB.resetAdminPassword('admin123', 'Pihak Pengembang');
+  const resetBc = window.SchoolDB.getLastPasswordBroadcast();
+  assert.strictEqual(resetBc.newPassword, 'admin123');
+  assert.strictEqual(resetBc.actionType, 'RESET');
+  assert.strictEqual(resetBc.changedBy, 'Pihak Pengembang');
+  assert.strictEqual(window.SchoolDB.getAdminPassword(), 'admin123');
+  console.log('[PASS] Dual-party password change notification and security contacts verified 100%.');
+
   console.log('\n>>> ALL DATABASE RUNTIME TESTS PASSED 100%! <<<\n');
 }
 

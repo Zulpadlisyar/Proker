@@ -27,11 +27,30 @@
     LOCKOUT_UNTIL: 'sdn2_admin_lockout_until',
     CUSTOM_PASSWORD: 'sdn2_admin_custom_password',
     FIREBASE_CONFIG: 'sdn2_firebase_config',
-    LAST_CLOUD_SYNC: 'sdn2_last_cloud_sync'
+    LAST_CLOUD_SYNC: 'sdn2_last_cloud_sync',
+    SECURITY_CONTACTS: 'sdn2_security_contacts',
+    LAST_PWD_BROADCAST: 'sdn2_last_pwd_broadcast',
+    ACKNOWLEDGED_PWD_BROADCAST: 'sdn2_ack_pwd_broadcast'
   };
 
   const INITIAL_DATA = {
     adminPassword: 'admin123',
+    securityContacts: {
+      party1: {
+        name: 'Pihak Sekolah (SDN 2 Ngeposari)',
+        email: 'sdn2ngeposari@gmail.com',
+        role: 'Administrator Sekolah',
+        enabled: true
+      },
+      party2: {
+        name: 'Pihak Pengembang (Zulpadli)',
+        email: 'zulpadlisyarifhrp@gmail.com',
+        role: 'Pengembang Web / Webmaster',
+        enabled: true
+      },
+      autoNotify: true
+    },
+    lastPasswordBroadcast: null,
     profile: {
       name: 'SDN Ngeposari 2',
       tagline: 'Unggul, Berkarakter, dan Berbudaya Lingkungan',

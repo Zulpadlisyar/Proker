@@ -406,6 +406,8 @@ window.CloudSyncManager = {
         inquiries: data.inquiries || [],
         contact: data.contact || {},
         adminPassword: data.adminPassword || (typeof localStorage !== 'undefined' ? localStorage.getItem('sdn2_admin_custom_password') : null) || 'admin123',
+        securityContacts: data.securityContacts || null,
+        lastPasswordBroadcast: data.lastPasswordBroadcast || null,
         updatedAt: new Date().toISOString(),
         syncedBy: 'Admin Web CMS'
       };
@@ -854,6 +856,17 @@ window.SchoolDB = {
           });
         }
         
+        if (!this.data.securityContacts) {
+          const defaultContacts = (typeof SchoolConstants !== 'undefined' && SchoolConstants.INITIAL_DATA && SchoolConstants.INITIAL_DATA.securityContacts)
+            ? JSON.parse(JSON.stringify(SchoolConstants.INITIAL_DATA.securityContacts))
+            : {
+                party1: { name: 'Pihak Sekolah (SDN 2 Ngeposari)', email: 'sdn2ngeposari@gmail.com', role: 'Administrator Sekolah', enabled: true },
+                party2: { name: 'Pihak Pengembang (Zulpadli)', email: 'zulpadlisyarifhrp@gmail.com', role: 'Pengembang Web / Webmaster', enabled: true },
+                autoNotify: true
+              };
+          this.data.securityContacts = defaultContacts;
+        }
+
         await this.save();
       }
 
@@ -993,6 +1006,30 @@ window.SchoolDB = {
       } catch (e) {}
       changed = true;
     }
+    if (cloudData.securityContacts && typeof cloudData.securityContacts === 'object') {
+      this.data.securityContacts = { ...(this.data.securityContacts || {}), ...cloudData.securityContacts };
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('sdn2_security_contacts', JSON.stringify(this.data.securityContacts));
+        }
+      } catch (e) {}
+      changed = true;
+    }
+    if (cloudData.lastPasswordBroadcast && typeof cloudData.lastPasswordBroadcast === 'object') {
+      const prevBc = this.data.lastPasswordBroadcast;
+      this.data.lastPasswordBroadcast = cloudData.lastPasswordBroadcast;
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('sdn2_last_pwd_broadcast', JSON.stringify(cloudData.lastPasswordBroadcast));
+        }
+      } catch (e) {}
+      if (!prevBc || prevBc.timestamp !== cloudData.lastPasswordBroadcast.timestamp) {
+        if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+          window.dispatchEvent(new CustomEvent('password-broadcast-received', { detail: cloudData.lastPasswordBroadcast }));
+        }
+      }
+      changed = true;
+    }
 
     if (changed) {
       await idbStore.set('siteData', this.data);
@@ -1030,7 +1067,8 @@ window.SchoolDB = {
         schoolHabits: this.data.schoolHabits,
         comfortStandards: this.data.comfortStandards,
         inquiries: this.data.inquiries,
-        contact: this.data.contact
+        contact: this.data.contact,
+        securityContacts: this.data.securityContacts || null
       }
     };
     return JSON.stringify(backupObj, null, 2);
@@ -1062,6 +1100,7 @@ window.SchoolDB = {
     if (Array.isArray(payload.comfortStandards)) this.data.comfortStandards = payload.comfortStandards;
     if (Array.isArray(payload.inquiries)) this.data.inquiries = payload.inquiries;
     if (payload.contact) this.data.contact = { ...this.data.contact, ...payload.contact };
+    if (payload.securityContacts) this.data.securityContacts = payload.securityContacts;
 
     await this.save();
     await this.logAudit('PULIHKAN', 'Sistem', 'Memulihkan data dari berkas cadangan JSON');
@@ -1912,7 +1951,169 @@ window.SchoolDB = {
     return inputPwd.trim() === this.getAdminPassword().trim();
   },
 
-  async updateAdminPassword(currentPassword, newPassword) {
+  getSecurityContacts() {
+    if (this.data && this.data.securityContacts) {
+      return this.data.securityContacts;
+    }
+    try {
+      const stored = (typeof localStorage !== 'undefined') ? localStorage.getItem('sdn2_security_contacts') : null;
+      if (stored) return JSON.parse(stored);
+    } catch (e) {}
+    return (typeof SchoolConstants !== 'undefined' && SchoolConstants.INITIAL_DATA && SchoolConstants.INITIAL_DATA.securityContacts)
+      ? JSON.parse(JSON.stringify(SchoolConstants.INITIAL_DATA.securityContacts))
+      : {
+          party1: { name: 'Pihak Sekolah (SDN 2 Ngeposari)', email: 'sdn2ngeposari@gmail.com', role: 'Administrator Sekolah', enabled: true },
+          party2: { name: 'Pihak Pengembang (Zulpadli)', email: 'zulpadlisyarifhrp@gmail.com', role: 'Pengembang Web / Webmaster', enabled: true },
+          autoNotify: true
+        };
+  },
+
+  async updateSecurityContacts(newContacts) {
+    if (!this.data) this.data = {};
+    if (!newContacts || typeof newContacts !== 'object') {
+      throw new Error('Data kontak keamanan tidak valid.');
+    }
+    const current = this.getSecurityContacts();
+    const p1 = newContacts.party1 || current.party1 || {};
+    const p2 = newContacts.party2 || current.party2 || {};
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (p1.email && !emailRegex.test(String(p1.email).trim())) {
+      throw new Error('Format email Pihak Sekolah tidak valid.');
+    }
+    if (p2.email && !emailRegex.test(String(p2.email).trim())) {
+      throw new Error('Format email Pihak Pengembang tidak valid.');
+    }
+
+    this.data.securityContacts = {
+      party1: {
+        name: (p1.name || 'Pihak Sekolah (SDN 2 Ngeposari)').trim(),
+        email: (p1.email || 'sdn2ngeposari@gmail.com').trim().toLowerCase(),
+        role: (p1.role || 'Administrator Sekolah').trim(),
+        enabled: p1.enabled !== false
+      },
+      party2: {
+        name: (p2.name || 'Pihak Pengembang (Zulpadli)').trim(),
+        email: (p2.email || 'zulpadlisyarifhrp@gmail.com').trim().toLowerCase(),
+        role: (p2.role || 'Pengembang Web / Webmaster').trim(),
+        enabled: p2.enabled !== false
+      },
+      autoNotify: newContacts.autoNotify !== false
+    };
+
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('sdn2_security_contacts', JSON.stringify(this.data.securityContacts));
+      }
+    } catch (e) {}
+
+    await this.save();
+    await this.logAudit('UBAH', 'Keamanan', 'Memperbarui konfigurasi kontak penerima notifikasi kata sandi');
+    return this.data.securityContacts;
+  },
+
+  getLastPasswordBroadcast() {
+    if (this.data && this.data.lastPasswordBroadcast) {
+      return this.data.lastPasswordBroadcast;
+    }
+    try {
+      const stored = (typeof localStorage !== 'undefined') ? localStorage.getItem('sdn2_last_pwd_broadcast') : null;
+      if (stored) return JSON.parse(stored);
+    } catch (e) {}
+    return null;
+  },
+
+  async dispatchPasswordNotification(newPassword, actionType = 'UBAH', changedBy = 'Administrator') {
+    const cleanPwd = String(newPassword).trim();
+    const contacts = this.getSecurityContacts();
+    const p1 = contacts.party1 || { name: 'Pihak Sekolah', email: 'sdn2ngeposari@gmail.com', enabled: true };
+    const p2 = contacts.party2 || { name: 'Pihak Pengembang', email: 'zulpadlisyarifhrp@gmail.com', enabled: true };
+
+    const recipients = [
+      { name: p1.name, email: p1.email, role: p1.role || 'Pihak Sekolah', enabled: p1.enabled !== false },
+      { name: p2.name, email: p2.email, role: p2.role || 'Pihak Pengembang', enabled: p2.enabled !== false }
+    ];
+
+    const broadcastPayload = {
+      id: 'pwd-bc-' + Date.now(),
+      newPassword: cleanPwd,
+      actionType: actionType === 'RESET' ? 'RESET' : 'UBAH',
+      changedBy: (changedBy || 'Administrator').trim(),
+      timestamp: new Date().toISOString(),
+      recipients: recipients,
+      deliveryStatus: 'MEMPROSES'
+    };
+
+    if (!this.data) this.data = {};
+    this.data.lastPasswordBroadcast = broadcastPayload;
+
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('sdn2_last_pwd_broadcast', JSON.stringify(broadcastPayload));
+      }
+    } catch (e) {}
+
+    // Dispatch automated email if autoNotify is enabled
+    let emailSent = false;
+    if (contacts.autoNotify !== false) {
+      const activeEmails = recipients.filter(r => r.enabled && r.email).map(r => r.email);
+      if (activeEmails.length > 0 && typeof fetch === 'function') {
+        try {
+          const primaryEmail = activeEmails[0];
+          const ccList = activeEmails.slice(1).join(',');
+          const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(primaryEmail)}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+              _subject: `[KEAMANAN CMS] Pemberitahuan Kata Sandi Baru SDN 2 Ngeposari (${actionType})`,
+              _cc: ccList || undefined,
+              _template: 'table',
+              sekolah: 'SD Negeri 2 Ngeposari (NPSN: 20401876)',
+              tipe_pemberitahuan: actionType === 'RESET' ? 'RESET KATA SANDI KE BAWAAN' : 'PEMBARUAN KATA SANDI BARU',
+              kata_sandi_baru: cleanPwd,
+              diperbarui_oleh: broadcastPayload.changedBy,
+              waktu_kejadian: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }),
+              pihak_1: `${p1.name} <${p1.email}>`,
+              pihak_2: `${p2.name} <${p2.email}>`,
+              halaman_login: 'https://sdn2ngeposari.my.id/admin.html',
+              catatan: 'Pemberitahuan otomatis: Sistem CMS SDN 2 Ngeposari menginformasikan kata sandi baru ini kepada kedua belah pihak secara bersamaan demi transparansi dan kontinuitas akses.'
+            })
+          });
+          if (response && response.ok) {
+            emailSent = true;
+          }
+        } catch (netErr) {
+          console.warn('[PasswordNotification] Gagal kirim email otomatis:', netErr.message || netErr);
+        }
+      }
+    }
+
+    broadcastPayload.deliveryStatus = emailSent ? 'TERKIRIM_EMAIL' : 'TERSINKRON_CLOUD';
+    this.data.lastPasswordBroadcast = broadcastPayload;
+
+    await this.save();
+    await this.logAudit(
+      'BROADCAST',
+      'Keamanan',
+      `Kata sandi baru (${actionType}) otomatis dibagikan ke kedua pihak (${p1.email}, ${p2.email}) [${broadcastPayload.deliveryStatus}]`
+    );
+
+    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+      window.dispatchEvent(new CustomEvent('password-broadcast-dispatched', { detail: broadcastPayload }));
+    }
+
+    return {
+      success: true,
+      emailSent,
+      deliveryStatus: broadcastPayload.deliveryStatus,
+      payload: broadcastPayload
+    };
+  },
+
+  async updateAdminPassword(currentPassword, newPassword, changedBy = 'Administrator') {
     if (!this.verifyAdminPassword(currentPassword)) {
       throw new Error('Kata sandi saat ini tidak sesuai.');
     }
@@ -1933,11 +2134,19 @@ window.SchoolDB = {
     } catch (e) {}
 
     await this.save();
-    await this.logAudit('UBAH', 'Keamanan', 'Memperbarui kata sandi administrator CMS');
+    await this.logAudit('UBAH', 'Keamanan', `Memperbarui kata sandi administrator CMS oleh ${changedBy}`);
+
+    // Otomatis kirim pemberitahuan ke kedua belah pihak
+    try {
+      await this.dispatchPasswordNotification(cleanNewPwd, 'UBAH', changedBy);
+    } catch (err) {
+      console.warn('[SchoolDB] Dispatch notifikasi kata sandi baru gagal:', err);
+    }
+
     return true;
   },
 
-  async resetAdminPassword(targetPassword = 'admin123') {
+  async resetAdminPassword(targetPassword = 'admin123', changedBy = 'Administrator') {
     if (!this.data) this.data = {};
     const cleanPwd = (targetPassword && typeof targetPassword === 'string') ? targetPassword.trim() : 'admin123';
     this.data.adminPassword = cleanPwd;
@@ -1948,7 +2157,15 @@ window.SchoolDB = {
       }
     } catch (e) {}
     await this.save();
-    await this.logAudit('RESET', 'Keamanan', `Mereset kata sandi administrator CMS ke bawaan (${cleanPwd})`);
+    await this.logAudit('RESET', 'Keamanan', `Mereset kata sandi administrator CMS ke bawaan (${cleanPwd}) oleh ${changedBy}`);
+
+    // Otomatis kirim pemberitahuan ke kedua belah pihak
+    try {
+      await this.dispatchPasswordNotification(cleanPwd, 'RESET', changedBy);
+    } catch (err) {
+      console.warn('[SchoolDB] Dispatch notifikasi reset gagal:', err);
+    }
+
     return true;
   }
 };

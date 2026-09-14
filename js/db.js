@@ -1951,17 +1951,110 @@ window.SchoolDB = {
     return inputPwd.trim() === this.getAdminPassword().trim();
   },
 
+  getSenderIdentity() {
+    return {
+      name: 'Zulpadli Syarif Harahap',
+      email: 'zulpadlisyarifhrp@gmail.com',
+      role: 'Pengembang Web & Administrator Sistem'
+    };
+  },
+
+  getNotificationEmailText(newPassword, actionType = 'UBAH', changedBy = 'Administrator') {
+    const cleanPwd = String(newPassword || this.getAdminPassword()).trim();
+    const actionLabel = actionType === 'RESET' 
+      ? 'RESET KATA SANDI KE BAWAAN' 
+      : (actionType === 'UJI_COBA' ? 'UJI COBA NOTIFIKASI KEAMANAN' : 'PEMBARUAN KATA SANDI BARU');
+    const sender = this.getSenderIdentity();
+    const contacts = this.getSecurityContacts();
+    const p1 = contacts.party1 || { name: 'Pihak Sekolah (SDN 2 Ngeposari)', email: 'sdn2ngeposari@gmail.com' };
+    const p2 = contacts.party2 || { name: 'Pihak Pengembang (Zulpadli)', email: 'zulpadlisyarifhrp@gmail.com' };
+    const dateStr = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+
+    return `Yth. Pihak Sekolah (SDN 2 Ngeposari) dan Pihak Pengembang,
+
+Berikut adalah pemberitahuan resmi pembaruan kata sandi sistem CMS SD Negeri 2 Ngeposari:
+
+--------------------------------------------------
+DETAIL KEAMANAN CMS:
+--------------------------------------------------
+Tipe Tindakan    : ${actionLabel}
+Kata Sandi Baru  : ${cleanPwd}
+Diperbarui Oleh  : ${changedBy}
+Waktu Kejadian   : ${dateStr} WIB
+Halaman Login    : https://sdn2ngeposari.my.id/admin.html
+
+PENGIRIM RESMI SISTEM (TETAP):
+Nama   : ${sender.name}
+Email  : ${sender.email}
+Peran  : ${sender.role}
+
+PENERIMA NOTIFIKASI RESMI:
+1. Pihak Sekolah    : ${p1.name} <${p1.email}>
+2. Pihak Pengembang : ${p2.name} <${p2.email}>
+
+CATATAN RESMI:
+Pemberitahuan otomatis ini dikirimkan langsung dari alamat email pengembang resmi (${sender.email}) kepada kedua belah pihak secara bersamaan demi menjaga transparansi, integritas keamanan data, dan kontinuitas akses pengelolaan sekolah.
+
+Hormat kami,
+${sender.name}
+Pengembang Web & Administrator Sistem SDN 2 Ngeposari`;
+  },
+
+  getGmailComposeUrl(newPassword, actionType = 'UBAH', changedBy = 'Administrator') {
+    const cleanPwd = String(newPassword || this.getAdminPassword()).trim();
+    const actionLabel = actionType === 'RESET' 
+      ? 'RESET KATA SANDI KE BAWAAN' 
+      : (actionType === 'UJI_COBA' ? 'UJI COBA NOTIFIKASI' : 'PEMBARUAN KATA SANDI');
+    const contacts = this.getSecurityContacts();
+    const p1 = contacts.party1 || { email: 'sdn2ngeposari@gmail.com' };
+    const p2 = contacts.party2 || { email: 'zulpadlisyarifhrp@gmail.com' };
+    
+    // To: Pihak Sekolah, CC: Pihak Pengembang (Zulpadli)
+    const to = p1.email || 'sdn2ngeposari@gmail.com';
+    const cc = p2.email || 'zulpadlisyarifhrp@gmail.com';
+    const subject = `[KEAMANAN CMS] ${actionLabel} - SD Negeri 2 Ngeposari`;
+    const body = this.getNotificationEmailText(cleanPwd, actionType, changedBy);
+
+    return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&cc=${encodeURIComponent(cc)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  },
+
+  getMailtoUrl(newPassword, actionType = 'UBAH', changedBy = 'Administrator') {
+    const cleanPwd = String(newPassword || this.getAdminPassword()).trim();
+    const actionLabel = actionType === 'RESET' 
+      ? 'RESET KATA SANDI KE BAWAAN' 
+      : (actionType === 'UJI_COBA' ? 'UJI COBA NOTIFIKASI' : 'PEMBARUAN KATA SANDI');
+    const contacts = this.getSecurityContacts();
+    const p1 = contacts.party1 || { email: 'sdn2ngeposari@gmail.com' };
+    const p2 = contacts.party2 || { email: 'zulpadlisyarifhrp@gmail.com' };
+    
+    const to = p1.email || 'sdn2ngeposari@gmail.com';
+    const cc = p2.email || 'zulpadlisyarifhrp@gmail.com';
+    const subject = `[KEAMANAN CMS] ${actionLabel} - SD Negeri 2 Ngeposari`;
+    const body = this.getNotificationEmailText(cleanPwd, actionType, changedBy);
+
+    return `mailto:${encodeURIComponent(to)}?cc=${encodeURIComponent(cc)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  },
+
   getSecurityContacts() {
+    const sender = this.getSenderIdentity();
     if (this.data && this.data.securityContacts) {
+      if (!this.data.securityContacts.sender) {
+        this.data.securityContacts.sender = sender;
+      }
       return this.data.securityContacts;
     }
     try {
       const stored = (typeof localStorage !== 'undefined') ? localStorage.getItem('sdn2_security_contacts') : null;
-      if (stored) return JSON.parse(stored);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (!parsed.sender) parsed.sender = sender;
+        return parsed;
+      }
     } catch (e) {}
     return (typeof SchoolConstants !== 'undefined' && SchoolConstants.INITIAL_DATA && SchoolConstants.INITIAL_DATA.securityContacts)
       ? JSON.parse(JSON.stringify(SchoolConstants.INITIAL_DATA.securityContacts))
       : {
+          sender: sender,
           party1: { name: 'Pihak Sekolah (SDN 2 Ngeposari)', email: 'sdn2ngeposari@gmail.com', role: 'Administrator Sekolah', enabled: true },
           party2: { name: 'Pihak Pengembang (Zulpadli)', email: 'zulpadlisyarifhrp@gmail.com', role: 'Pengembang Web / Webmaster', enabled: true },
           autoNotify: true
@@ -1986,6 +2079,7 @@ window.SchoolDB = {
     }
 
     this.data.securityContacts = {
+      sender: this.getSenderIdentity(),
       party1: {
         name: (p1.name || 'Pihak Sekolah (SDN 2 Ngeposari)').trim(),
         email: (p1.email || 'sdn2ngeposari@gmail.com').trim().toLowerCase(),
@@ -2025,6 +2119,7 @@ window.SchoolDB = {
 
   async dispatchPasswordNotification(newPassword, actionType = 'UBAH', changedBy = 'Administrator') {
     const cleanPwd = String(newPassword).trim();
+    const sender = this.getSenderIdentity();
     const contacts = this.getSecurityContacts();
     const p1 = contacts.party1 || { name: 'Pihak Sekolah', email: 'sdn2ngeposari@gmail.com', enabled: true };
     const p2 = contacts.party2 || { name: 'Pihak Pengembang', email: 'zulpadlisyarifhrp@gmail.com', enabled: true };
@@ -2034,14 +2129,24 @@ window.SchoolDB = {
       { name: p2.name, email: p2.email, role: p2.role || 'Pihak Pengembang', enabled: p2.enabled !== false }
     ];
 
+    const actionLabel = actionType === 'RESET' 
+      ? 'RESET KATA SANDI KE BAWAAN' 
+      : (actionType === 'UJI_COBA' ? 'UJI COBA NOTIFIKASI KEAMANAN' : 'PEMBARUAN KATA SANDI BARU');
+
     const broadcastPayload = {
       id: 'pwd-bc-' + Date.now(),
       newPassword: cleanPwd,
-      actionType: actionType === 'RESET' ? 'RESET' : 'UBAH',
+      actionType: actionType === 'RESET' ? 'RESET' : (actionType === 'UJI_COBA' ? 'UJI_COBA' : 'UBAH'),
       changedBy: (changedBy || 'Administrator').trim(),
+      sender: sender,
       timestamp: new Date().toISOString(),
       recipients: recipients,
-      deliveryStatus: 'MEMPROSES'
+      deliveryStatus: 'MEMPROSES',
+      gmailComposeUrl: this.getGmailComposeUrl(cleanPwd, actionType, changedBy),
+      mailtoUrl: this.getMailtoUrl(cleanPwd, actionType, changedBy),
+      emailText: this.getNotificationEmailText(cleanPwd, actionType, changedBy),
+      needsActivation: false,
+      activationMessage: ''
     };
 
     if (!this.data) this.data = {};
@@ -2055,50 +2160,78 @@ window.SchoolDB = {
 
     // Dispatch automated email if autoNotify is enabled
     let emailSent = false;
-    if (contacts.autoNotify !== false) {
-      const activeEmails = recipients.filter(r => r.enabled && r.email).map(r => r.email);
-      if (activeEmails.length > 0 && typeof fetch === 'function') {
+    let needsActivation = false;
+    let activationMessage = '';
+
+    if (contacts.autoNotify !== false && typeof fetch === 'function') {
+      try {
+        // Always send through the permanent official sender endpoint: zulpadlisyarifhrp@gmail.com
+        // and CC to sdn2ngeposari@gmail.com
+        const targetEndpoint = sender.email;
+        const ccRecipient = (p1.email && p1.email !== sender.email) ? p1.email : undefined;
+
+        const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(targetEndpoint)}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            name: `${sender.name} (Pengembang CMS SDN 2 Ngeposari)`,
+            email: sender.email,
+            _replyto: sender.email,
+            _subject: `[KEAMANAN CMS] ${actionLabel} - SD Negeri 2 Ngeposari`,
+            _cc: ccRecipient,
+            _captcha: 'false',
+            _template: 'table',
+            sekolah: 'SD Negeri 2 Ngeposari (NPSN: 20401876)',
+            pengirim_resmi: `${sender.name} <${sender.email}>`,
+            tipe_pemberitahuan: actionLabel,
+            kata_sandi_baru: cleanPwd,
+            diperbarui_oleh: broadcastPayload.changedBy,
+            waktu_kejadian: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }),
+            penerima_1_sekolah: `${p1.name} <${p1.email}>`,
+            penerima_2_pengembang: `${p2.name} <${p2.email}>`,
+            halaman_login: 'https://sdn2ngeposari.my.id/admin.html',
+            catatan: `Pemberitahuan otomatis: Sistem CMS SDN 2 Ngeposari mengirimkan kata sandi baru dari pengirim resmi ${sender.email} kepada kedua belah pihak demi transparansi dan kontinuitas akses.`
+          })
+        });
+
+        let json = null;
         try {
-          const primaryEmail = activeEmails[0];
-          const ccList = activeEmails.slice(1).join(',');
-          const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(primaryEmail)}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-              _subject: `[KEAMANAN CMS] Pemberitahuan Kata Sandi Baru SDN 2 Ngeposari (${actionType})`,
-              _cc: ccList || undefined,
-              _template: 'table',
-              sekolah: 'SD Negeri 2 Ngeposari (NPSN: 20401876)',
-              tipe_pemberitahuan: actionType === 'RESET' ? 'RESET KATA SANDI KE BAWAAN' : 'PEMBARUAN KATA SANDI BARU',
-              kata_sandi_baru: cleanPwd,
-              diperbarui_oleh: broadcastPayload.changedBy,
-              waktu_kejadian: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }),
-              pihak_1: `${p1.name} <${p1.email}>`,
-              pihak_2: `${p2.name} <${p2.email}>`,
-              halaman_login: 'https://sdn2ngeposari.my.id/admin.html',
-              catatan: 'Pemberitahuan otomatis: Sistem CMS SDN 2 Ngeposari menginformasikan kata sandi baru ini kepada kedua belah pihak secara bersamaan demi transparansi dan kontinuitas akses.'
-            })
-          });
-          if (response && response.ok) {
-            emailSent = true;
-          }
-        } catch (netErr) {
-          console.warn('[PasswordNotification] Gagal kirim email otomatis:', netErr.message || netErr);
+          json = await response.json();
+        } catch (pe) {}
+
+        if (json && (json.success === 'true' || json.success === true)) {
+          emailSent = true;
+        } else if (json && String(json.message || '').toLowerCase().includes('activation')) {
+          needsActivation = true;
+          activationMessage = 'FormSubmit memerlukan aktivasi 1x: Link aktivasi telah dikirim ke zulpadlisyarifhrp@gmail.com. Silakan buka Gmail dan klik tautan "Activate Form". Setelah aktif 1x, semua email otomatis berikutnya akan langsung terkirim.';
+        } else if (response && response.ok) {
+          emailSent = true;
         }
+      } catch (netErr) {
+        console.warn('[PasswordNotification] Gagal kirim email otomatis:', netErr.message || netErr);
       }
     }
 
-    broadcastPayload.deliveryStatus = emailSent ? 'TERKIRIM_EMAIL' : 'TERSINKRON_CLOUD';
+    if (emailSent) {
+      broadcastPayload.deliveryStatus = 'TERKIRIM_EMAIL';
+    } else if (needsActivation) {
+      broadcastPayload.deliveryStatus = 'MENUNGGU_AKTIVASI_GMAIL';
+      broadcastPayload.needsActivation = true;
+      broadcastPayload.activationMessage = activationMessage;
+    } else {
+      broadcastPayload.deliveryStatus = 'TERSINKRON_CLOUD';
+    }
+
     this.data.lastPasswordBroadcast = broadcastPayload;
 
     await this.save();
     await this.logAudit(
       'BROADCAST',
       'Keamanan',
-      `Kata sandi baru (${actionType}) otomatis dibagikan ke kedua pihak (${p1.email}, ${p2.email}) [${broadcastPayload.deliveryStatus}]`
+      `Kata sandi baru (${actionType}) dari ${sender.email} disiarkan ke (${p1.email}, ${p2.email}) [${broadcastPayload.deliveryStatus}]`
     );
 
     if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
@@ -2108,6 +2241,8 @@ window.SchoolDB = {
     return {
       success: true,
       emailSent,
+      needsActivation,
+      activationMessage,
       deliveryStatus: broadcastPayload.deliveryStatus,
       payload: broadcastPayload
     };

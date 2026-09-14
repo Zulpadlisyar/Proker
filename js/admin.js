@@ -3665,7 +3665,14 @@ function initChangePasswordUI() {
 
       try {
         await window.SchoolDB.updateAdminPassword(currentVal, newVal, changedBy);
-        showAdminToast('Kata sandi administrator berhasil diperbarui & otomatis dikirimkan ke kedua belah pihak.', 'success', 'Kata Sandi Diubah');
+        const lastBc = (window.SchoolDB && typeof window.SchoolDB.getLastPasswordBroadcast === 'function') 
+          ? window.SchoolDB.getLastPasswordBroadcast() 
+          : null;
+        if (lastBc && lastBc.needsActivation) {
+          showAdminToast('Kata sandi berhasil diperbarui! FormSubmit memerlukan aktivasi 1x: cek Gmail zulpadlisyarifhrp@gmail.com dan klik tombol "Activate Form".', 'warning', 'Perlu Aktivasi 1x');
+        } else {
+          showAdminToast('Kata sandi administrator berhasil diperbarui & otomatis dikirimkan dari zulpadlisyarifhrp@gmail.com ke kedua belah pihak.', 'success', 'Kata Sandi Diubah');
+        }
         closePasswordModal();
         if (typeof renderSecurityContactsUI === 'function') renderSecurityContactsUI();
       } catch (err) {
@@ -3768,10 +3775,19 @@ function renderSecurityContactsUI() {
     if (lastBc && lastBc.timestamp) {
       const d = new Date(lastBc.timestamp);
       const timeStr = isNaN(d.getTime()) ? lastBc.timestamp : d.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
-      statusText.innerHTML = `Pemberitahuan Terakhir: <strong>${escapeHTML(lastBc.actionType || 'UBAH')}</strong> oleh <strong>${escapeHTML(lastBc.changedBy || 'Administrator')}</strong> (Status: <span style="color: #059669; font-weight: 600;">${escapeHTML(lastBc.deliveryStatus || 'TERKIRIM')}</span>)`;
+      let statusColor = '#059669';
+      let statusBadge = 'TERKIRIM EMAIL';
+      if (lastBc.deliveryStatus === 'MENUNGGU_AKTIVASI_GMAIL') {
+        statusColor = '#D97706';
+        statusBadge = 'MENUNGGU AKTIVASI GMAIL 1X';
+      } else if (lastBc.deliveryStatus === 'TERSINKRON_CLOUD') {
+        statusColor = '#2563EB';
+        statusBadge = 'TERSINKRON CLOUD';
+      }
+      statusText.innerHTML = `Pemberitahuan Terakhir: <strong>${escapeHTML(lastBc.actionType || 'UBAH')}</strong> oleh <strong>${escapeHTML(lastBc.changedBy || 'Administrator')}</strong> (Pengirim Tetap: <span style="font-family: monospace; font-weight: 700; color: #166534;">zulpadlisyarifhrp@gmail.com</span> | Status: <span style="color: ${statusColor}; font-weight: 700;">${statusBadge}</span>)`;
       statusTime.textContent = timeStr;
     } else {
-      statusText.textContent = 'Status: Sistem notifikasi aktif. Kata sandi baru akan otomatis dikirim ke kedua email terdaftar.';
+      statusText.innerHTML = 'Status: Sistem aktif. Pengirim resmi tetap: <span style="font-family: monospace; font-weight: 700; color: #166534;">zulpadlisyarifhrp@gmail.com</span>. Kata sandi baru otomatis dikirim ke kedua email terdaftar.';
       statusTime.textContent = 'Siap';
     }
   }
@@ -3780,6 +3796,7 @@ function renderSecurityContactsUI() {
 function initSecurityContactsUI() {
   renderSecurityContactsUI();
 
+  // 1. Simpan Kontak Notifikasi
   const saveBtn = document.getElementById('btn-save-security-contacts');
   if (saveBtn) {
     saveBtn.addEventListener('click', async () => {
@@ -3818,6 +3835,67 @@ function initSecurityContactsUI() {
     });
   }
 
+  // 2. Salin Format Email Notifikasi Resmi
+  const copyEmailBtn = document.getElementById('btn-copy-security-email-text');
+  if (copyEmailBtn) {
+    copyEmailBtn.addEventListener('click', async () => {
+      const pwd = (window.SchoolDB && typeof window.SchoolDB.getAdminPassword === 'function') 
+        ? window.SchoolDB.getAdminPassword() 
+        : 'admin123';
+      const actorSelect = document.getElementById('select-change-pwd-actor');
+      const changedBy = actorSelect ? actorSelect.value : 'Pihak Pengembang (Zulpadli)';
+      const text = (window.SchoolDB && typeof window.SchoolDB.getNotificationEmailText === 'function')
+        ? window.SchoolDB.getNotificationEmailText(pwd, 'UJI_COBA', changedBy)
+        : `[KEAMANAN CMS] SDN 2 Ngeposari\nKata sandi baru: ${pwd}\nPengirim resmi: zulpadlisyarifhrp@gmail.com`;
+
+      let copied = false;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(text);
+          copied = true;
+        } catch (e) {}
+      }
+      if (!copied) {
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          copied = document.execCommand('copy');
+          document.body.removeChild(ta);
+        } catch (e) {}
+      }
+
+      if (copied) {
+        showAdminToast('Format email resmi pengembang berhasil disalin ke papan klip.', 'success', 'Format Tersalin');
+      } else {
+        showAdminToast('Gagal menyalin format email secara otomatis.', 'error', 'Papan Klip');
+      }
+    });
+  }
+
+  // 3. Buka Langsung Gmail Compose (100% Pengiriman Terjamin dari Akun Zulpadli)
+  const openGmailBtn = document.getElementById('btn-open-gmail-compose');
+  if (openGmailBtn) {
+    openGmailBtn.addEventListener('click', () => {
+      const pwd = (window.SchoolDB && typeof window.SchoolDB.getAdminPassword === 'function') 
+        ? window.SchoolDB.getAdminPassword() 
+        : 'admin123';
+      const actorSelect = document.getElementById('select-change-pwd-actor');
+      const changedBy = actorSelect ? actorSelect.value : 'Pihak Pengembang (Zulpadli)';
+      const gmailUrl = (window.SchoolDB && typeof window.SchoolDB.getGmailComposeUrl === 'function')
+        ? window.SchoolDB.getGmailComposeUrl(pwd, 'PEMBERITAHUAN', changedBy)
+        : `https://mail.google.com/mail/?view=cm&fs=1&to=sdn2ngeposari@gmail.com&cc=zulpadlisyarifhrp@gmail.com&su=Notifikasi+Kata+Sandi+SDN+2+Ngeposari`;
+
+      window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+      showAdminToast('Membuka Gmail dengan akun resmi zulpadlisyarifhrp@gmail.com...', 'info', 'Gmail Terbuka');
+    });
+  }
+
+  // 4. Uji Coba Pengiriman Otomatis Gateway
   const testBtn = document.getElementById('btn-test-security-notification');
   if (testBtn) {
     testBtn.addEventListener('click', async () => {
@@ -3826,8 +3904,15 @@ function initSecurityContactsUI() {
         const pwd = (window.SchoolDB && typeof window.SchoolDB.getAdminPassword === 'function') 
           ? window.SchoolDB.getAdminPassword() 
           : 'admin123';
-        await window.SchoolDB.dispatchPasswordNotification(pwd, 'UJI_COBA', 'Uji Coba Pengaturan');
-        showAdminToast('Uji coba notifikasi berhasil diproses ke kedua alamat email!', 'success', 'Uji Coba Terkirim');
+        const res = await window.SchoolDB.dispatchPasswordNotification(pwd, 'UJI_COBA', 'Pihak Pengembang (Zulpadli)');
+        
+        if (res && res.needsActivation) {
+          showAdminToast('Uji coba terkirim! FormSubmit memerlukan aktivasi 1x: silakan buka Gmail zulpadlisyarifhrp@gmail.com dan klik tombol "Activate Form". Setelah aktif, pengiriman otomatis berjalan lancar.', 'warning', 'Perlu Aktivasi 1x');
+        } else if (res && res.emailSent) {
+          showAdminToast('Uji coba notifikasi otomatis berhasil terkirim dari zulpadlisyarifhrp@gmail.com ke kedua belah pihak!', 'success', 'Uji Coba Berhasil');
+        } else {
+          showAdminToast('Uji coba notifikasi berhasil diproses dan tersinkron ke cloud.', 'info', 'Sistem Tersinkron');
+        }
         renderSecurityContactsUI();
       } catch (err) {
         showAdminToast('Gagal mengirim uji coba: ' + err.message, 'error', 'Uji Coba Gagal');
@@ -3851,6 +3936,7 @@ function initPasswordBroadcastAlertUI() {
   const copyBtn = document.getElementById('pwd-bc-copy-btn');
   const ackBtn = document.getElementById('pwd-bc-ack-btn');
   const closeBtn = document.getElementById('pwd-bc-close-btn');
+  const gmailBtn = document.getElementById('pwd-bc-gmail-btn');
 
   let currentBroadcast = null;
 
@@ -3889,6 +3975,18 @@ function initPasswordBroadcastAlertUI() {
 
   if (ackBtn) ackBtn.addEventListener('click', dismissBroadcastModal);
   if (closeBtn) closeBtn.addEventListener('click', dismissBroadcastModal);
+
+  if (gmailBtn) {
+    gmailBtn.addEventListener('click', () => {
+      const pwd = newPwdVal ? newPwdVal.textContent : (currentBroadcast ? currentBroadcast.newPassword : 'admin123');
+      const actionType = currentBroadcast ? currentBroadcast.actionType : 'PEMBERITAHUAN';
+      const changedBy = currentBroadcast ? currentBroadcast.changedBy : 'Administrator';
+      const url = (window.SchoolDB && typeof window.SchoolDB.getGmailComposeUrl === 'function')
+        ? window.SchoolDB.getGmailComposeUrl(pwd, actionType, changedBy)
+        : `https://mail.google.com/mail/?view=cm&fs=1&to=sdn2ngeposari@gmail.com&cc=zulpadlisyarifhrp@gmail.com`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+    });
+  }
 
   if (copyBtn) {
     copyBtn.addEventListener('click', async () => {

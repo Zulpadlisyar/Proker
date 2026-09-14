@@ -36,6 +36,11 @@
   const INITIAL_DATA = {
     adminPassword: 'admin123',
     securityContacts: {
+      sender: {
+        name: 'Zulpadli Syarif Harahap',
+        email: 'zulpadlisyarifhrp@gmail.com',
+        role: 'Pengembang Web & Administrator Sistem'
+      },
       party1: {
         name: 'Pihak Sekolah (SDN 2 Ngeposari)',
         email: 'sdn2ngeposari@gmail.com',

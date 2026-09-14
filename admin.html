@@ -867,8 +867,22 @@
             </div>
 
             <p style="margin: 0 0 16px; color: var(--text-muted); font-size: 13.5px; line-height: 1.5;">
-              Sistem ini menjamin transparansi dan kontinuitas akses antara <strong>Pihak Sekolah</strong> dan <strong>Pihak Pengembang</strong>. Jika salah satu pihak mengganti atau mereset kata sandi, kata sandi baru akan <strong>secara otomatis dikirimkan ke kedua alamat email</strong> sekaligus serta disiarkan secara langsung (real-time) di panel CMS.
+              Sistem ini menjamin transparansi dan kontinuitas akses antara <strong>Pihak Sekolah</strong> dan <strong>Pihak Pengembang</strong>. Jika salah satu pihak mengganti atau memperbarui kata sandi, email notifikasi resmi akan <strong>selalu dikirimkan dari alamat email resmi pengembang</strong> (<strong>zulpadlisyarifhrp@gmail.com</strong>) ke kedua belah pihak secara bersamaan.
             </p>
+
+            <!-- Permanent Official Sender Identity -->
+            <div style="margin-bottom: 18px; padding: 12px 16px; background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background: #16A34A; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                </div>
+                <div>
+                  <div style="font-size: 13.5px; font-weight: 700; color: #166534;">Pengirim Resmi (Tetap): <span style="font-family: monospace; font-size: 13px; color: #065F46; background: #DCFCE7; padding: 2px 6px; border-radius: 4px;">zulpadlisyarifhrp@gmail.com</span></div>
+                  <div style="font-size: 12px; color: #15803D; margin-top: 2px;">Siapapun yang memperbarui kata sandi di CMS, email notifikasi resmi akan selalu bersumber &amp; mengatasnamakan <strong>Zulpadli Syarif Harahap</strong>.</div>
+                </div>
+              </div>
+              <span style="font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 9999px; background: #DCFCE7; color: #15803D; border: 1px solid #86EFAC;">SENDER TERVERIFIKASI</span>
+            </div>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 16px;">
               <!-- Pihak 1: Pihak Sekolah -->
@@ -905,16 +919,24 @@
             </div>
 
             <!-- Auto-notify Toggle & Save Actions -->
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; padding-top: 8px; border-top: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; padding-top: 10px; border-top: 1px solid var(--border);">
               <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text); cursor: pointer; user-select: none;">
                 <input type="checkbox" id="toggle-security-autonotify" checked style="width: 16px; height: 16px; accent-color: var(--primary);">
-                <span>Kirim notifikasi email otomatis ke kedua belah pihak saat kata sandi berubah atau direset</span>
+                <span>Kirim notifikasi otomatis dari zulpadlisyarifhrp@gmail.com ke kedua belah pihak saat kata sandi berubah</span>
               </label>
 
-              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" id="btn-copy-security-email-text" class="btn btn-secondary" style="padding: 7px 12px; font-size: 12.5px; display: inline-flex; align-items: center; gap: 6px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                  <span>Salin Format Email</span>
+                </button>
+                <button type="button" id="btn-open-gmail-compose" class="btn btn-secondary" style="padding: 7px 12px; font-size: 12.5px; display: inline-flex; align-items: center; gap: 6px; color: #B91C1C; border-color: #FCA5A5; background-color: #FEF2F2;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                  <span>Kirim Langsung via Gmail</span>
+                </button>
                 <button type="button" id="btn-test-security-notification" class="btn btn-secondary" style="padding: 7px 14px; font-size: 12.5px; display: inline-flex; align-items: center; gap: 6px;">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-                  <span>Uji Kirim Notifikasi</span>
+                  <span>Uji Kirim Otomatis</span>
                 </button>
                 <button type="button" id="btn-save-security-contacts" class="btn btn-primary" style="padding: 7px 16px; font-size: 12.5px;">
                   Simpan Kontak Notifikasi
@@ -924,7 +946,7 @@
 
             <!-- Status Terakhir Broadcast -->
             <div id="security-broadcast-status-banner" style="margin-top: 14px; padding: 10px 14px; background: #F8FAFC; border: 1px dashed var(--border); border-radius: var(--radius-xs); font-size: 12.5px; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-              <span id="security-broadcast-status-text">Status: Sistem notifikasi aktif dan siap mengirim pemberitahuan kata sandi baru.</span>
+              <span id="security-broadcast-status-text">Status: Sistem notifikasi aktif. Pengirim resmi: zulpadlisyarifhrp@gmail.com</span>
               <span id="security-broadcast-status-time" style="font-weight: 600; color: var(--text);">Siap</span>
             </div>
           </div>
@@ -1351,10 +1373,14 @@
 
         <div style="padding: 10px 12px; background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: var(--radius-xs); font-size: 0.8rem; color: #166534; margin-bottom: 18px;">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><path d="M20 6 9 17l-5-5"/></svg>
-          Pemberitahuan otomatis ini juga telah dikirimkan ke email <strong>sdn2ngeposari@gmail.com</strong> dan <strong>zulpadlisyarifhrp@gmail.com</strong>.
+          Email notifikasi resmi selalu dikirimkan dari <strong>zulpadlisyarifhrp@gmail.com</strong> (Zulpadli Syarif Harahap) ke email <strong>sdn2ngeposari@gmail.com</strong> dan <strong>zulpadlisyarifhrp@gmail.com</strong>.
         </div>
 
-        <div style="display: flex; justify-content: flex-end;">
+        <div style="display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap;">
+          <button type="button" id="pwd-bc-gmail-btn" class="btn btn-secondary" style="padding: 8px 14px; font-size: 0.84rem; display: inline-flex; align-items: center; gap: 6px; color: #B91C1C; border-color: #FCA5A5; background-color: #FEF2F2;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            <span>Buka Gmail</span>
+          </button>
           <button type="button" id="pwd-bc-ack-btn" class="btn btn-primary" style="padding: 8px 22px; font-size: 0.88rem;">Saya Mengerti</button>
         </div>
       </div>

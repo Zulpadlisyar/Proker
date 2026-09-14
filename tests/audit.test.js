@@ -326,6 +326,29 @@ test('3.19: Dual-Party Password Notification & Security Contacts System in admin
   assert(adminJs.includes('password-broadcast-received'), 'admin.js missing password-broadcast-received listener');
 });
 
+test('3.20: Fixed Official Sender (zulpadlisyarifhrp@gmail.com), Direct Gmail Compose, and Copy Email Actions', () => {
+  const adminHtml = fs.readFileSync('admin.html', 'utf8');
+  const adminJs = fs.readFileSync('js/admin.js', 'utf8');
+  const dbJs = fs.readFileSync('js/db.js', 'utf8');
+
+  // Verify permanent sender badge & email in DOM
+  assert(adminHtml.includes('zulpadlisyarifhrp@gmail.com'), 'admin.html must state official sender zulpadlisyarifhrp@gmail.com');
+  assert(adminHtml.includes('id="btn-open-gmail-compose"'), 'admin.html missing direct Gmail compose button');
+  assert(adminHtml.includes('id="btn-copy-security-email-text"'), 'admin.html missing copy email text button');
+  assert(adminHtml.includes('id="pwd-bc-gmail-btn"'), 'admin.html broadcast alert modal missing direct Gmail button');
+
+  // Verify DB sender methods
+  assert(dbJs.includes('getSenderIdentity()'), 'db.js missing getSenderIdentity');
+  assert(dbJs.includes('getGmailComposeUrl('), 'db.js missing getGmailComposeUrl');
+  assert(dbJs.includes('getMailtoUrl('), 'db.js missing getMailtoUrl');
+  assert(dbJs.includes('getNotificationEmailText('), 'db.js missing getNotificationEmailText');
+
+  // Verify JS UI handlers
+  assert(adminJs.includes('btn-open-gmail-compose'), 'admin.js missing btn-open-gmail-compose listener');
+  assert(adminJs.includes('btn-copy-security-email-text'), 'admin.js missing btn-copy-security-email-text listener');
+  assert(adminJs.includes('pwd-bc-gmail-btn'), 'admin.js missing pwd-bc-gmail-btn listener');
+});
+
 console.log('\n----------------------------------------------------');
 console.log(`TOTAL TESTS: ${passCount + failCount}`);
 console.log(`PASSED: ${passCount}`);

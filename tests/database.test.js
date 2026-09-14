@@ -294,13 +294,33 @@ async function runDatabaseTests() {
   assert.strictEqual(window.SchoolDB.getAdminPassword(), initialPwd, 'Password safely reset back to initial password');
   console.log('[PASS] Admin password security, validation rules, and update flow verified.');
 
-  // 10. Dual-Party Password Notification & Security Contacts System
+  // 10. Dual-Party Password Notification & Security Contacts System with Fixed Sender zulpadlisyarifhrp@gmail.com
   console.log('10. Testing Dual-Party Password Change Notification & Security Contacts...');
+  const sender = window.SchoolDB.getSenderIdentity();
+  assert(sender && sender.email === 'zulpadlisyarifhrp@gmail.com', 'Permanent sender email must be zulpadlisyarifhrp@gmail.com');
+  assert.strictEqual(sender.name, 'Zulpadli Syarif Harahap', 'Permanent sender name must be Zulpadli Syarif Harahap');
+
   const contacts = window.SchoolDB.getSecurityContacts();
   assert(contacts && contacts.party1 && contacts.party2, 'Security contacts must contain both party1 and party2');
+  assert(contacts.sender && contacts.sender.email === 'zulpadlisyarifhrp@gmail.com', 'Contacts must include permanent sender zulpadlisyarifhrp@gmail.com');
   assert.strictEqual(contacts.party1.email, 'sdn2ngeposari@gmail.com', 'Party 1 default email must be sdn2ngeposari@gmail.com');
   assert.strictEqual(contacts.party2.email, 'zulpadlisyarifhrp@gmail.com', 'Party 2 default email must be zulpadlisyarifhrp@gmail.com');
   assert.strictEqual(contacts.autoNotify, true, 'autoNotify must be enabled by default');
+
+  // Test Email Formatting and Compose URLs
+  const emailText = window.SchoolDB.getNotificationEmailText('testPass123', 'UBAH', 'Pihak Sekolah (SDN 2 Ngeposari)');
+  assert(emailText.includes('zulpadlisyarifhrp@gmail.com'), 'Email text must include sender zulpadlisyarifhrp@gmail.com');
+  assert(emailText.includes('sdn2ngeposari@gmail.com'), 'Email text must include recipient sdn2ngeposari@gmail.com');
+  assert(emailText.includes('testPass123'), 'Email text must include new password');
+  assert(emailText.includes('https://sdn2ngeposari.my.id/admin.html'), 'Email text must include official login URL');
+
+  const gmailUrl = window.SchoolDB.getGmailComposeUrl('testPass123', 'UBAH', 'Pihak Sekolah (SDN 2 Ngeposari)');
+  assert(gmailUrl.startsWith('https://mail.google.com/mail/?view=cm'), 'Gmail compose URL must use Google Web view=cm format');
+  assert(gmailUrl.includes('sdn2ngeposari%40gmail.com') || gmailUrl.includes('sdn2ngeposari@gmail.com'), 'Gmail compose URL must target sdn2ngeposari@gmail.com');
+  assert(gmailUrl.includes('zulpadlisyarifhrp%40gmail.com') || gmailUrl.includes('zulpadlisyarifhrp@gmail.com'), 'Gmail compose URL must CC zulpadlisyarifhrp@gmail.com');
+
+  const mailtoUrl = window.SchoolDB.getMailtoUrl('testPass123', 'UBAH', 'Pihak Sekolah (SDN 2 Ngeposari)');
+  assert(mailtoUrl.startsWith('mailto:sdn2ngeposari@gmail.com') || mailtoUrl.startsWith('mailto:sdn2ngeposari%40gmail.com'), 'Mailto URL must target sdn2ngeposari@gmail.com');
 
   // Test updating contacts with invalid email
   let invalidEmailThrew = false;
@@ -314,34 +334,39 @@ async function runDatabaseTests() {
   }
   assert(invalidEmailThrew, 'updateSecurityContacts must reject invalid email format');
 
-  // Test dispatching password notification
-  const dispatchRes = await window.SchoolDB.dispatchPasswordNotification('sandiBaru2026', 'UBAH', 'Pihak Pengembang');
+  // Test dispatching password notification: ANY actor modifying password -> Sender MUST STILL BE zulpadlisyarifhrp@gmail.com
+  const dispatchRes = await window.SchoolDB.dispatchPasswordNotification('sandiBaru2026', 'UBAH', 'Pihak Sekolah (SDN 2 Ngeposari)');
   assert.strictEqual(dispatchRes.success, true, 'dispatchPasswordNotification must succeed');
   assert(dispatchRes.payload, 'dispatch result must contain payload');
   assert.strictEqual(dispatchRes.payload.newPassword, 'sandiBaru2026');
   assert.strictEqual(dispatchRes.payload.actionType, 'UBAH');
-  assert.strictEqual(dispatchRes.payload.changedBy, 'Pihak Pengembang');
+  assert.strictEqual(dispatchRes.payload.changedBy, 'Pihak Sekolah (SDN 2 Ngeposari)');
+  assert.strictEqual(dispatchRes.payload.sender.email, 'zulpadlisyarifhrp@gmail.com', 'Regardless of who changes password, sender MUST ALWAYS be zulpadlisyarifhrp@gmail.com');
+  assert.strictEqual(dispatchRes.payload.sender.name, 'Zulpadli Syarif Harahap', 'Sender name must be Zulpadli Syarif Harahap');
   assert.strictEqual(dispatchRes.payload.recipients.length, 2, 'Must notify both parties');
 
   const latestBroadcast = window.SchoolDB.getLastPasswordBroadcast();
   assert(latestBroadcast, 'getLastPasswordBroadcast must return the active broadcast');
   assert.strictEqual(latestBroadcast.newPassword, 'sandiBaru2026');
+  assert.strictEqual(latestBroadcast.sender.email, 'zulpadlisyarifhrp@gmail.com');
 
-  // Test updateAdminPassword automatically dispatches notification
-  await window.SchoolDB.updateAdminPassword('admin123', 'sandiOtomatis2026', 'Pihak Sekolah');
+  // Test updateAdminPassword automatically dispatches notification with fixed sender
+  await window.SchoolDB.updateAdminPassword('admin123', 'sandiOtomatis2026', 'Sumarni (Kepala Sekolah)');
   const updateBc = window.SchoolDB.getLastPasswordBroadcast();
   assert.strictEqual(updateBc.newPassword, 'sandiOtomatis2026');
   assert.strictEqual(updateBc.actionType, 'UBAH');
-  assert.strictEqual(updateBc.changedBy, 'Pihak Sekolah');
+  assert.strictEqual(updateBc.changedBy, 'Sumarni (Kepala Sekolah)');
+  assert.strictEqual(updateBc.sender.email, 'zulpadlisyarifhrp@gmail.com', 'Sender remains zulpadlisyarifhrp@gmail.com even when school changes password');
 
-  // Test resetAdminPassword automatically dispatches reset notification
-  await window.SchoolDB.resetAdminPassword('admin123', 'Pihak Pengembang');
+  // Test resetAdminPassword automatically dispatches reset notification with fixed sender
+  await window.SchoolDB.resetAdminPassword('admin123', 'Pihak Sekolah');
   const resetBc = window.SchoolDB.getLastPasswordBroadcast();
   assert.strictEqual(resetBc.newPassword, 'admin123');
   assert.strictEqual(resetBc.actionType, 'RESET');
-  assert.strictEqual(resetBc.changedBy, 'Pihak Pengembang');
+  assert.strictEqual(resetBc.changedBy, 'Pihak Sekolah');
+  assert.strictEqual(resetBc.sender.email, 'zulpadlisyarifhrp@gmail.com', 'Sender remains zulpadlisyarifhrp@gmail.com on reset');
   assert.strictEqual(window.SchoolDB.getAdminPassword(), 'admin123');
-  console.log('[PASS] Dual-party password change notification and security contacts verified 100%.');
+  console.log('[PASS] Dual-party password change notification and permanent sender zulpadlisyarifhrp@gmail.com verified 100%.');
 
   console.log('\n>>> ALL DATABASE RUNTIME TESTS PASSED 100%! <<<\n');
 }

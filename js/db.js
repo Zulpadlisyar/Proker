@@ -649,7 +649,15 @@ window.SchoolDB = {
         if (!Array.isArray(this.data.academicCalendar)) this.data.academicCalendar = JSON.parse(JSON.stringify(INITIAL_DATA.academicCalendar || []));
         if (!Array.isArray(this.data.schoolHabits)) this.data.schoolHabits = JSON.parse(JSON.stringify(INITIAL_DATA.schoolHabits || []));
         if (!Array.isArray(this.data.comfortStandards)) this.data.comfortStandards = JSON.parse(JSON.stringify(INITIAL_DATA.comfortStandards || []));
-        if (!Array.isArray(this.data.inquiries)) this.data.inquiries = JSON.parse(JSON.stringify(INITIAL_DATA.inquiries || []));
+        if (!Array.isArray(this.data.inquiries)) this.data.inquiries = [];
+        // Auto-purge any legacy dummy inquiry data (e.g. Bapak Ahmad Fauzi)
+        if (Array.isArray(this.data.inquiries) && this.data.inquiries.length > 0) {
+          const prevLen = this.data.inquiries.length;
+          this.data.inquiries = this.data.inquiries.filter(i => i && i.id !== 'inq-1' && i.email !== 'ahmad.fauzi@gmail.com');
+          if (this.data.inquiries.length !== prevLen) {
+            await this.save();
+          }
+        }
         if (!Array.isArray(this.data.categories)) this.data.categories = (INITIAL_DATA.categories ? [...INITIAL_DATA.categories] : ['Akademik', 'Kepramukaan', 'Ekstrakurikuler', 'Prestasi', 'Sosial & Lingkungan', 'Umum']);
         if (!Array.isArray(this.data.auditLogs)) this.data.auditLogs = [];
         if (!this.data.adminPassword) {
@@ -1882,12 +1890,12 @@ window.SchoolDB = {
 
   // Inquiries CRUD
   getInquiries() {
-    if (!this.data) return (INITIAL_DATA && INITIAL_DATA.inquiries) ? [...INITIAL_DATA.inquiries] : [];
+    if (!this.data) return [];
     if (!Array.isArray(this.data.inquiries)) {
-      this.data.inquiries = (INITIAL_DATA && INITIAL_DATA.inquiries) ? JSON.parse(JSON.stringify(INITIAL_DATA.inquiries)) : [];
+      this.data.inquiries = [];
     }
     return [...this.data.inquiries]
-      .filter(item => item && typeof item === 'object')
+      .filter(item => item && typeof item === 'object' && item.id !== 'inq-1' && item.email !== 'ahmad.fauzi@gmail.com')
       .sort((a, b) => this._parseDateSafe(b.date) - this._parseDateSafe(a.date));
   },
 

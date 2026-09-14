@@ -417,18 +417,7 @@
         desc: 'Menyediakan sarana konsumsi makanan dan minuman sehat yang higienis serta aman bagi perkembangan anak.'
       }
     ],
-    inquiries: [
-      {
-        id: 'inq-1',
-        name: 'Bapak Ahmad Fauzi',
-        email: 'ahmad.fauzi@gmail.com',
-        phone: '081298765432',
-        subject: 'Informasi Pendaftaran Siswa Baru (PPDB)',
-        message: 'Selamat pagi, saya ingin menanyakan jadwal resmi pembukaan PPDB untuk tahun ajaran baru dan persyaratan dokumen yang harus disiapkan. Terima kasih.',
-        date: '2026-08-30 09:15',
-        isRead: false
-      }
-    ]
+    inquiries: []
   };
 
   // Default Centralized Firebase Firestore Configuration

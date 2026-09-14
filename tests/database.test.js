@@ -187,6 +187,8 @@ async function runDatabaseTests() {
   assert(upgradedProfile.description.includes('terakreditasi A'), 'Legacy placeholder description must be auto-upgraded to official description');
   // 8. Inquiries Reliability, Robust Date Sorting, and Cloud Sync Merging
   console.log('8. Testing Inquiries Reliability, Robust Date Sorting, and Cloud Sync Merging...');
+  assert.strictEqual(window.SchoolDB.getInquiries().length, 0, 'Inquiries section must start clean and completely empty with zero dummy messages');
+
   const newInq = await window.SchoolDB.addInquiry({
     name: 'Ibu Ratna',
     email: 'ratna@example.com',
@@ -242,6 +244,9 @@ async function runDatabaseTests() {
   // Cleanup test inquiry
   await window.SchoolDB.deleteInquiry(newInq.id);
   await window.SchoolDB.deleteInquiry('legacy-date-inq');
+  await window.SchoolDB.deleteInquiry('cloud-inq-100');
+  assert.strictEqual(window.SchoolDB.getInquiries().length, 0, 'Inquiries section must remain clean and empty after test cleanup');
+  console.log('[PASS] Inquiries section starts 100% empty, dummy inquiries purged, and CRUD verified.');
   // 9. Admin Password Security, Verification, and Update Flow
   console.log('9. Testing Admin Password Security, Verification, and Update Flow...');
   const initialPwd = window.SchoolDB.getAdminPassword();

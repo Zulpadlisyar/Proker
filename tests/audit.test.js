@@ -349,6 +349,15 @@ test('3.20: Fixed Official Sender (zulpadlisyarifhrp@gmail.com), Direct Gmail Co
   assert(adminJs.includes('pwd-bc-gmail-btn'), 'admin.js missing pwd-bc-gmail-btn listener');
 });
 
+test('3.21: Inquiries Section Has Zero Default Dummy Messages and Dummy Seed Button is Removed', () => {
+  const constantsJs = fs.readFileSync('js/config/constants.js', 'utf8');
+  const adminJs = fs.readFileSync('js/admin.js', 'utf8');
+  assert(!constantsJs.includes('ahmad.fauzi@gmail.com'), 'INITIAL_DATA still contains dummy email ahmad.fauzi@gmail.com');
+  assert(!constantsJs.includes('Bapak Ahmad Fauzi'), 'INITIAL_DATA still contains dummy user Bapak Ahmad Fauzi');
+  assert(!adminJs.includes('btn-seed-sample-inquiry'), 'admin.js still has btn-seed-sample-inquiry');
+  assert(adminJs.includes('Kotak pesan konsultasi saat ini kosong'), 'admin.js missing clean empty state copy');
+});
+
 console.log('\n----------------------------------------------------');
 console.log(`TOTAL TESTS: ${passCount + failCount}`);
 console.log(`PASSED: ${passCount}`);

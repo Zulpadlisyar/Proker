@@ -2118,15 +2118,12 @@ function renderInboxList() {
             </div>
             <h4 style="margin: 0 0 6px; font-size: 15px; font-weight: 600; color: var(--text);">Belum Ada Pesan Masuk</h4>
             <p style="margin: 0 0 16px; color: var(--text-muted); font-size: 13.5px; max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.5;">
-              Pesan konsultasi yang dikirim oleh wali murid atau masyarakat melalui formulir halaman kontak akan otomatis tampil di sini secara real-time.
+              Kotak pesan konsultasi saat ini kosong. Pesan yang dikirim oleh wali murid atau pengunjung melalui formulir halaman kontak akan otomatis tampil di sini secara real-time.
             </p>
             <div style="display: inline-flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
               <button type="button" class="btn btn-secondary" id="btn-refresh-inbox-data" style="font-size: 12.5px; padding: 6px 14px;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
                 Segarkan Data
-              </button>
-              <button type="button" class="btn btn-primary" id="btn-seed-sample-inquiry" style="font-size: 12.5px; padding: 6px 14px;">
-                + Muat Pesan Contoh
               </button>
             </div>
           </div>
@@ -2136,24 +2133,6 @@ function renderInboxList() {
           btnRefresh.addEventListener('click', () => {
             renderInboxList();
             showAdminToast('Data pesan berhasil diperbarui.', 'info', 'Pesan Masuk');
-          });
-        }
-        const btnSeed = container.querySelector('#btn-seed-sample-inquiry');
-        if (btnSeed) {
-          btnSeed.addEventListener('click', async () => {
-            const seedInquiry = {
-              name: 'Bapak Ahmad Fauzi',
-              email: 'ahmad.fauzi@gmail.com',
-              phone: '081298765432',
-              subject: 'Informasi Pendaftaran Siswa Baru (PPDB)',
-              message: 'Selamat pagi, saya ingin menanyakan jadwal resmi pembukaan PPDB untuk tahun ajaran baru dan persyaratan dokumen yang harus disiapkan. Terima kasih.'
-            };
-            if (window.SchoolDB && typeof window.SchoolDB.addInquiry === 'function') {
-              await window.SchoolDB.addInquiry(seedInquiry);
-              showAdminToast('Pesan contoh berhasil dimuat.', 'success', 'Pesan Contoh');
-              renderInboxList();
-              renderDashboard();
-            }
           });
         }
         return;

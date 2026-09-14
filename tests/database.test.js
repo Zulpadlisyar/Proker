@@ -241,6 +241,24 @@ async function runDatabaseTests() {
   assert(mergedInquiries.some(i => i.id === 'cloud-inq-100'), 'Cloud inquiry must be added during cloud sync');
   assert(mergedInquiries.length >= localCountBefore, 'Cloud sync must not decrease inquiries count via wipeout');
 
+  // Dummy inquiry purge verification
+  assert.strictEqual(window.SchoolDB._isDummyInquiry({ id: 'inq-1' }), true, '_isDummyInquiry must identify inq-1 as dummy');
+  assert.strictEqual(window.SchoolDB._isDummyInquiry({ name: 'Bapak Ahmad Fauzi', email: 'ahmad.fauzi@gmail.com' }), true, '_isDummyInquiry must identify Ahmad Fauzi as dummy');
+  assert.strictEqual(window.SchoolDB._isDummyInquiry({ phone: '081298765432' }), true, '_isDummyInquiry must identify dummy phone as dummy');
+  assert.strictEqual(window.SchoolDB._isDummyInquiry({ name: 'Ibu Ratna', email: 'ratna@example.com' }), false, '_isDummyInquiry must accept authentic inquiries');
+
+  // Attempting to inject dummy inquiry via cloud sync must be blocked
+  const countBeforeDummySync = window.SchoolDB.getInquiries().length;
+  await window.SchoolDB._applyCloudData({
+    inquiries: [
+      { id: 'inq-1', name: 'Bapak Ahmad Fauzi', email: 'ahmad.fauzi@gmail.com', message: 'PPDB' },
+      { id: 'inq_sample_123', name: 'Ahmad Fauzi', email: 'ahmad.fauzi@yahoo.com', phone: '081298765432', subject: 'PPDB' }
+    ]
+  });
+  const afterDummySync = window.SchoolDB.getInquiries();
+  assert(!afterDummySync.some(i => i.id === 'inq-1' || i.id === 'inq_sample_123'), 'Dummy inquiries must be strictly blocked from cloud sync merge');
+  assert.strictEqual(afterDummySync.length, countBeforeDummySync, 'Inquiries count must not increase when only dummy messages are provided in cloud data');
+
   // Cleanup test inquiry
   await window.SchoolDB.deleteInquiry(newInq.id);
   await window.SchoolDB.deleteInquiry('legacy-date-inq');

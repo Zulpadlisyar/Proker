@@ -403,7 +403,12 @@ window.CloudSyncManager = {
         academicCalendar: data.academicCalendar || [],
         schoolHabits: data.schoolHabits || [],
         comfortStandards: data.comfortStandards || [],
-        inquiries: data.inquiries || [],
+        inquiries: (data.inquiries || []).filter(i => {
+          if (window.SchoolDB && typeof window.SchoolDB._isDummyInquiry === 'function') {
+            return !window.SchoolDB._isDummyInquiry(i);
+          }
+          return i && i.id !== 'inq-1' && i.email !== 'ahmad.fauzi@gmail.com';
+        }),
         contact: data.contact || {},
         adminPassword: data.adminPassword || (typeof localStorage !== 'undefined' ? localStorage.getItem('sdn2_admin_custom_password') : null) || 'admin123',
         securityContacts: data.securityContacts || null,
@@ -653,7 +658,7 @@ window.SchoolDB = {
         // Auto-purge any legacy dummy inquiry data (e.g. Bapak Ahmad Fauzi)
         if (Array.isArray(this.data.inquiries) && this.data.inquiries.length > 0) {
           const prevLen = this.data.inquiries.length;
-          this.data.inquiries = this.data.inquiries.filter(i => i && i.id !== 'inq-1' && i.email !== 'ahmad.fauzi@gmail.com');
+          this.data.inquiries = this.data.inquiries.filter(i => !this._isDummyInquiry(i));
           if (this.data.inquiries.length !== prevLen) {
             await this.save();
           }
@@ -987,18 +992,18 @@ window.SchoolDB = {
       changed = true;
     }
     if (Array.isArray(cloudData.inquiries)) {
-      const localInquiries = Array.isArray(this.data.inquiries) ? this.data.inquiries.filter(Boolean) : [];
+      const localInquiries = Array.isArray(this.data.inquiries) ? this.data.inquiries.filter(i => !this._isDummyInquiry(i)) : [];
       const inqMap = new Map();
       localInquiries.forEach(inq => {
         if (inq && inq.id) inqMap.set(String(inq.id), inq);
       });
-      cloudData.inquiries.filter(Boolean).forEach(inq => {
+      cloudData.inquiries.filter(i => !this._isDummyInquiry(i)).forEach(inq => {
         if (inq && inq.id) {
           const existing = inqMap.get(String(inq.id));
           inqMap.set(String(inq.id), { ...(existing || {}), ...inq });
         }
       });
-      this.data.inquiries = Array.from(inqMap.values());
+      this.data.inquiries = Array.from(inqMap.values()).filter(i => !this._isDummyInquiry(i));
       changed = true;
     }
     if (cloudData.contact) {
@@ -1106,7 +1111,7 @@ window.SchoolDB = {
     if (Array.isArray(payload.academicCalendar)) this.data.academicCalendar = payload.academicCalendar;
     if (Array.isArray(payload.schoolHabits)) this.data.schoolHabits = payload.schoolHabits;
     if (Array.isArray(payload.comfortStandards)) this.data.comfortStandards = payload.comfortStandards;
-    if (Array.isArray(payload.inquiries)) this.data.inquiries = payload.inquiries;
+    if (Array.isArray(payload.inquiries)) this.data.inquiries = payload.inquiries.filter(i => !this._isDummyInquiry(i));
     if (payload.contact) this.data.contact = { ...this.data.contact, ...payload.contact };
     if (payload.securityContacts) this.data.securityContacts = payload.securityContacts;
 
@@ -1888,6 +1893,24 @@ window.SchoolDB = {
     return isNaN(t) ? 0 : t;
   },
 
+  // Comprehensive Filter for Dummy / Sample Inquiry Messages (e.g. Bapak Ahmad Fauzi)
+  _isDummyInquiry(inq) {
+    if (!inq || typeof inq !== 'object') return true;
+    if (inq.id === 'inq-1') return true;
+    const email = String(inq.email || '').toLowerCase().trim();
+    const name = String(inq.name || '').toLowerCase().trim();
+    const phone = String(inq.phone || '').replace(/\D/g, '');
+    const subject = String(inq.subject || '').toLowerCase();
+    const msg = String(inq.message || '').toLowerCase();
+    
+    if (email.includes('ahmad.fauzi')) return true;
+    if (name.includes('ahmad fauzi')) return true;
+    if (phone === '081298765432') return true;
+    if (subject.includes('ppdb') && (name.includes('fauzi') || email.includes('ahmad'))) return true;
+    if (msg.includes('jadwal resmi pembukaan ppdb') && (name.includes('fauzi') || email.includes('ahmad') || phone === '081298765432')) return true;
+    return false;
+  },
+
   // Inquiries CRUD
   getInquiries() {
     if (!this.data) return [];
@@ -1895,7 +1918,7 @@ window.SchoolDB = {
       this.data.inquiries = [];
     }
     return [...this.data.inquiries]
-      .filter(item => item && typeof item === 'object' && item.id !== 'inq-1' && item.email !== 'ahmad.fauzi@gmail.com')
+      .filter(item => !this._isDummyInquiry(item))
       .sort((a, b) => this._parseDateSafe(b.date) - this._parseDateSafe(a.date));
   },
 

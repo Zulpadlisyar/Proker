@@ -3682,15 +3682,6 @@ function initChangePasswordUI() {
     });
   }
 
-  const resetBtnModal = document.getElementById('btn-reset-modal-to-default');
-  if (resetBtnModal) {
-    resetBtnModal.addEventListener('click', () => handleResetAdminPassword());
-  }
-
-  const resetBtnSettings = document.getElementById('btn-reset-password-settings');
-  if (resetBtnSettings) {
-    resetBtnSettings.addEventListener('click', () => handleResetAdminPassword());
-  }
 }
 
 // Global handler to reset admin password to official default (admin123)
@@ -3940,11 +3931,6 @@ function initPasswordBroadcastAlertUI() {
 window.addEventListener('DOMContentLoaded', () => {
   checkLoginRateLimit();
   checkAuth();
-
-  const resetLoginBtn = document.getElementById('btn-reset-login-password');
-  if (resetLoginBtn) {
-    resetLoginBtn.addEventListener('click', () => handleResetAdminPassword());
-  }
 
   // Automatically attach error highlighting validation to all admin forms
   document.querySelectorAll('form').forEach(f => {

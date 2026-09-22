@@ -3154,6 +3154,89 @@ if (adminLoginForm) {
   });
 }
 
+// ----------------------------------------------------
+// LOGIN SCREEN PASSWORD RESET FLOW
+// ----------------------------------------------------
+function initLoginResetUI() {
+  const forgotBtn = document.getElementById('btn-login-forgot-pwd');
+  const modal = document.getElementById('login-reset-modal-overlay');
+  const closeBtn = document.getElementById('login-reset-modal-close');
+  const cancelBtn = document.getElementById('btn-cancel-login-reset');
+  const confirmBtn = document.getElementById('btn-confirm-login-reset');
+  const actorSelect = document.getElementById('select-login-reset-actor');
+
+  if (!modal) return;
+
+  function openResetModal() {
+    modal.style.display = 'flex';
+  }
+
+  function closeResetModal() {
+    modal.style.display = 'none';
+  }
+
+  if (forgotBtn) {
+    forgotBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openResetModal();
+    });
+  }
+
+  if (closeBtn) closeBtn.addEventListener('click', closeResetModal);
+  if (cancelBtn) cancelBtn.addEventListener('click', closeResetModal);
+
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', async () => {
+      const changedBy = actorSelect ? actorSelect.value : 'Pihak Sekolah (SDN 2 Ngeposari)';
+      setButtonSubmitting(confirmBtn, true, 'Mereset...');
+      try {
+        if (window.SchoolDB && typeof window.SchoolDB.resetAdminPassword === 'function') {
+          await window.SchoolDB.resetAdminPassword('admin123', changedBy);
+        } else {
+          try {
+            localStorage.removeItem('sdn2_admin_custom_password');
+          } catch (e) {}
+        }
+
+        try {
+          localStorage.removeItem('sdn2_admin_lockout_until');
+        } catch (e) {}
+        loginAttempts = 0;
+
+        const lockoutAlert = document.getElementById('login-lockout-alert');
+        if (lockoutAlert) lockoutAlert.style.display = 'none';
+        const loginErrAlert = document.getElementById('login-error-alert');
+        if (loginErrAlert) loginErrAlert.style.display = 'none';
+
+        const pwdInput = document.getElementById('admin-password');
+        if (pwdInput) {
+          pwdInput.value = 'admin123';
+          pwdInput.focus();
+        }
+
+        closeResetModal();
+
+        showAdminToast('Kata sandi administrator berhasil direset ke admin123 & disiarkan ke kedua belah pihak.', 'success', 'Reset Berhasil');
+
+        // Automatically trigger broadcast modal if available so user can immediately launch Gmail or WhatsApp
+        const lastBc = (window.SchoolDB && typeof window.SchoolDB.getLastPasswordBroadcast === 'function')
+          ? window.SchoolDB.getLastPasswordBroadcast()
+          : null;
+        if (lastBc && typeof window.showBroadcastModal === 'function') {
+          window.showBroadcastModal(lastBc, true);
+        }
+      } catch (err) {
+        console.error('Gagal mereset kata sandi:', err);
+        showAdminToast('Gagal mereset kata sandi: ' + (err.message || 'Terjadi kesalahan'), 'error', 'Reset Gagal');
+      } finally {
+        setButtonSubmitting(confirmBtn, false);
+      }
+    });
+  }
+}
+initLoginResetUI();
+window.initLoginResetUI = initLoginResetUI;
+
 // Logout Handler
 const logoutBtn = document.getElementById('admin-logout-btn');
 if (logoutBtn) {
@@ -3654,6 +3737,9 @@ function initChangePasswordUI() {
         }
         closePasswordModal();
         if (typeof renderSecurityContactsUI === 'function') renderSecurityContactsUI();
+        if (lastBc && typeof window.showBroadcastModal === 'function') {
+          window.showBroadcastModal(lastBc, true);
+        }
       } catch (err) {
         console.warn('Gagal mengubah kata sandi:', err);
         if (errorAlert && errorText) {
@@ -3716,6 +3802,13 @@ async function handleResetAdminPassword() {
 
     if (typeof renderSecurityContactsUI === 'function') renderSecurityContactsUI();
     showAdminToast('Kata sandi administrator berhasil direset ke admin123 & dikirim ke kedua belah pihak.', 'success', 'Reset Berhasil');
+
+    const lastBc = (window.SchoolDB && typeof window.SchoolDB.getLastPasswordBroadcast === 'function')
+      ? window.SchoolDB.getLastPasswordBroadcast()
+      : null;
+    if (lastBc && typeof window.showBroadcastModal === 'function') {
+      window.showBroadcastModal(lastBc, true);
+    }
   } catch (err) {
     console.error('Gagal mereset kata sandi:', err);
     showAdminToast('Gagal mereset kata sandi: ' + (err.message || 'Terjadi kesalahan'), 'error', 'Reset Gagal');
@@ -3734,14 +3827,18 @@ function renderSecurityContactsUI() {
 
   const p1Name = document.getElementById('input-security-p1-name');
   const p1Email = document.getElementById('input-security-p1-email');
+  const p1Phone = document.getElementById('input-security-p1-phone');
   const p2Name = document.getElementById('input-security-p2-name');
   const p2Email = document.getElementById('input-security-p2-email');
+  const p2Phone = document.getElementById('input-security-p2-phone');
   const autoToggle = document.getElementById('toggle-security-autonotify');
 
   if (p1Name && !p1Name.matches(':focus')) p1Name.value = p1.name || 'Pihak Sekolah (SDN 2 Ngeposari)';
   if (p1Email && !p1Email.matches(':focus')) p1Email.value = p1.email || 'sdn2ngeposari@gmail.com';
+  if (p1Phone && !p1Phone.matches(':focus')) p1Phone.value = p1.phone || '0813-7734-9636';
   if (p2Name && !p2Name.matches(':focus')) p2Name.value = p2.name || 'Pihak Pengembang (Zulpadli)';
   if (p2Email && !p2Email.matches(':focus')) p2Email.value = p2.email || 'zulpadlisyarifhrp@gmail.com';
+  if (p2Phone && !p2Phone.matches(':focus')) p2Phone.value = p2.phone || '0813-7734-9636';
   if (autoToggle) autoToggle.checked = contacts.autoNotify !== false;
 
   const statusText = document.getElementById('security-broadcast-status-text');
@@ -3781,8 +3878,10 @@ function initSecurityContactsUI() {
     saveBtn.addEventListener('click', async () => {
       const p1Name = (document.getElementById('input-security-p1-name')?.value || '').trim();
       const p1Email = (document.getElementById('input-security-p1-email')?.value || '').trim();
+      const p1Phone = (document.getElementById('input-security-p1-phone')?.value || '').trim();
       const p2Name = (document.getElementById('input-security-p2-name')?.value || '').trim();
       const p2Email = (document.getElementById('input-security-p2-email')?.value || '').trim();
+      const p2Phone = (document.getElementById('input-security-p2-phone')?.value || '').trim();
       const autoNotify = !!document.getElementById('toggle-security-autonotify')?.checked;
 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -3800,8 +3899,8 @@ function initSecurityContactsUI() {
       setButtonSubmitting(saveBtn, true, 'Menyimpan...');
       try {
         await window.SchoolDB.updateSecurityContacts({
-          party1: { name: p1Name, email: p1Email, role: 'Administrator Sekolah', enabled: true },
-          party2: { name: p2Name, email: p2Email, role: 'Pengembang Web / Webmaster', enabled: true },
+          party1: { name: p1Name, email: p1Email, phone: p1Phone || '0813-7734-9636', role: 'Administrator Sekolah', enabled: true },
+          party2: { name: p2Name, email: p2Email, phone: p2Phone || '0813-7734-9636', role: 'Pengembang Web / Webmaster', enabled: true },
           autoNotify
         });
         showAdminToast('Konfigurasi kontak notifikasi kedua belah pihak berhasil disimpan.', 'success', 'Kontak Disimpan');
@@ -3874,6 +3973,24 @@ function initSecurityContactsUI() {
     });
   }
 
+  // 3b. Buka Langsung WhatsApp Dispatch (100% Pengiriman Terjamin via WA)
+  const openWaBtn = document.getElementById('btn-open-whatsapp-broadcast');
+  if (openWaBtn) {
+    openWaBtn.addEventListener('click', () => {
+      const pwd = (window.SchoolDB && typeof window.SchoolDB.getAdminPassword === 'function') 
+        ? window.SchoolDB.getAdminPassword() 
+        : 'admin123';
+      const actorSelect = document.getElementById('select-change-pwd-actor');
+      const changedBy = actorSelect ? actorSelect.value : 'Pihak Pengembang (Zulpadli)';
+      const waUrl = (window.SchoolDB && typeof window.SchoolDB.getWhatsAppUrl === 'function')
+        ? window.SchoolDB.getWhatsAppUrl(pwd, 'PEMBERITAHUAN', changedBy)
+        : `https://api.whatsapp.com/send?text=${encodeURIComponent('Pemberitahuan Kata Sandi CMS SDN 2 Ngeposari: ' + pwd)}`;
+
+      window.open(waUrl, '_blank', 'noopener,noreferrer');
+      showAdminToast('Membuka WhatsApp untuk mengirim notifikasi kata sandi...', 'info', 'WhatsApp Terbuka');
+    });
+  }
+
   // 4. Uji Coba Pengiriman Otomatis Gateway
   const testBtn = document.getElementById('btn-test-security-notification');
   if (testBtn) {
@@ -3916,13 +4033,14 @@ function initPasswordBroadcastAlertUI() {
   const ackBtn = document.getElementById('pwd-bc-ack-btn');
   const closeBtn = document.getElementById('pwd-bc-close-btn');
   const gmailBtn = document.getElementById('pwd-bc-gmail-btn');
+  const waBtn = document.getElementById('pwd-bc-wa-btn');
 
   let currentBroadcast = null;
 
-  function showBroadcastModal(bc) {
+  function showBroadcastModal(bc, force = false) {
     if (!bc || !bc.newPassword) return;
     const lastAck = (typeof localStorage !== 'undefined') ? localStorage.getItem('sdn2_ack_pwd_broadcast') : null;
-    if (lastAck && lastAck === bc.id) return; // Already acknowledged
+    if (!force && lastAck && lastAck === bc.id) return; // Already acknowledged
 
     currentBroadcast = bc;
     if (actorHeader) {
@@ -3941,6 +4059,7 @@ function initPasswordBroadcastAlertUI() {
     alertModal.classList.add('open');
     alertModal.style.display = 'flex';
   }
+  window.showBroadcastModal = showBroadcastModal;
 
   function dismissBroadcastModal() {
     if (currentBroadcast && currentBroadcast.id) {
@@ -3963,6 +4082,18 @@ function initPasswordBroadcastAlertUI() {
       const url = (window.SchoolDB && typeof window.SchoolDB.getGmailComposeUrl === 'function')
         ? window.SchoolDB.getGmailComposeUrl(pwd, actionType, changedBy)
         : `https://mail.google.com/mail/?view=cm&fs=1&to=sdn2ngeposari@gmail.com&cc=zulpadlisyarifhrp@gmail.com`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+    });
+  }
+
+  if (waBtn) {
+    waBtn.addEventListener('click', () => {
+      const pwd = newPwdVal ? newPwdVal.textContent : (currentBroadcast ? currentBroadcast.newPassword : 'admin123');
+      const actionType = currentBroadcast ? currentBroadcast.actionType : 'PEMBERITAHUAN';
+      const changedBy = currentBroadcast ? currentBroadcast.changedBy : 'Administrator';
+      const url = (window.SchoolDB && typeof window.SchoolDB.getWhatsAppUrl === 'function')
+        ? window.SchoolDB.getWhatsAppUrl(pwd, actionType, changedBy)
+        : `https://api.whatsapp.com/send?text=${encodeURIComponent('Pemberitahuan Kata Sandi CMS SDN 2 Ngeposari: ' + pwd)}`;
       window.open(url, '_blank', 'noopener,noreferrer');
     });
   }

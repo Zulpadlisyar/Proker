@@ -322,12 +322,15 @@ async function runDatabaseTests() {
   const sender = window.SchoolDB.getSenderIdentity();
   assert(sender && sender.email === 'zulpadlisyarifhrp@gmail.com', 'Permanent sender email must be zulpadlisyarifhrp@gmail.com');
   assert.strictEqual(sender.name, 'Zulpadli Syarif Harahap', 'Permanent sender name must be Zulpadli Syarif Harahap');
+  assert.strictEqual(sender.phone, '0813-7734-9636', 'Permanent sender phone must be 0813-7734-9636');
 
   const contacts = window.SchoolDB.getSecurityContacts();
   assert(contacts && contacts.party1 && contacts.party2, 'Security contacts must contain both party1 and party2');
   assert(contacts.sender && contacts.sender.email === 'zulpadlisyarifhrp@gmail.com', 'Contacts must include permanent sender zulpadlisyarifhrp@gmail.com');
   assert.strictEqual(contacts.party1.email, 'sdn2ngeposari@gmail.com', 'Party 1 default email must be sdn2ngeposari@gmail.com');
   assert.strictEqual(contacts.party2.email, 'zulpadlisyarifhrp@gmail.com', 'Party 2 default email must be zulpadlisyarifhrp@gmail.com');
+  assert.strictEqual(contacts.party1.phone, '0813-7734-9636', 'Party 1 default phone must be 0813-7734-9636');
+  assert.strictEqual(contacts.party2.phone, '0813-7734-9636', 'Party 2 default phone must be 0813-7734-9636');
   assert.strictEqual(contacts.autoNotify, true, 'autoNotify must be enabled by default');
 
   // Test Email Formatting and Compose URLs
@@ -345,6 +348,16 @@ async function runDatabaseTests() {
   const mailtoUrl = window.SchoolDB.getMailtoUrl('testPass123', 'UBAH', 'Pihak Sekolah (SDN 2 Ngeposari)');
   assert(mailtoUrl.startsWith('mailto:sdn2ngeposari@gmail.com') || mailtoUrl.startsWith('mailto:sdn2ngeposari%40gmail.com'), 'Mailto URL must target sdn2ngeposari@gmail.com');
 
+  // Test WhatsApp Formatting and Dispatch URLs
+  const waText = window.SchoolDB.getWhatsAppNotificationText('testPass123', 'UBAH', 'Pihak Sekolah (SDN 2 Ngeposari)');
+  assert(waText.includes('testPass123'), 'WhatsApp text must include new password');
+  assert(waText.includes('0813-7734-9636'), 'WhatsApp text must include official phone');
+  assert(waText.includes('Zulpadli Syarif Harahap'), 'WhatsApp text must include sender name');
+
+  const waUrl = window.SchoolDB.getWhatsAppUrl('testPass123', 'UBAH', 'Pihak Sekolah', '0813-7734-9636');
+  assert(waUrl.startsWith('https://api.whatsapp.com/send?phone=6281377349636'), 'WhatsApp URL must target international phone format 6281377349636');
+  assert(waUrl.includes(encodeURIComponent('testPass123')), 'WhatsApp URL must encode password');
+
   // Test updating contacts with invalid email
   let invalidEmailThrew = false;
   try {
@@ -361,6 +374,9 @@ async function runDatabaseTests() {
   const dispatchRes = await window.SchoolDB.dispatchPasswordNotification('sandiBaru2026', 'UBAH', 'Pihak Sekolah (SDN 2 Ngeposari)');
   assert.strictEqual(dispatchRes.success, true, 'dispatchPasswordNotification must succeed');
   assert(dispatchRes.payload, 'dispatch result must contain payload');
+  assert(dispatchRes.whatsappUrl, 'dispatch result must contain whatsappUrl');
+  assert(dispatchRes.whatsappUrlParty1, 'dispatch result must contain whatsappUrlParty1');
+  assert(dispatchRes.whatsappUrlParty2, 'dispatch result must contain whatsappUrlParty2');
   assert.strictEqual(dispatchRes.payload.newPassword, 'sandiBaru2026');
   assert.strictEqual(dispatchRes.payload.actionType, 'UBAH');
   assert.strictEqual(dispatchRes.payload.changedBy, 'Pihak Sekolah (SDN 2 Ngeposari)');

@@ -358,6 +358,53 @@ test('3.21: Inquiries Section Has Zero Default Dummy Messages and Dummy Seed But
   assert(adminJs.includes('Kotak pesan konsultasi saat ini kosong'), 'admin.js missing clean empty state copy');
 });
 
+test('3.22: Multi-Channel WhatsApp Dispatch, Phone Contacts, and Login Screen Reset Password Flow', () => {
+  const adminHtml = fs.readFileSync('admin.html', 'utf8');
+  const adminJs = fs.readFileSync('js/admin.js', 'utf8');
+  const dbJs = fs.readFileSync('js/db.js', 'utf8');
+  const constantsJs = fs.readFileSync('js/config/constants.js', 'utf8');
+
+  // Verify Login Screen Reset trigger & modal in DOM
+  assert(adminHtml.includes('id="btn-login-forgot-pwd"'), 'admin.html missing btn-login-forgot-pwd');
+  assert(adminHtml.includes('id="login-reset-modal-overlay"'), 'admin.html missing login-reset-modal-overlay');
+  assert(adminHtml.includes('id="btn-confirm-login-reset"'), 'admin.html missing btn-confirm-login-reset');
+
+  // Verify WhatsApp phone inputs and dispatch buttons
+  assert(adminHtml.includes('id="input-security-p1-phone"'), 'admin.html missing input-security-p1-phone');
+  assert(adminHtml.includes('id="input-security-p2-phone"'), 'admin.html missing input-security-p2-phone');
+  assert(adminHtml.includes('id="btn-open-whatsapp-broadcast"'), 'admin.html missing btn-open-whatsapp-broadcast');
+  assert(adminHtml.includes('id="pwd-bc-wa-btn"'), 'admin.html missing pwd-bc-wa-btn');
+
+  // Verify DB methods for WhatsApp
+  assert(dbJs.includes('getWhatsAppUrl('), 'db.js missing getWhatsAppUrl');
+  assert(dbJs.includes('getWhatsAppNotificationText('), 'db.js missing getWhatsAppNotificationText');
+  assert(constantsJs.includes('0813-7734-9636'), 'constants.js missing official phone 0813-7734-9636');
+
+  // Verify JS UI handlers
+  assert(adminJs.includes('initLoginResetUI'), 'admin.js missing initLoginResetUI');
+  assert(adminJs.includes('btn-open-whatsapp-broadcast'), 'admin.js missing btn-open-whatsapp-broadcast listener');
+  assert(adminJs.includes('pwd-bc-wa-btn'), 'admin.js missing pwd-bc-wa-btn listener');
+});
+
+test('3.23: Public Contact Form WhatsApp Continuation & Real Inquiry API Dispatch', () => {
+  const kontakHtml = fs.readFileSync('kontak.html', 'utf8');
+  const mainJs = fs.readFileSync('js/main.js', 'utf8');
+  const dbJs = fs.readFileSync('js/db.js', 'utf8');
+
+  // Verify Success Box and WhatsApp Button in kontak.html
+  assert(kontakHtml.includes('id="contact-form-success-box"'), 'kontak.html missing contact-form-success-box');
+  assert(kontakHtml.includes('id="btn-contact-direct-wa"'), 'kontak.html missing btn-contact-direct-wa');
+
+  // Verify Main.js wires WhatsApp continuation upon submission
+  assert(mainJs.includes('contact-form-success-box'), 'main.js missing contact-form-success-box reference');
+  assert(mainJs.includes('btn-contact-direct-wa'), 'main.js missing btn-contact-direct-wa wiring');
+  assert(mainJs.includes('https://wa.me/'), 'main.js missing https://wa.me/ format');
+
+  // Verify DB.js addInquiry dispatches real FormSubmit API
+  assert(dbJs.includes('fetch(`https://formsubmit.co/ajax/'), 'db.js addInquiry missing FormSubmit API dispatch');
+  assert(dbJs.includes('_cc: p1Email'), 'db.js addInquiry missing CC to school email');
+});
+
 console.log('\n----------------------------------------------------');
 console.log(`TOTAL TESTS: ${passCount + failCount}`);
 console.log(`PASSED: ${passCount}`);

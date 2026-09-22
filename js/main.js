@@ -924,7 +924,7 @@
           submitBtn.textContent = 'Mengirim Pesan...';
         }
         try {
-          await window.SchoolDB.addInquiry({
+          const newInq = await window.SchoolDB.addInquiry({
             name,
             email,
             phone,
@@ -935,6 +935,29 @@
           contactForm.reset();
           if (window.SchoolGuards && typeof window.SchoolGuards.clearAllErrors === 'function') {
             window.SchoolGuards.clearAllErrors(contactForm);
+          }
+
+          // Show Success Box with 1-Click WhatsApp continuation
+          const successBox = document.getElementById('contact-form-success-box');
+          if (successBox) {
+            successBox.style.display = 'block';
+            const waBtn = document.getElementById('btn-contact-direct-wa');
+            if (waBtn) {
+              let targetPhone = '6281377349636';
+              try {
+                if (window.SchoolDB) {
+                  const sec = window.SchoolDB.getSecurityContacts();
+                  const rawPhone = (sec && sec.party1 && sec.party1.phone) || '0813-7734-9636';
+                  const clean = rawPhone.replace(/\D/g, '');
+                  if (clean) targetPhone = clean.startsWith('0') ? '62' + clean.slice(1) : clean;
+                }
+              } catch (e) {}
+              const waMsg = `Halo Admin SDN 2 Ngeposari, saya ${name} (${phone}).\n\nSaya baru saja mengirim pesan melalui formulir website sekolah:\n"${message}"\n\nMohon konfirmasi dan informasinya lebih lanjut. Terima kasih.`;
+              waBtn.href = `https://wa.me/${targetPhone}?text=${encodeURIComponent(waMsg)}`;
+            }
+            try {
+              successBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } catch (e) {}
           }
         } catch (err) {
           showToast('Gagal mengirim pesan: ' + err.message, 'error');

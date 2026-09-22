@@ -1946,6 +1946,45 @@ window.SchoolDB = {
 
     this.data.inquiries.unshift(newInquiry);
     await this.save();
+
+    // Dispatch background email notification to school & developer via FormSubmit API
+    if (typeof fetch === 'function') {
+      try {
+        const contacts = typeof this.getSecurityContacts === 'function' ? this.getSecurityContacts() : null;
+        const sender = typeof this.getSenderIdentity === 'function' ? this.getSenderIdentity() : { email: 'zulpadlisyarifhrp@gmail.com' };
+        const p1Email = (contacts && contacts.party1 && contacts.party1.email) ? contacts.party1.email : 'sdn2ngeposari@gmail.com';
+        const p2Email = sender.email || 'zulpadlisyarifhrp@gmail.com';
+
+        fetch(`https://formsubmit.co/ajax/${encodeURIComponent(p2Email)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            name: `${name} (Pesan Konsultasi Website)`,
+            email: email,
+            phone: phone,
+            _subject: `[PESAN BARU WEBSITE] Konsultasi dari ${name} - SDN 2 Ngeposari`,
+            _cc: p1Email,
+            _captcha: 'false',
+            _template: 'table',
+            nama_pengirim: name,
+            email_pengirim: email,
+            no_telepon_wa: phone,
+            pesan: message,
+            waktu_kirim: formattedDate + ' WIB',
+            halaman_inbox: 'https://sdn2ngeposari.my.id/admin.html'
+          })
+        }).catch(err => {
+          if (typeof console !== 'undefined' && console.warn) {
+            console.warn('[addInquiry] FormSubmit dispatch notice:', err.message || err);
+          }
+        });
+      } catch (e) {
+        if (typeof console !== 'undefined' && console.warn) {
+          console.warn('[addInquiry] FormSubmit exception notice:', e.message || e);
+        }
+      }
+    }
+
     if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
       window.dispatchEvent(new CustomEvent('inquiry-received', { detail: newInquiry }));
     }
@@ -1986,8 +2025,51 @@ window.SchoolDB = {
     return {
       name: 'Zulpadli Syarif Harahap',
       email: 'zulpadlisyarifhrp@gmail.com',
+      phone: '0813-7734-9636',
       role: 'Pengembang Web & Administrator Sistem'
     };
+  },
+
+  _formatWhatsAppNumber(phone) {
+    if (!phone) return '';
+    let digits = String(phone).replace(/\D/g, '');
+    if (digits.startsWith('0')) {
+      digits = '62' + digits.slice(1);
+    } else if (digits.startsWith('8')) {
+      digits = '62' + digits;
+    }
+    return digits;
+  },
+
+  getWhatsAppNotificationText(newPassword, actionType = 'UBAH', changedBy = 'Administrator') {
+    const cleanPwd = String(newPassword || this.getAdminPassword()).trim();
+    const actionLabel = actionType === 'RESET' 
+      ? 'RESET KATA SANDI KE BAWAAN' 
+      : (actionType === 'UJI_COBA' ? 'UJI COBA NOTIFIKASI KEAMANAN' : 'PEMBARUAN KATA SANDI BARU');
+    const sender = this.getSenderIdentity();
+    const dateStr = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+
+    return `*PEMBERITAHUAN KEAMANAN CMS SD NEGERI 2 NGEPOSARI*
+
+Halo Bapak/Ibu Pihak Sekolah & Pengembang,
+Berikut adalah informasi resmi pembaruan akses kata sandi administrator CMS:
+
+- *Tindakan*: ${actionLabel}
+- *Kata Sandi Aktif*: ${cleanPwd}
+- *Diperbarui Oleh*: ${changedBy}
+- *Waktu Kejadian*: ${dateStr} WIB
+- *Halaman Login*: https://sdn2ngeposari.my.id/admin.html
+
+Pemberitahuan resmi ini disiarkan langsung oleh pengembang ${sender.name} (${sender.phone}). Mohon simpan kata sandi ini dengan aman demi kelancaran pengelolaan website sekolah.`;
+  },
+
+  getWhatsAppUrl(newPassword, actionType = 'UBAH', changedBy = 'Administrator', targetPhone = '') {
+    const text = this.getWhatsAppNotificationText(newPassword, actionType, changedBy);
+    const cleanPhone = this._formatWhatsAppNumber(targetPhone);
+    if (cleanPhone) {
+      return `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(text)}`;
+    }
+    return `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
   },
 
   getNotificationEmailText(newPassword, actionType = 'UBAH', changedBy = 'Administrator') {
@@ -2017,11 +2099,12 @@ Halaman Login    : https://sdn2ngeposari.my.id/admin.html
 PENGIRIM RESMI SISTEM (TETAP):
 Nama   : ${sender.name}
 Email  : ${sender.email}
+No. WA : ${sender.phone || '0813-7734-9636'}
 Peran  : ${sender.role}
 
 PENERIMA NOTIFIKASI RESMI:
-1. Pihak Sekolah    : ${p1.name} <${p1.email}>
-2. Pihak Pengembang : ${p2.name} <${p2.email}>
+1. Pihak Sekolah    : ${p1.name} <${p1.email}> ${p1.phone ? '(' + p1.phone + ')' : ''}
+2. Pihak Pengembang : ${p2.name} <${p2.email}> ${p2.phone ? '(' + p2.phone + ')' : ''}
 
 CATATAN RESMI:
 Pemberitahuan otomatis ini dikirimkan langsung dari alamat email pengembang resmi (${sender.email}) kepada kedua belah pihak secara bersamaan demi menjaga transparansi, integritas keamanan data, dan kontinuitas akses pengelolaan sekolah.
@@ -2086,8 +2169,8 @@ Pengembang Web & Administrator Sistem SDN 2 Ngeposari`;
       ? JSON.parse(JSON.stringify(SchoolConstants.INITIAL_DATA.securityContacts))
       : {
           sender: sender,
-          party1: { name: 'Pihak Sekolah (SDN 2 Ngeposari)', email: 'sdn2ngeposari@gmail.com', role: 'Administrator Sekolah', enabled: true },
-          party2: { name: 'Pihak Pengembang (Zulpadli)', email: 'zulpadlisyarifhrp@gmail.com', role: 'Pengembang Web / Webmaster', enabled: true },
+          party1: { name: 'Pihak Sekolah (SDN 2 Ngeposari)', email: 'sdn2ngeposari@gmail.com', phone: '0813-7734-9636', role: 'Administrator Sekolah', enabled: true },
+          party2: { name: 'Pihak Pengembang (Zulpadli)', email: 'zulpadlisyarifhrp@gmail.com', phone: '0813-7734-9636', role: 'Pengembang Web / Webmaster', enabled: true },
           autoNotify: true
         };
   },
@@ -2114,12 +2197,14 @@ Pengembang Web & Administrator Sistem SDN 2 Ngeposari`;
       party1: {
         name: (p1.name || 'Pihak Sekolah (SDN 2 Ngeposari)').trim(),
         email: (p1.email || 'sdn2ngeposari@gmail.com').trim().toLowerCase(),
+        phone: (p1.phone || '0813-7734-9636').trim(),
         role: (p1.role || 'Administrator Sekolah').trim(),
         enabled: p1.enabled !== false
       },
       party2: {
         name: (p2.name || 'Pihak Pengembang (Zulpadli)').trim(),
         email: (p2.email || 'zulpadlisyarifhrp@gmail.com').trim().toLowerCase(),
+        phone: (p2.phone || '0813-7734-9636').trim(),
         role: (p2.role || 'Pengembang Web / Webmaster').trim(),
         enabled: p2.enabled !== false
       },
@@ -2176,6 +2261,10 @@ Pengembang Web & Administrator Sistem SDN 2 Ngeposari`;
       gmailComposeUrl: this.getGmailComposeUrl(cleanPwd, actionType, changedBy),
       mailtoUrl: this.getMailtoUrl(cleanPwd, actionType, changedBy),
       emailText: this.getNotificationEmailText(cleanPwd, actionType, changedBy),
+      whatsappUrl: this.getWhatsAppUrl(cleanPwd, actionType, changedBy),
+      whatsappUrlParty1: this.getWhatsAppUrl(cleanPwd, actionType, changedBy, p1.phone || '0813-7734-9636'),
+      whatsappUrlParty2: this.getWhatsAppUrl(cleanPwd, actionType, changedBy, p2.phone || '0813-7734-9636'),
+      whatsappText: this.getWhatsAppNotificationText(cleanPwd, actionType, changedBy),
       needsActivation: false,
       activationMessage: ''
     };
@@ -2275,7 +2364,11 @@ Pengembang Web & Administrator Sistem SDN 2 Ngeposari`;
       needsActivation,
       activationMessage,
       deliveryStatus: broadcastPayload.deliveryStatus,
-      payload: broadcastPayload
+      payload: broadcastPayload,
+      whatsappUrl: broadcastPayload.whatsappUrl,
+      whatsappUrlParty1: broadcastPayload.whatsappUrlParty1,
+      whatsappUrlParty2: broadcastPayload.whatsappUrlParty2,
+      gmailComposeUrl: broadcastPayload.gmailComposeUrl
     };
   },
 

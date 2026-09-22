@@ -39,17 +39,20 @@
       sender: {
         name: 'Zulpadli Syarif Harahap',
         email: 'zulpadlisyarifhrp@gmail.com',
+        phone: '0813-7734-9636',
         role: 'Pengembang Web & Administrator Sistem'
       },
       party1: {
         name: 'Pihak Sekolah (SDN 2 Ngeposari)',
         email: 'sdn2ngeposari@gmail.com',
+        phone: '0813-7734-9636',
         role: 'Administrator Sekolah',
         enabled: true
       },
       party2: {
         name: 'Pihak Pengembang (Zulpadli)',
         email: 'zulpadlisyarifhrp@gmail.com',
+        phone: '0813-7734-9636',
         role: 'Pengembang Web / Webmaster',
         enabled: true
       },
